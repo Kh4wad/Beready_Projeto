@@ -5,7 +5,7 @@
  */
 ?>
 <div class="usuarios index content">
-    <?= $this->Html->link(__('New Usuario'), ['action' => 'add'], ['class' => 'button float-right']) ?>
+    <?= $this->Html->link(('New Usuario'), ['action' => 'add'], ['class' => 'button float-right']) ?>
     <h3><?= __('Usuarios') ?></h3>
     <div class="table-responsive">
         <table>
@@ -42,8 +42,8 @@
                     <td><?= h($usuario->atualizado_em) ?></td>
                     <td><?= h($usuario->ultimo_login) ?></td>
                     <td class="actions">
-                        <?= $this->Html->link(__('View'), ['action' => 'view', $usuario->id]) ?>
-                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $usuario->id]) ?>
+                        <?= $this->Html->link(('View'), ['action' => 'view', $usuario->id]) ?>
+                        <?= $this->Html->link(('Edit'), ['action' => 'edit', $usuario->id]) ?>
                         <?= $this->Form->postLink(
                             __('Delete'),
                             ['action' => 'delete', $usuario->id],
@@ -63,9 +63,9 @@
             <?= $this->Paginator->first('<< ' . __('first')) ?>
             <?= $this->Paginator->prev('< ' . __('previous')) ?>
             <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
+            <?= $this->Paginator->next(('next') . ' >') ?>
+            <?= $this->Paginator->last(('last') . ' >>') ?>
         </ul>
-        <p><?= $this->Paginator->counter(__('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
+        <p><?= $this->Paginator->counter(('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')) ?></p>
     </div>
 </div>

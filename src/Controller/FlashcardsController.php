@@ -3,97 +3,108 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Table\FlashcardsTable;
+
 /**
  * Flashcards Controller
  *
+ * @property \App\Model\Table\FlashcardsTable $Flashcards
  */
 class FlashcardsController extends AppController
 {
     /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
+     * Listar method (era index)
      */
-    public function index()
+    public function listar()
     {
-        $query = $this->Flashcards->find();
+        $query = $this->Flashcards->find()->contain(['Usuarios', 'Prompts']);
         $flashcards = $this->paginate($query);
-
         $this->set(compact('flashcards'));
     }
 
     /**
-     * View method
-     *
-     * @param string|null $id Flashcard id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * Ver method (era view)
      */
-    public function view($id = null)
+    public function ver($id = null)
     {
-        $flashcard = $this->Flashcards->get($id, contain: []);
+        $flashcard = $this->Flashcards->get($id, [
+            'contain' => ['Usuarios', 'Prompts', 'ImagemFrentes', 'ImagemVersos', 'FlashcardTags']
+        ]);
         $this->set(compact('flashcard'));
     }
 
     /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     * Criar method (era add)
      */
-    public function add()
+    public function criar()
     {
         $flashcard = $this->Flashcards->newEmptyEntity();
         if ($this->request->is('post')) {
             $flashcard = $this->Flashcards->patchEntity($flashcard, $this->request->getData());
             if ($this->Flashcards->save($flashcard)) {
-                $this->Flash->success(__('The flashcard has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                $this->Flash->success(('Flashcard criado com sucesso!'));
+                return $this->redirect(['action' => 'listar']);
             }
-            $this->Flash->error(__('The flashcard could not be saved. Please, try again.'));
+            $this->Flash->error(('Não foi possível criar o flashcard. Tente novamente.'));
         }
-        $this->set(compact('flashcard'));
+
+        // Carregar dados para os dropdowns
+        $usuarios = $this->Flashcards->Usuarios->find('list', ['limit' => 200]);
+        $prompts = $this->Flashcards->Prompts->find('list', ['limit' => 200]);
+        $imagemFrentes = $this->Flashcards->ImagemFrentes->find('list', ['limit' => 200]);
+        $imagemVersos = $this->Flashcards->ImagemVersos->find('list', ['limit' => 200]);
+
+        $this->set(compact('flashcard', 'usuarios', 'prompts', 'imagemFrentes', 'imagemVersos'));
     }
 
     /**
-     * Edit method
-     *
-     * @param string|null $id Flashcard id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * Editar method (era edit)
      */
-    public function edit($id = null)
+    public function editar($id = null)
     {
-        $flashcard = $this->Flashcards->get($id, contain: []);
+        $flashcard = $this->Flashcards->get($id, ['contain' => []]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $flashcard = $this->Flashcards->patchEntity($flashcard, $this->request->getData());
             if ($this->Flashcards->save($flashcard)) {
-                $this->Flash->success(__('The flashcard has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                $this->Flash->success(('Flashcard atualizado com sucesso!'));
+                return $this->redirect(['action' => 'listar']);
             }
-            $this->Flash->error(__('The flashcard could not be saved. Please, try again.'));
+            $this->Flash->error(('Não foi possível atualizar o flashcard. Tente novamente.'));
         }
-        $this->set(compact('flashcard'));
+
+        // Carregar dados para os dropdowns
+        $usuarios = $this->Flashcards->Usuarios->find('list', ['limit' => 200]);
+        $prompts = $this->Flashcards->Prompts->find('list', ['limit' => 200]);
+        $imagemFrentes = $this->Flashcards->ImagemFrentes->find('list', ['limit' => 200]);
+        $imagemVersos = $this->Flashcards->ImagemVersos->find('list', ['limit' => 200]);
+
+        $this->set(compact('flashcard', 'usuarios', 'prompts', 'imagemFrentes', 'imagemVersos'));
     }
 
     /**
-     * Delete method
-     *
-     * @param string|null $id Flashcard id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * Excluir method (era delete)
      */
-    public function delete($id = null)
+    public function excluir($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $flashcard = $this->Flashcards->get($id);
-        if ($this->Flashcards->delete($flashcard)) {
-            $this->Flash->success(__('The flashcard has been deleted.'));
-        } else {
-            $this->Flash->error(__('The flashcard could not be deleted. Please, try again.'));
+
+        try {
+            $flashcard = $this->Flashcards->get($id);
+            if ($this->Flashcards->delete($flashcard)) {
+                $this->Flash->success(('Flashcard excluído com sucesso!'));
+            } else {
+                $this->Flash->error(('Não foi possível excluir o flashcard. Tente novamente.'));
+            }
+        } catch (\Exception $e) {
+            $this->Flash->error(('Flashcard não encontrado ou já foi excluído.'));
         }
 
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['action' => 'listar']);
+    }
+
+    public function initialize(): void
+    {
+        parent::initialize();
+        $this->loadComponent('Flash');
     }
 }

@@ -13,7 +13,7 @@
                 ['action' => 'delete', $usuario->id],
                 ['confirm' => __('Are you sure you want to delete # {0}?', $usuario->id), 'class' => 'side-nav-item']
             ) ?>
-            <?= $this->Html->link(__('List Usuarios'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(('List Usuarios'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
         </div>
     </aside>
     <div class="column column-80">
@@ -36,7 +36,7 @@
                     echo $this->Form->control('ultimo_login');
                 ?>
             </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
+            <?= $this->Form->button(('Submit')) ?>
             <?= $this->Form->end() ?>
         </div>
     </div>

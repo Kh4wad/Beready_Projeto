@@ -8,10 +8,10 @@
     <aside class="column">
         <div class="side-nav">
             <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(__('Edit Usuario'), ['action' => 'edit', $usuario->id], ['class' => 'side-nav-item']) ?>
-            <?= $this->Form->postLink(__('Delete Usuario'), ['action' => 'delete', $usuario->id], ['confirm' => __('Are you sure you want to delete # {0}?', $usuario->id), 'class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(__('List Usuarios'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(__('New Usuario'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(('Edit Usuario'), ['action' => 'edit', $usuario->id], ['class' => 'side-nav-item']) ?>
+            <?= $this->Form->postLink(('Delete Usuario'), ['action' => 'delete', $usuario->id], ['confirm' => __('Are you sure you want to delete # {0}?', $usuario->id), 'class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(('List Usuarios'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
+            <?= $this->Html->link(('New Usuario'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
         </div>
     </aside>
     <div class="column column-80">
@@ -122,8 +122,8 @@
                             <td><?= h($flashcard->arquivado) ?></td>
                             <td><?= h($flashcard->criado_em) ?></td>
                             <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'Flashcards', 'action' => 'view', $flashcard->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'Flashcards', 'action' => 'edit', $flashcard->id]) ?>
+                                <?= $this->Html->link(('View'), ['controller' => 'Flashcards', 'action' => 'view', $flashcard->id]) ?>
+                                <?= $this->Html->link(('Edit'), ['controller' => 'Flashcards', 'action' => 'edit', $flashcard->id]) ?>
                                 <?= $this->Form->postLink(
                                     __('Delete'),
                                     ['controller' => 'Flashcards', 'action' => 'delete', $flashcard->id],
@@ -172,8 +172,8 @@
                             <td><?= h($preferenciasUsuario->criado_em) ?></td>
                             <td><?= h($preferenciasUsuario->atualizado_em) ?></td>
                             <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'PreferenciasUsuario', 'action' => 'view', $preferenciasUsuario->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'PreferenciasUsuario', 'action' => 'edit', $preferenciasUsuario->id]) ?>
+                                <?= $this->Html->link(('View'), ['controller' => 'PreferenciasUsuario', 'action' => 'view', $preferenciasUsuario->id]) ?>
+                                <?= $this->Html->link(('Edit'), ['controller' => 'PreferenciasUsuario', 'action' => 'edit', $preferenciasUsuario->id]) ?>
                                 <?= $this->Form->postLink(
                                     __('Delete'),
                                     ['controller' => 'PreferenciasUsuario', 'action' => 'delete', $preferenciasUsuario->id],
@@ -216,8 +216,8 @@
                             <td><?= h($prompt->sessao_id) ?></td>
                             <td><?= h($prompt->criado_em) ?></td>
                             <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'Prompts', 'action' => 'view', $prompt->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'Prompts', 'action' => 'edit', $prompt->id]) ?>
+                                <?= $this->Html->link(('View'), ['controller' => 'Prompts', 'action' => 'view', $prompt->id]) ?>
+                                <?= $this->Html->link(('Edit'), ['controller' => 'Prompts', 'action' => 'edit', $prompt->id]) ?>
                                 <?= $this->Form->postLink(
                                     __('Delete'),
                                     ['controller' => 'Prompts', 'action' => 'delete', $prompt->id],
@@ -266,8 +266,8 @@
                             <td><?= h($quize->criado_em) ?></td>
                             <td><?= h($quize->atualizado_em) ?></td>
                             <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'Quizes', 'action' => 'view', $quize->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'Quizes', 'action' => 'edit', $quize->id]) ?>
+                                <?= $this->Html->link(('View'), ['controller' => 'Quizes', 'action' => 'view', $quize->id]) ?>
+                                <?= $this->Html->link(('Edit'), ['controller' => 'Quizes', 'action' => 'edit', $quize->id]) ?>
                                 <?= $this->Form->postLink(
                                     __('Delete'),
                                     ['controller' => 'Quizes', 'action' => 'delete', $quize->id],
@@ -314,8 +314,8 @@
                             <td><?= h($tentativasQuiz->concluido_em) ?></td>
                             <td><?= h($tentativasQuiz->criado_em) ?></td>
                             <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'TentativasQuiz', 'action' => 'view', $tentativasQuiz->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'TentativasQuiz', 'action' => 'edit', $tentativasQuiz->id]) ?>
+                                <?= $this->Html->link(('View'), ['controller' => 'TentativasQuiz', 'action' => 'view', $tentativasQuiz->id]) ?>
+                                <?= $this->Html->link(('Edit'), ['controller' => 'TentativasQuiz', 'action' => 'edit', $tentativasQuiz->id]) ?>
                                 <?= $this->Form->postLink(
                                     __('Delete'),
                                     ['controller' => 'TentativasQuiz', 'action' => 'delete', $tentativasQuiz->id],
@@ -350,8 +350,8 @@
                             <td><?= h($vocabulario->palavra_frase) ?></td>
                             <td><?= h($vocabulario->criado_em) ?></td>
                             <td class="actions">
-                                <?= $this->Html->link(__('View'), ['controller' => 'Vocabulario', 'action' => 'view', $vocabulario->id]) ?>
-                                <?= $this->Html->link(__('Edit'), ['controller' => 'Vocabulario', 'action' => 'edit', $vocabulario->id]) ?>
+                                <?= $this->Html->link(('View'), ['controller' => 'Vocabulario', 'action' => 'view', $vocabulario->id]) ?>
+                                <?= $this->Html->link(('Edit'), ['controller' => 'Vocabulario', 'action' => 'edit', $vocabulario->id]) ?>
                                 <?= $this->Form->postLink(
                                     __('Delete'),
                                     ['controller' => 'Vocabulario', 'action' => 'delete', $vocabulario->id],

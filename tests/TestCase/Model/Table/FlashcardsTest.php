@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\FlashcardsTable;
+use App\Model\Table\FlashcardTagsTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\FlashcardsTable Test Case
+ * App\Model\Table\FlashcardTagsTable Test Case
  */
-class FlashcardsTableTest extends TestCase
+class FlashcardTagsTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\FlashcardsTable
+     * @var \App\Model\Table\FlashcardTagsTable
      */
-    protected $Flashcards;
+    protected $FlashcardTags;
 
     /**
      * Fixtures
@@ -24,12 +24,10 @@ class FlashcardsTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.Flashcards',
-        'app.Usuarios',
-        'app.Prompts',
-        'app.ImagemFrentes',
-        'app.ImagemVersos',
         'app.FlashcardTags',
+        'app.Flashcards',
+        'app.FlashcardsFlashcardtags',
+        'app.Usuarios', // se houver relação
     ];
 
     /**
@@ -40,8 +38,8 @@ class FlashcardsTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Flashcards') ? [] : ['className' => FlashcardsTable::class];
-        $this->Flashcards = $this->getTableLocator()->get('Flashcards', $config);
+        $config = $this->getTableLocator()->exists('FlashcardTags') ? [] : ['className' => FlashcardTagsTable::class];
+        $this->FlashcardTags = $this->getTableLocator()->get('FlashcardTags', $config);
     }
 
     /**
@@ -51,8 +49,7 @@ class FlashcardsTableTest extends TestCase
      */
     protected function tearDown(): void
     {
-        unset($this->Flashcards);
-
+        unset($this->FlashcardTags);
         parent::tearDown();
     }
 
@@ -60,7 +57,6 @@ class FlashcardsTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @link \App\Model\Table\FlashcardsTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -71,7 +67,6 @@ class FlashcardsTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @link \App\Model\Table\FlashcardsTable::buildRules()
      */
     public function testBuildRules(): void
     {
