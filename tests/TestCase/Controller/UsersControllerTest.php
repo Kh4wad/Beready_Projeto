@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\FlashcardTagsController;
+use App\Controller\UsuariosController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Controller\FlashcardTagsController Test Case
+ * App\Controller\UsuariosController Test Case
  *
- * @link \App\Controller\FlashcardTagsController
+ * @link \App\Controller\UsuariosController
  */
-class FlashcardTagsControllerTest extends TestCase
+class UsuariosControllerTest extends TestCase
 {
     use IntegrationTestTrait;
 
@@ -22,16 +22,14 @@ class FlashcardTagsControllerTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.FlashcardTags', // Corrigido para FlashcardTags
-        'app.Flashcards',    // Se houver relação
-        'app.FlashcardsFlashcardtags' // Se houver tabela join
+        'app.Usuarios',
     ];
 
     /**
      * Test index method
      *
      * @return void
-     * @link \App\Controller\FlashcardTagsController::index()
+     * @link \App\Controller\UsuariosController::index()
      */
     public function testIndex(): void
     {
@@ -42,7 +40,7 @@ class FlashcardTagsControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @link \App\Controller\FlashcardTagsController::view()
+     * @link \App\Controller\UsuariosController::view()
      */
     public function testView(): void
     {
@@ -53,7 +51,7 @@ class FlashcardTagsControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @link \App\Controller\FlashcardTagsController::add()
+     * @link \App\Controller\UsuariosController::add()
      */
     public function testAdd(): void
     {
@@ -64,7 +62,7 @@ class FlashcardTagsControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @link \App\Controller\FlashcardTagsController::edit()
+     * @link \App\Controller\UsuariosController::edit()
      */
     public function testEdit(): void
     {
@@ -75,7 +73,7 @@ class FlashcardTagsControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @link \App\Controller\FlashcardTagsController::delete()
+     * @link \App\Controller\UsuariosController::delete()
      */
     public function testDelete(): void
     {
