@@ -20,80 +20,34 @@ class UsersTable extends Table
         $this->setDisplayField('nome');
         $this->setPrimaryKey('id');
 
-        $this->addBehavior('Timestamp', [
-            'events' => [
-                'Model.beforeSave' => [
-                    'criado_em' => 'new',
-                    'atualizado_em' => 'always'
-                ]
-            ]
-        ]);
-
-        // Relacionamentos
-        // $this->hasMany('Flashcards', ['foreignKey' => 'usuario_id']);
-        // $this->hasMany('LoginsLog', ['foreignKey' => 'user_id']);
+        // Remove o Timestamp behavior pois seu banco já tem DEFAULT CURRENT_TIMESTAMP
     }
 
     /**
-     * Regras de validação padrão
+     * Regras de validação padrão - SUPER SIMPLIFICADA
      */
     public function validationDefault(Validator $validator): Validator
     {
         $validator
-            ->scalar('nome')
-            ->maxLength('nome', 100)
-            ->requirePresence('nome', 'create')
-            ->notEmptyString('nome', 'O nome é obrigatório.');
+            ->notEmptyString('nome', 'O nome é obrigatório.')
+            ->maxLength('nome', 100, 'O nome deve ter no máximo 100 caracteres.');
 
         $validator
-            ->email('email')
-            ->requirePresence('email', 'create')
-            ->notEmptyString('email', 'O e-mail é obrigatório.');
+            ->notEmptyString('email', 'O e-mail é obrigatório.')
+            ->email('email', false, 'Digite um e-mail válido.');
 
         $validator
-            ->scalar('senha')
-            ->minLength('senha', 6, 'A senha deve ter pelo menos 6 caracteres.')
-            ->requirePresence('senha', 'create')
             ->notEmptyString('senha', 'A senha é obrigatória.', 'create')
-            ->allowEmptyString('senha', 'update');
+            ->minLength('senha', 6, 'A senha deve ter pelo menos 6 caracteres.');
 
-        $validator
-            ->scalar('telefone')
-            ->maxLength('telefone', 20)
-            ->allowEmptyString('telefone');
-
-        $validator
-            ->scalar('nivel_ingles')
-            ->maxLength('nivel_ingles', 50)
-            ->allowEmptyString('nivel_ingles');
-
-        $validator
-            ->scalar('idioma_preferido')
-            ->maxLength('idioma_preferido', 10)
-            ->allowEmptyString('idioma_preferido');
-
-        $validator
-            ->scalar('objetivos_aprendizado')
-            ->allowEmptyString('objetivos_aprendizado');
-
-        $validator
-            ->scalar('status')
-            ->maxLength('status', 20)
-            ->notEmptyString('status')
-            ->inList('status', ['ativo', 'inativo'], 'Status deve ser "ativo" ou "inativo"');
-
-        // Validação para confirmação de senha (campo virtual)
         $validator
             ->add('confirmar_senha', 'custom', [
                 'rule' => function ($value, $context) {
-                    if (isset($context['data']['senha'])) {
-                        return $value === $context['data']['senha'];
-                    }
-                    return true; // Permite vazio se não houver senha (update)
+                    return $value === ($context['data']['senha'] ?? '');
                 },
                 'message' => 'As senhas não coincidem.'
             ])
-            ->allowEmptyString('confirmar_senha');
+            ->notEmptyString('confirmar_senha', 'Confirme sua senha.', 'create');
 
         return $validator;
     }
@@ -109,29 +63,5 @@ class UsersTable extends Table
         ]);
 
         return $rules;
-    }
-
-    /**
-     * BeforeSave callback - para hash da senha
-     */
-    public function beforeSave($event, $entity, $options)
-    {
-        // Se a senha foi modificada, faz o hash
-        if ($entity->isDirty('senha') && !empty($entity->senha)) {
-            $entity->senha_hash = password_hash($entity->senha, PASSWORD_DEFAULT);
-        }
-
-        // Define valores padrão se não foram informados
-        if ($entity->isNew() && empty($entity->status)) {
-            $entity->status = 'ativo';
-        }
-
-        if ($entity->isNew() && empty($entity->nivel_ingles)) {
-            $entity->nivel_ingles = 'iniciante';
-        }
-
-        if ($entity->isNew() && empty($entity->idioma_preferido)) {
-            $entity->idioma_preferido = 'pt-BR';
-        }
     }
 }

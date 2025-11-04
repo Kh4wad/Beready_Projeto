@@ -8,21 +8,6 @@ use Authentication\PasswordHasher\DefaultPasswordHasher;
 
 /**
  * User Entity
- *
- * @property int $id
- * @property string $nome
- * @property string $email
- * @property string $senha_hash
- * @property string|null $telefone
- * @property string|null $nivel_ingles
- * @property string|null $idioma_preferido
- * @property string|null $objetivos_aprendizado
- * @property string $status
- * @property string|null $token
- * @property \Cake\I18n\DateTime|null $token_expires
- * @property \Cake\I18n\DateTime $criado_em
- * @property \Cake\I18n\DateTime $atualizado_em
- * @property \Cake\I18n\DateTime|null $ultimo_login
  */
 class User extends Entity
 {
@@ -32,7 +17,8 @@ class User extends Entity
     protected array $_accessible = [
         'nome' => true,
         'email' => true,
-        'senha_hash' => true,
+        'senha' => true, // Campo virtual do formulário
+        'senha_hash' => true, // Campo real do banco
         'telefone' => true,
         'nivel_ingles' => true,
         'idioma_preferido' => true,
@@ -43,7 +29,7 @@ class User extends Entity
         'criado_em' => true,
         'atualizado_em' => true,
         'ultimo_login' => true,
-        'confirmar_senha' => true, // Campo virtual para confirmação
+        'confirmar_senha' => true,
     ];
 
     /**
@@ -51,24 +37,24 @@ class User extends Entity
      */
     protected array $_hidden = [
         'senha_hash',
+        'senha', // Esconde o campo virtual também
         'token',
     ];
 
     // Campos virtuais
     protected array $_virtual = ['confirmar_senha'];
 
-    // Automaticamente hasheia a senha quando setar 'senha_hash'
-    protected function _setSenhaHash(string $senha): ?string
+    // Automaticamente hasheia a senha e salva em senha_hash
+    protected function _setSenha(string $senha): void
     {
         if (strlen($senha) > 0) {
-            return (new DefaultPasswordHasher())->hash($senha);
+            $this->set('senha_hash', (new DefaultPasswordHasher())->hash($senha));
         }
-        return null;
     }
 
     // Getter para o campo virtual confirmar_senha
     protected function _getConfirmarSenha()
     {
-        return null; // Sempre retorna null pois é apenas para validação
+        return null;
     }
 }

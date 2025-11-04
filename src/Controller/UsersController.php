@@ -7,8 +7,6 @@ use Cake\Event\EventInterface;
 use Cake\Utility\Security;
 use Cake\Mailer\Mailer;
 use Cake\Routing\Router;
-use Cake\Filesystem\Folder;
-use Cake\Filesystem\File;
 
 class UsersController extends AppController
 {
@@ -41,7 +39,7 @@ class UsersController extends AppController
                     // Ignora erro se a tabela não existir
                 }
 
-                $this->Flash->success(('Bem-vindo, ' . $user['email']));
+                $this->Flash->success(('Bem-vindo, ' . $user['nome']));
                 return $this->redirect($this->Auth->redirectUrl());
             }
 
@@ -77,19 +75,16 @@ class UsersController extends AppController
 
     public function add()
     {
-        $usersTable = $this->fetchTable('Users');
-        $user = $usersTable->newEmptyEntity();
-
+        $user = $this->Users->newEmptyEntity();
+        
         if ($this->request->is('post')) {
             $data = $this->request->getData();
             
-            // 🔥 REMOVIDO: Processamento de upload de imagem
-            
-            // Mapear campos corretamente
+            // Dados diretos para o banco
             $userData = [
                 'nome' => $data['nome'],
                 'email' => $data['email'],
-                'senha_hash' => $data['senha'], // ✅ Campo correto do banco
+                'senha_hash' => (new \Authentication\PasswordHasher\DefaultPasswordHasher())->hash($data['senha']),
                 'telefone' => $data['telefone'] ?? null,
                 'nivel_ingles' => $data['nivel_ingles'] ?? 'iniciante',
                 'idioma_preferido' => $data['idioma_preferido'] ?? 'pt-BR',
@@ -97,77 +92,33 @@ class UsersController extends AppController
                 'status' => 'ativo'
             ];
             
-            // Remover campos que não existem na tabela
-            unset($data['confirmar_senha']);
-            unset($data['foto_perfil']); // 🔥 REMOVIDO: campo de imagem
+            $user = $this->Users->newEntity($userData);
             
-            $user = $usersTable->patchEntity($user, $userData);
-            
-            if ($usersTable->save($user)) {
-                $this->Flash->success(('Usuário criado com sucesso. Faça login para continuar.'));
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Usuário cadastrado com sucesso! Faça login para continuar.'));
                 return $this->redirect(['action' => 'login']);
             }
             
-            $this->Flash->error(('O usuário não pôde ser salvo. Por favor, tente novamente.'));
+            $this->Flash->error(__('Erro ao cadastrar usuário. Por favor, verifique os dados e tente novamente.'));
         }
+        
         $this->set(compact('user'));
-    }
-
-// 🔥 REMOVIDO: Método processUpload completo
-
-    /**
-     * Processa o upload do arquivo de foto de perfil
-     */
-    private function processUpload($uploadedFile)
-    {
-        // Verificar se é uma imagem válida
-        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        if (!in_array($uploadedFile->getClientMediaType(), $allowedTypes)) {
-            $this->Flash->error('Tipo de arquivo não permitido. Use apenas JPEG, PNG, GIF ou WebP.');
-            return null;
-        }
-
-        // Verificar tamanho do arquivo (máximo 5MB)
-        if ($uploadedFile->getSize() > 5 * 1024 * 1024) {
-            $this->Flash->error('Arquivo muito grande. O tamanho máximo é 5MB.');
-            return null;
-        }
-
-        // Criar diretório de uploads se não existir
-        $uploadDir = WWW_ROOT . 'uploads' . DS . 'profiles';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-
-        // Gerar nome único para o arquivo
-        $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-        $filename = uniqid() . '_' . time() . '.' . strtolower($extension);
-
-        // Mover arquivo para o diretório de uploads
-        try {
-            $uploadedFile->moveTo($uploadDir . DS . $filename);
-            return $filename;
-        } catch (\Exception $e) {
-            $this->Flash->error('Erro ao fazer upload do arquivo.');
-            return null;
-        }
     }
 
     public function forgotPassword()
     {
         $this->request->allowMethod(['get', 'post']);
-        $usersTable = $this->fetchTable('Users');
 
         if ($this->request->is('post')) {
             $email = $this->request->getData('email');
-            $user = $usersTable->find()->where(['email' => $email])->first();
+            $user = $this->Users->find()->where(['email' => $email])->first();
 
             if ($user) {
                 $token = Security::hash(Security::randomBytes(32));
                 $user->token = $token;
                 $user->token_expires = new \DateTime('+1 hour');
 
-                if ($usersTable->save($user)) {
+                if ($this->Users->save($user)) {
                     $resetLink = Router::url(['controller' => 'Users', 'action' => 'resetPassword', $token], true);
 
                     // Simulação de envio de e-mail
@@ -188,14 +139,12 @@ class UsersController extends AppController
 
     public function resetPassword($token = null)
     {
-        $usersTable = $this->fetchTable('Users');
-
         if (!$token) {
             $this->Flash->error(('Token de redefinição de senha inválido.'));
             return $this->redirect(['action' => 'forgotPassword']);
         }
 
-        $user = $usersTable->find()->where([
+        $user = $this->Users->find()->where([
             'token' => $token,
             'token_expires >' => new \DateTime(),
         ])->first();
@@ -206,17 +155,102 @@ class UsersController extends AppController
         }
 
         if ($this->request->is(['post', 'put'])) {
-            $user = $usersTable->patchEntity($user, $this->request->getData());
+            $user = $this->Users->patchEntity($user, $this->request->getData());
             $user->token = null;
             $user->token_expires = null;
 
-            if ($usersTable->save($user)) {
+            if ($this->Users->save($user)) {
                 $this->Flash->success(('Sua senha foi redefinida com sucesso.'));
                 return $this->redirect(['action' => 'login']);
             }
             $this->Flash->error(('A senha não pôde ser redefinida. Por favor, tente novamente.'));
         }
 
+        $this->set(compact('user'));
+    }
+
+    // Adicione também os métodos que estão faltando para o CRUD completo
+    public function index()
+    {
+        $users = $this->paginate($this->Users);
+        $this->set(compact('users'));
+    }
+
+    public function view($id = null)
+    {
+        $user = $this->Users->get($id, [
+            'contain' => [],
+        ]);
+        $this->set(compact('user'));
+    }
+
+    public function edit($id = null)
+    {
+        $user = $this->Users->get($id, [
+            'contain' => [],
+        ]);
+        
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $data = $this->request->getData();
+            
+            // Se a senha estiver vazia, remove para não atualizar
+            if (empty($data['senha'])) {
+                unset($data['senha']);
+            }
+            if (empty($data['confirmar_senha'])) {
+                unset($data['confirmar_senha']);
+            }
+            
+            $user = $this->Users->patchEntity($user, $data);
+            
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Perfil atualizado com sucesso.'));
+                return $this->redirect(['action' => 'view', $id]);
+            }
+            $this->Flash->error(__('Erro ao atualizar perfil. Por favor, tente novamente.'));
+        }
+        
+        $this->set(compact('user'));
+    }
+
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $user = $this->Users->get($id);
+        
+        if ($this->Users->delete($user)) {
+            $this->Flash->success(__('Usuário excluído com sucesso.'));
+        } else {
+            $this->Flash->error(__('Erro ao excluir usuário. Por favor, tente novamente.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+
+    public function profile()
+    {
+        $user = $this->Users->get($this->Auth->user('id'));
+        
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $data = $this->request->getData();
+            
+            // Se a senha estiver vazia, remove para não atualizar
+            if (empty($data['senha'])) {
+                unset($data['senha']);
+            }
+            if (empty($data['confirmar_senha'])) {
+                unset($data['confirmar_senha']);
+            }
+            
+            $user = $this->Users->patchEntity($user, $data);
+            
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Perfil atualizado com sucesso.'));
+                return $this->redirect(['action' => 'profile']);
+            }
+            $this->Flash->error(__('Erro ao atualizar perfil. Por favor, tente novamente.'));
+        }
+        
         $this->set(compact('user'));
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Usuario $usuario
+ * @var \App\Model\Entity\User $user
  */
 ?>
 <div class="register-container">
@@ -20,7 +20,8 @@
                 <?= $this->Flash->render() ?>
             </div>
 
-            <?= $this->Form->create($usuario, ['class' => 'register-form', 'type' => 'file']) ?>
+            <?= $this->Form->create($user, ['class' => 'register-form']) ?>
+              <?= $this->Form->hidden('status', ['value' => 'ativo']) ?>
                 <div class="form-grid">
                     <!-- Informações Básicas -->
                     <div class="form-section">
@@ -184,7 +185,7 @@
                     <?= $this->Html->link('Cancelar', ['action' => 'login'], [
                         'class' => 'btn btn-secondary'
                     ]) ?>
-                    <?= $this->Form->button(('Criar Minha Conta'), [
+                    <?= $this->Form->button('Criar Minha Conta', [
                         'class' => 'btn btn-primary submit-btn',
                         'type' => 'submit'
                     ]) ?>
@@ -193,7 +194,7 @@
 
             <div class="login-redirect">
                 <p>Já tem uma conta?
-                    <?= $this->Html->link(('Fazer Login'), ['action' => 'login'], [
+                    <?= $this->Html->link('Fazer Login', ['action' => 'login'], [
                         'class' => 'login-link'
                     ]) ?>
                 </p>
@@ -485,70 +486,6 @@
     font-size: 14px;
 }
 
-/* File Upload */
-.file-upload-container {
-    position: relative;
-}
-
-.file-upload-area {
-    border: 2px dashed #d1d5db;
-    border-radius: 10px;
-    padding: 30px;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    background: #f9fafb;
-}
-
-.file-upload-area:hover {
-    border-color: #7c3aed;
-    background: #faf5ff;
-}
-
-.file-upload-area.dragover {
-    border-color: #7c3aed;
-    background: #f3f4f6;
-}
-
-.upload-icon {
-    font-size: 48px;
-    color: #9ca3af;
-    margin-bottom: 12px;
-}
-
-.upload-text {
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 6px;
-}
-
-.upload-hint {
-    font-size: 14px;
-    color: #6b7280;
-}
-
-.file-input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.file-preview {
-    margin-top: 15px;
-    text-align: center;
-}
-
-.file-preview img {
-    max-width: 150px;
-    max-height: 150px;
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-}
-
 /* Toggle Password */
 .toggle-password {
     position: absolute;
@@ -810,50 +747,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupTogglePassword(togglePassword, passwordInput);
     setupTogglePassword(toggleConfirmPassword, confirmPasswordInput);
-
-    // File upload preview
-    const fileInput = document.getElementById('fotoPerfil');
-    const fileUploadArea = document.getElementById('fileUploadArea');
-    const filePreview = document.getElementById('filePreview');
-
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.type.startsWith('image/')) {
-                    if (file.size > 5 * 1024 * 1024) {
-                        filePreview.innerHTML = '<p class="text-error">Arquivo muito grande. Máximo 5MB.</p>';
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    filePreview.innerHTML = '<p class="text-error">Por favor, selecione uma imagem (PNG, JPG).</p>';
-                }
-            }
-        });
-
-        // Drag and drop
-        fileUploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.classList.add('dragover');
-        });
-
-        fileUploadArea.addEventListener('dragleave', function() {
-            this.classList.remove('dragover');
-        });
-
-        fileUploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.classList.remove('dragover');
-            fileInput.files = e.dataTransfer.files;
-            fileInput.dispatchEvent(new Event('change'));
-        });
-    }
 
     // Auto-remover mensagens flash após 5 segundos
     setTimeout(function() {
