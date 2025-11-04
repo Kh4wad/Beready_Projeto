@@ -16,19 +16,10 @@ use Cake\ORM\Entity;
  * @property bool|null $tag_sistema
  * @property \Cake\I18n\DateTime|null $criado_em
  *
- * @property \App\Model\Entity\FlashcardTag[] $flashcard_tags
+ * @property \App\Model\Entity\FlashcardTag[] $flashcard_tags // 🔥 CORRETO
  */
 class Tag extends Entity
 {
-    /**
-     * Fields that can be mass assigned using newEntity() or patchEntity().
-     *
-     * Note that when '*' is set to true, this allows all unspecified fields to
-     * be mass assigned. For security purposes, it is advised to set '*' to false
-     * (or remove it), and explicitly make individual fields accessible as needed.
-     *
-     * @var array<string, bool>
-     */
     protected array $_accessible = [
         'nome' => true,
         'cor' => true,
@@ -36,6 +27,6 @@ class Tag extends Entity
         'criado_por' => true,
         'tag_sistema' => true,
         'criado_em' => true,
-        'flashcard_tags' => true,
+        'flashcard_tags' => true, // 🔥 CORRETO
     ];
 }

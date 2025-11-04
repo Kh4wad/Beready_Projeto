@@ -6,34 +6,32 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
+/**
+ * FlashcardTags Model
+ */
 class FlashcardTagsTable extends Table
 {
     public function initialize(array $config): void
     {
         parent::initialize($config);
 
-        $this->setTable('flashcardtags'); // nome da tabela
+        $this->setTable('flashcard_tags'); // 🔥 NOME CORRETO
+        $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        // Associação com Tags
         $this->belongsTo('Tags', [
             'foreignKey' => 'tag_id',
-            'joinType' => 'INNER',
+            'joinType' => 'INNER'
         ]);
 
-        // Associação com Flashcards (descomentado para funcionar com contain)
         $this->belongsTo('Flashcards', [
             'foreignKey' => 'flashcard_id',
-            'joinType' => 'INNER',
+            'joinType' => 'INNER'
         ]);
     }
 
     public function validationDefault(Validator $validator): Validator
     {
-        $validator
-            ->integer('id')
-            ->allowEmptyString('id', null, 'create');
-
         $validator
             ->integer('flashcard_id')
             ->requirePresence('flashcard_id', 'create')
@@ -43,6 +41,10 @@ class FlashcardTagsTable extends Table
             ->integer('tag_id')
             ->requirePresence('tag_id', 'create')
             ->notEmptyString('tag_id');
+
+        $validator
+            ->dateTime('criado_em')
+            ->allowEmptyDateTime('criado_em');
 
         return $validator;
     }

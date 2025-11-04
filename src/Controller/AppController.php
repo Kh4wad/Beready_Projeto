@@ -44,14 +44,15 @@ class AppController extends Controller
 
         $this->loadComponent('Flash');
 
-        // AUTENTICAÇÃO NATIVA DO CAKEPHP - SUBSTITUI O Authentication
+        // 🔥 CORREÇÃO: Auth configurado corretamente para sua estrutura
         $this->loadComponent('Auth', [
             'authenticate' => [
                 'Form' => [
                     'fields' => [
                         'username' => 'email',    // Campo de email
                         'password' => 'password'  // Campo de senha
-                    ]
+                    ],
+                    'userModel' => 'Users' // 🔥 Especificar o model correto
                 ]
             ],
             'loginAction' => [
@@ -60,21 +61,17 @@ class AppController extends Controller
                 'prefix' => false
             ],
             'loginRedirect' => [
-                'controller' => 'Pages',
-                'action' => 'display',
-                'home'
+                'controller' => 'Users', // 🔥 Mudar para Users index (dashboard)
+                'action' => 'index'
             ],
             'logoutRedirect' => [
                 'controller' => 'Users',
                 'action' => 'login'
             ],
-            'unauthorizedRedirect' => [
-                'controller' => 'Pages',
-                'action' => 'display',
-                'home'
-            ],
+            'unauthorizedRedirect' => $this->referer(), // 🔥 Melhor redirecionamento
             'authError' => 'Você não está autorizado a acessar essa página.',
-            'storage' => 'Session'
+            'storage' => 'Session',
+            'checkAuthIn' => 'Controller.initialize' // 🔥 Verificar auth no initialize
         ]);
 
         /*
@@ -88,7 +85,13 @@ class AppController extends Controller
     {
         parent::beforeFilter($event);
 
-        // PERMITE ACESSO SEM AUTENTICAÇÃO - MÉTODO NATIVO DO AUTH
-        $this->Auth->allow(['login', 'add', 'forgotPassword', 'resetPassword']);
+        // 🔥 CORREÇÃO: Permitir acesso às ações públicas
+        $this->Auth->allow([
+            'login', 
+            'add', 
+            'forgotPassword', 
+            'resetPassword',
+            'display' // Para páginas estáticas
+        ]);
     }
 }

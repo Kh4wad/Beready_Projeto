@@ -37,54 +37,13 @@
             height: 100%;
             width: 100%;
         }
-        /* Header */
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%; /* ocupa 100% da tela */
-            padding: 0 20px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-            color: white;
-        }
-
-        .logo-text {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 25px;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: opacity 0.3s;
-        }
-
-        .nav-links a:hover {
-            opacity: 0.8;
-        }
 
         /* Main Content */
         .main-content {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: calc(100vh - 80px);
+            min-height: 100vh;
             padding: 40px 20px;
         }
 
@@ -263,18 +222,34 @@
             border-radius: 6px;
             padding: 12px 15px;
             margin-bottom: 20px;
+            border: 1px solid transparent;
         }
 
         .alert-success {
             background-color: #d4edda;
-            border: 1px solid #c3e6cb;
+            border-color: #c3e6cb;
             color: #155724;
         }
 
         .alert-error {
             background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
+            border-color: #f5c6cb;
             color: #721c24;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        /* Remove estilos não utilizados */
+        .header-content,
+        .logo,
+        .logo-icon,
+        .logo-text,
+        .nav-links {
+            display: none;
         }
     </style>
 </head>
@@ -288,20 +263,26 @@
 
             <div class="login-body">
                 <!-- Flash Messages -->
-                <?php if (isset($error) && $error): ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-circle"></i> E-mail ou senha incorretos. Tente novamente.
-                    </div>
-                <?php endif; ?>
+                <?= $this->Flash->render() ?>
+                
+                <?php 
+                // Verifica se há mensagens de erro específicas do CakePHP
+                $flashError = $this->Flash->render('error');
+                $flashAuthError = $this->Flash->render('auth');
+                ?>
 
-                <?php if ($this->Flash->render()): ?>
-                    <div class="alert alert-success">
-                        <i class="fas fa-check-circle"></i> <?= $this->Flash->render() ?>
+                <?php if ($flashError || $flashAuthError): ?>
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        <?= $flashError ?: $flashAuthError ?>
                     </div>
                 <?php endif; ?>
 
                 <!-- Login Form -->
-                <?= $this->Form->create(null, ['class' => 'login-form']) ?>
+                <?= $this->Form->create(null, [
+                    'class' => 'login-form',
+                    'url' => ['controller' => 'Users', 'action' => 'login']
+                ]) ?>
                     <div class="form-group">
                         <label class="form-label">E-mail</label>
                         <?= $this->Form->control('email', [
@@ -310,7 +291,10 @@
                             'placeholder' => 'seu.email@exemplo.com',
                             'required' => true,
                             'class' => 'form-control',
-                            'templates' => ['inputContainer' => '{{content}}']
+                            'templates' => [
+                                'inputContainer' => '{{content}}',
+                                'error' => '<div class="error-message text-danger mt-1">{{content}}</div>'
+                            ]
                         ]) ?>
                         <div class="alternative-option">
                             <?= $this->Html->link('Usar número do celular', '#') ?>
@@ -325,15 +309,22 @@
                             'placeholder' => 'Sua senha',
                             'required' => true,
                             'class' => 'form-control',
-                            'templates' => ['inputContainer' => '{{content}}']
+                            'id' => 'password-input',
+                            'templates' => [
+                                'inputContainer' => '{{content}}',
+                                'error' => '<div class="error-message text-danger mt-1">{{content}}</div>'
+                            ]
                         ]) ?>
-                        <i class="fas fa-eye toggle-password"></i>
+                        <i class="fas fa-eye toggle-password" id="toggle-password"></i>
                         <div class="alternative-option">
-                            <?= $this->Html->link('Esqueceu sua senha?', ['action' => 'forgotPassword']) ?>
+                            <?= $this->Html->link('Esqueceu sua senha?', ['controller' => 'Users', 'action' => 'forgotPassword']) ?>
                         </div>
                     </div>
 
-                    <?= $this->Form->button('Entrar', ['class' => 'btn-login']) ?>
+                    <?= $this->Form->button('Entrar', [
+                        'class' => 'btn-login',
+                        'type' => 'submit'
+                    ]) ?>
                 <?= $this->Form->end() ?>
 
                 <div class="divider">
@@ -342,7 +333,7 @@
 
                 <div class="register-link">
                     <?= __('Não tem uma conta?') ?>
-                    <?= $this->Html->link(('Registrar-se'), ['action' => 'add']) ?>
+                    <?= $this->Html->link(('Registrar-se'), ['controller' => 'Users', 'action' => 'add']) ?>
                 </div>
 
                 <div class="social-login">
@@ -362,18 +353,37 @@
             </div>
         </div>
     </main>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Script para mostrar/ocultar senha -->
     <script>
-        const togglePassword = document.querySelector('.toggle-password');
-        const passwordInput = document.querySelector('input[name="password"]');
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.getElementById('toggle-password');
+            const passwordInput = document.getElementById('password-input');
 
-        togglePassword.addEventListener('click', () => {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            togglePassword.classList.toggle('fa-eye-slash');
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    
+                    // Alterna entre os ícones de olho
+                    if (type === 'text') {
+                        this.classList.remove('fa-eye');
+                        this.classList.add('fa-eye-slash');
+                    } else {
+                        this.classList.remove('fa-eye-slash');
+                        this.classList.add('fa-eye');
+                    }
+                });
+            }
+
+            // Foca no campo de email quando a página carrega
+            const emailInput = document.querySelector('input[name="email"]');
+            if (emailInput) {
+                emailInput.focus();
+            }
         });
     </script>
 </body>

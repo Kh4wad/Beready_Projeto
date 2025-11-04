@@ -1,17 +1,17 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Tag $tag
+ * @var \App\Model\Entity\Flashcard $flashcard
  */
 ?>
 <div class="register-container">
     <div class="register-card">
         <div class="card-header">
             <div class="header-icon">
-                <i class="fas fa-tag"></i>
+                <i class="fas fa-sticky-note"></i>
             </div>
-            <h1 class="card-title">Nova Tag</h1>
-            <p class="card-subtitle">Crie uma nova tag para organizar seus flashcards</p>
+            <h1 class="card-title">Novo Flashcard</h1>
+            <p class="card-subtitle">Crie um novo cartão de aprendizado</p>
         </div>
 
         <div class="card-body">
@@ -19,70 +19,47 @@
                 <?= $this->Flash->render() ?>
             </div>
 
-            <?= $this->Form->create($tag, ['class' => 'register-form']) ?>
+            <?= $this->Form->create($flashcard, ['class' => 'register-form']) ?>
                 <div class="form-section">
                     <h3 class="section-title">
                         <i class="fas fa-info-circle"></i>
-                        Informações da Tag
+                        Informações do Flashcard
                     </h3>
 
                     <div class="form-group">
-                        <label class="form-label">Nome da Tag</label>
+                        <label class="form-label">Pergunta *</label>
                         <div class="input-container">
-                            <i class="fas fa-tag input-icon"></i>
-                            <?= $this->Form->control('nome', [
+                            <i class="fas fa-question input-icon"></i>
+                            <?= $this->Form->control('question', [
                                 'label' => false,
-                                'placeholder' => 'Ex: Gramática, Vocabulário, Verbos...',
+                                'placeholder' => 'Digite a pergunta...',
+                                'required' => true,
                                 'class' => 'form-input'
                             ]) ?>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Cor</label>
+                        <label class="form-label">Resposta *</label>
                         <div class="input-container">
-                            <i class="fas fa-palette input-icon"></i>
-                            <?= $this->Form->control('cor', [
-                                'label' => false,
-                                'placeholder' => '#7c3aed',
-                                'class' => 'form-input'
-                            ]) ?>
-                        </div>
-                        <small class="form-help">Use código hexadecimal (ex: #7c3aed)</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Descrição</label>
-                        <div class="input-container">
-                            <i class="fas fa-align-left input-icon"></i>
-                            <?= $this->Form->control('descricao', [
+                            <i class="fas fa-comment input-icon"></i>
+                            <?= $this->Form->control('answer', [
                                 'type' => 'textarea',
                                 'label' => false,
-                                'placeholder' => 'Descreva o propósito desta tag...',
-                                'rows' => 3,
+                                'placeholder' => 'Digite a resposta...',
+                                'required' => true,
+                                'rows' => 4,
                                 'class' => 'form-input textarea-input'
                             ]) ?>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Tipo de Tag</label>
-                        <div class="checkbox-container">
-                            <?= $this->Form->control('tag_sistema', [
-                                'type' => 'checkbox',
-                                'label' => ' Tag do Sistema',
-                                'class' => 'checkbox-input'
-                            ]) ?>
-                        </div>
-                        <small class="form-help">Marque se esta é uma tag padrão do sistema</small>
-                    </div>
                 </div>
 
                 <div class="form-actions">
-                    <?= $this->Html->link('Cancelar', ['action' => 'index'], [
+                    <?= $this->Html->link('Cancelar', ['action' => 'listar'], [
                         'class' => 'btn btn-secondary'
                     ]) ?>
-                    <?= $this->Form->button('Criar Tag', [
+                    <?= $this->Form->button('Criar Flashcard', [
                         'class' => 'btn btn-primary submit-btn',
                         'type' => 'submit'
                     ]) ?>
@@ -91,9 +68,6 @@
         </div>
     </div>
 </div>
-
-<!-- COLOCAR AQUI OS ESTILOS COMPLETOS DO ADD/EDIT -->
-
 <style>
 .register-container {
     padding: 20px;
@@ -257,16 +231,11 @@
     font-family: inherit;
 }
 
-.color-input {
-    height: 50px;
-    padding: 10px;
-    padding-left: 50px;
-}
-
 .textarea-input {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
     padding: 14px 16px;
+    line-height: 1.5;
 }
 
 .form-input:focus {
@@ -274,18 +243,6 @@
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
     outline: none;
     transform: translateY(-1px);
-}
-
-.checkbox-input {
-    margin-left: 10px;
-    transform: scale(1.2);
-}
-
-.form-help {
-    display: block;
-    margin-top: 5px;
-    font-size: 0.875rem;
-    color: #6b7280;
 }
 
 .form-actions {
@@ -367,5 +324,27 @@
         right: auto;
         max-width: 100%;
     }
+    
+    .form-section {
+        padding: 20px;
+    }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-remove flash messages
+    setTimeout(function() {
+        const flashMessages = document.querySelector('.flash-messages-container');
+        if (flashMessages) {
+            flashMessages.style.transition = 'opacity 0.5s ease';
+            flashMessages.style.opacity = '0';
+            setTimeout(function() {
+                if (flashMessages.parentNode) {
+                    flashMessages.parentNode.removeChild(flashMessages);
+                }
+            }, 500);
+        }
+    }, 5000);
+});
+</script>

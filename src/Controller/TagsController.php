@@ -3,12 +3,28 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Event\EventInterface;
+
 /**
  * Tags Controller
  *
  */
 class TagsController extends AppController
 {
+    public function beforeFilter(EventInterface $event)
+    {
+        parent::beforeFilter($event);
+        
+        // 🔥 ADICIONAR: Permitir acesso às ações do TagsController
+        $this->Auth->allow([
+            'index', 
+            'view', 
+            'add', 
+            'edit', 
+            'delete'
+        ]);
+    }
+
     /**
      * Index method
      *
@@ -31,7 +47,7 @@ class TagsController extends AppController
      */
     public function view($id = null)
     {
-        $tag = $this->Tags->get($id, contain: []);
+        $tag = $this->Tags->get($id, contain: ['FlashcardTags']); // 🔥 AGORA VAI FUNCIONAR
         $this->set(compact('tag'));
     }
 
@@ -46,11 +62,11 @@ class TagsController extends AppController
         if ($this->request->is('post')) {
             $tag = $this->Tags->patchEntity($tag, $this->request->getData());
             if ($this->Tags->save($tag)) {
-                $this->Flash->success(__('The tag has been saved.'));
+                $this->Flash->success(__('Tag criada com sucesso.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The tag could not be saved. Please, try again.'));
+            $this->Flash->error(__('Não foi possível criar a tag. Por favor, tente novamente.'));
         }
         $this->set(compact('tag'));
     }
@@ -68,11 +84,11 @@ class TagsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $tag = $this->Tags->patchEntity($tag, $this->request->getData());
             if ($this->Tags->save($tag)) {
-                $this->Flash->success(__('The tag has been saved.'));
+                $this->Flash->success(__('Tag atualizada com sucesso.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The tag could not be saved. Please, try again.'));
+            $this->Flash->error(__('Não foi possível atualizar a tag. Por favor, tente novamente.'));
         }
         $this->set(compact('tag'));
     }
@@ -89,9 +105,9 @@ class TagsController extends AppController
         $this->request->allowMethod(['post', 'delete']);
         $tag = $this->Tags->get($id);
         if ($this->Tags->delete($tag)) {
-            $this->Flash->success(__('The tag has been deleted.'));
+            $this->Flash->success(__('Tag excluída com sucesso.'));
         } else {
-            $this->Flash->error(__('The tag could not be deleted. Please, try again.'));
+            $this->Flash->error(__('Não foi possível excluir a tag. Por favor, tente novamente.'));
         }
 
         return $this->redirect(['action' => 'index']);

@@ -11,6 +11,6 @@ class FlashcardTag extends Entity
         'nome' => true,
         'created' => true,
         'modified' => true,
-        'flashcards' => true,
+        'flashcard_tags' => true,
     ];
 }

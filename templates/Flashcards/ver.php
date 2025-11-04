@@ -1,34 +1,34 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Tag $tag
+ * @var \App\Model\Entity\Flashcard $flashcard
  */
 ?>
 <div class="dashboard-container">
     <div class="dashboard-header">
         <div class="header-content">
             <div class="welcome-section">
-                <h1 class="welcome-title"><?= h($tag->nome) ?></h1>
-                <p class="welcome-subtitle">Detalhes da tag</p>
+                <h1 class="welcome-title"><?= h($flashcard->question) ?></h1>
+                <p class="welcome-subtitle">Detalhes do flashcard</p>
             </div>
             <div class="user-actions">
                 <?= $this->Html->link(
                     '<i class="fas fa-edit"></i> Editar',
-                    ['action' => 'edit', $tag->id],
+                    ['action' => 'editar', $flashcard->id],
                     ['class' => 'btn btn-outline', 'escape' => false]
                 ) ?>
                 <?= $this->Form->postLink(
                     '<i class="fas fa-trash"></i> Excluir',
-                    ['action' => 'delete', $tag->id],
+                    ['action' => 'excluir', $flashcard->id],
                     [
                         'class' => 'btn btn-logout',
                         'escape' => false,
-                        'confirm' => __('Tem certeza que deseja excluir a tag "{0}"?', $tag->nome)
+                        'confirm' => __('Tem certeza que deseja excluir o flashcard "{0}"?', $flashcard->question)
                     ]
                 ) ?>
                 <?= $this->Html->link(
                     '<i class="fas fa-arrow-left"></i> Voltar',
-                    ['action' => 'index'],
+                    ['action' => 'listar'],
                     ['class' => 'btn btn-secondary', 'escape' => false]
                 ) ?>
             </div>
@@ -39,7 +39,7 @@
         <div class="card-header">
             <h2 class="card-title">
                 <i class="fas fa-info-circle"></i>
-                Informações da Tag
+                Informações do Flashcard
             </h2>
         </div>
 
@@ -47,57 +47,52 @@
             <div class="detail-grid">
                 <div class="detail-item">
                     <label class="detail-label">ID</label>
-                    <div class="detail-value">#<?= h($tag->id) ?></div>
+                    <div class="detail-value">#<?= h($flashcard->id) ?></div>
                 </div>
 
-                <div class="detail-item">
-                    <label class="detail-label">Nome</label>
-                    <div class="detail-value"><?= h($tag->nome) ?></div>
-                </div>
-
-                <div class="detail-item">
-                    <label class="detail-label">Cor</label>
-                    <div class="detail-value">
-                        <?php if ($tag->cor): ?>
-                            <div class="color-display">
-                                <div class="color-box-large" style="background-color: <?= $tag->cor ?>"></div>
-                                <span class="color-code"><?= h($tag->cor) ?></span>
-                            </div>
-                        <?php else: ?>
-                            <span class="no-color">Não definida</span>
-                        <?php endif; ?>
+                <div class="detail-item full-width">
+                    <label class="detail-label">Pergunta</label>
+                    <div class="detail-value question-text">
+                        <?= h($flashcard->question) ?>
                     </div>
                 </div>
 
-                <div class="detail-item">
-                    <label class="detail-label">Tipo</label>
-                    <div class="detail-value">
-                        <?php if ($tag->tag_sistema): ?>
-                            <span class="badge badge-system">Tag do Sistema</span>
-                        <?php else: ?>
-                            <span class="badge badge-custom">Tag Personalizada</span>
-                        <?php endif; ?>
+                <div class="detail-item full-width">
+                    <label class="detail-label">Resposta</label>
+                    <div class="detail-value answer-text">
+                        <?= h($flashcard->answer) ?>
                     </div>
                 </div>
 
                 <div class="detail-item">
                     <label class="detail-label">Criado em</label>
-                    <div class="detail-value"><?= $tag->criado_em->format('d/m/Y \à\s H:i') ?></div>
+                    <div class="detail-value"><?= $flashcard->created->format('d/m/Y \à\s H:i') ?></div>
                 </div>
 
-                <?php if ($tag->descricao): ?>
-                <div class="detail-item full-width">
-                    <label class="detail-label">Descrição</label>
-                    <div class="detail-value description-text">
-                        <?= $this->Text->autoParagraph(h($tag->descricao)) ?>
-                    </div>
+                <div class="detail-item">
+                    <label class="detail-label">Modificado em</label>
+                    <div class="detail-value"><?= $flashcard->modified->format('d/m/Y \à\s H:i') ?></div>
                 </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+.question-text, .answer-text {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid #7c3aed;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.answer-text {
+    border-left-color: #10b981;
+    background: #f0fdf4;
+}
+</style>
 <style>
 .dashboard-container {
     padding: 20px;
@@ -127,6 +122,7 @@
     font-weight: 700;
     margin: 0 0 8px 0;
     color: white;
+    word-break: break-word;
 }
 
 .welcome-subtitle {
@@ -204,78 +200,19 @@
     color: #1f2937;
 }
 
-.color-display {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.color-box-large {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    border: 2px solid #e5e7eb;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.description-text {
-    line-height: 1.6;
+.question-text, .answer-text {
     background: #f8fafc;
     padding: 20px;
     border-radius: 12px;
     border-left: 4px solid #7c3aed;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    word-break: break-word;
 }
 
-.badge {
-    padding: 6px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.badge-system {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-.badge-custom {
-    background: #f3e8ff;
-    color: #7c3aed;
-}
-
-.table-container {
-    padding: 0;
-    overflow-x: auto;
-}
-
-.modern-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.modern-table th {
-    background: #f8fafc;
-    padding: 15px 20px;
-    text-align: left;
-    font-weight: 600;
-    color: #374151;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-.modern-table td {
-    padding: 15px 20px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.modern-table tr:hover {
-    background: #f9fafb;
-}
-
-.total-count {
-    font-size: 0.875rem;
-    color: #6b7280;
-    font-weight: 500;
+.answer-text {
+    border-left-color: #10b981;
+    background: #f0fdf4;
 }
 
 .btn {
@@ -361,8 +298,27 @@
         grid-template-columns: 1fr;
     }
     
-    .modern-table {
-        font-size: 0.875rem;
+    .question-text, .answer-text {
+        font-size: 1rem;
+        padding: 15px;
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-remove flash messages
+    setTimeout(function() {
+        const flashMessages = document.querySelector('.flash-messages-container');
+        if (flashMessages) {
+            flashMessages.style.transition = 'opacity 0.5s ease';
+            flashMessages.style.opacity = '0';
+            setTimeout(function() {
+                if (flashMessages.parentNode) {
+                    flashMessages.parentNode.removeChild(flashMessages);
+                }
+            }, 500);
+        }
+    }, 5000);
+});
+</script>

@@ -1,20 +1,20 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var iterable<\App\Model\Entity\Tag> $tags
+ * @var iterable<\App\Model\Entity\Flashcard> $flashcards
  */
 ?>
 <div class="dashboard-container">
     <div class="dashboard-header">
         <div class="header-content">
             <div class="welcome-section">
-                <h1 class="welcome-title">Gerenciar Tags</h1>
-                <p class="welcome-subtitle">Organize suas tags de aprendizado</p>
+                <h1 class="welcome-title">Flashcards</h1>
+                <p class="welcome-subtitle">Gerencie seus cartões de aprendizado</p>
             </div>
             <div class="user-actions">
                 <?= $this->Html->link(
-                    '<i class="fas fa-plus"></i> Nova Tag',
-                    ['action' => 'add'],
+                    '<i class="fas fa-plus"></i> Novo Flashcard',
+                    ['action' => 'criar'],
                     ['class' => 'btn btn-primary', 'escape' => false]
                 ) ?>
             </div>
@@ -28,11 +28,11 @@
     <div class="content-card">
         <div class="card-header">
             <h2 class="card-title">
-                <i class="fas fa-tags"></i>
-                Lista de Tags
+                <i class="fas fa-list"></i>
+                Lista de Flashcards
             </h2>
             <div class="card-actions">
-                <span class="total-count"><?= $this->Paginator->counter('{{count}}') ?> tags</span>
+                <span class="total-count"><?= $this->Paginator->counter('{{count}}') ?> flashcards</span>
             </div>
         </div>
 
@@ -41,68 +41,39 @@
                 <thead>
                     <tr>
                         <th><?= $this->Paginator->sort('id', 'ID') ?></th>
-                        <th><?= $this->Paginator->sort('nome', 'Nome') ?></th>
-                        <th><?= $this->Paginator->sort('cor', 'Cor') ?></th>
-                        <th><?= $this->Paginator->sort('tag_sistema', 'Sistema') ?></th>
-                        <th><?= $this->Paginator->sort('criado_em', 'Criado Em') ?></th>
+                        <th><?= $this->Paginator->sort('question', 'Pergunta') ?></th>
+                        <th><?= $this->Paginator->sort('answer', 'Resposta') ?></th>
+                        <th><?= $this->Paginator->sort('created', 'Criado em') ?></th>
                         <th class="actions">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($tags as $tag): ?>
+                    <?php foreach ($flashcards as $flashcard): ?>
                     <tr>
-                        <td><?= $this->Number->format($tag->id) ?></td>
-                        <td>
-                            <div class="tag-info">
-                                <?php if ($tag->cor): ?>
-                                    <span class="tag-color" style="background-color: <?= $tag->cor ?>"></span>
-                                <?php endif; ?>
-                                <strong><?= h($tag->nome) ?></strong>
-                                <?php if ($tag->descricao): ?>
-                                    <p class="tag-description"><?= h($tag->descricao) ?></p>
-                                <?php endif; ?>
-                            </div>
-                        </td>
-                        <td>
-                            <?php if ($tag->cor): ?>
-                                <div class="color-preview">
-                                    <div class="color-box" style="background-color: <?= $tag->cor ?>"></div>
-                                    <span class="color-code"><?= h($tag->cor) ?></span>
-                                </div>
-                            <?php else: ?>
-                                <span class="no-color">Não definida</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?php if ($tag->tag_sistema): ?>
-                                <span class="badge badge-system">Sistema</span>
-                            <?php else: ?>
-                                <span class="badge badge-custom">Personalizada</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <span class="timestamp"><?= $tag->criado_em->format('d/m/Y H:i') ?></span>
-                        </td>
+                        <td><?= $this->Number->format($flashcard->id) ?></td>
+                        <td><?= h($flashcard->question) ?></td>
+                        <td><?= h($flashcard->answer) ?></td>
+                        <td><?= h($flashcard->created->format('d/m/Y H:i')) ?></td>
                         <td class="actions">
                             <div class="action-buttons">
                                 <?= $this->Html->link(
                                     '<i class="fas fa-eye"></i>',
-                                    ['action' => 'view', $tag->id],
+                                    ['action' => 'ver', $flashcard->id],
                                     ['class' => 'btn-action view', 'title' => 'Visualizar', 'escape' => false]
                                 ) ?>
                                 <?= $this->Html->link(
                                     '<i class="fas fa-edit"></i>',
-                                    ['action' => 'edit', $tag->id],
+                                    ['action' => 'editar', $flashcard->id],
                                     ['class' => 'btn-action edit', 'title' => 'Editar', 'escape' => false]
                                 ) ?>
                                 <?= $this->Form->postLink(
                                     '<i class="fas fa-trash"></i>',
-                                    ['action' => 'delete', $tag->id],
+                                    ['action' => 'excluir', $flashcard->id],
                                     [
                                         'class' => 'btn-action delete',
                                         'title' => 'Excluir',
                                         'escape' => false,
-                                        'confirm' => __('Tem certeza que deseja excluir a tag "{0}"?', $tag->nome)
+                                        'confirm' => __('Tem certeza que deseja excluir o flashcard "{0}"?', $flashcard->question)
                                     ]
                                 ) ?>
                             </div>
@@ -263,71 +234,6 @@
 
 .modern-table tr:hover {
     background: #f9fafb;
-}
-
-.tag-info {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.tag-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 4px;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.tag-description {
-    margin: 4px 0 0 0;
-    font-size: 0.875rem;
-    color: #6b7280;
-    font-style: italic;
-}
-
-.color-preview {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.color-box {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 1px solid #e5e7eb;
-}
-
-.color-code {
-    font-family: 'Courier New', monospace;
-    font-size: 0.875rem;
-    color: #6b7280;
-}
-
-.badge {
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.badge-system {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-.badge-custom {
-    background: #f3e8ff;
-    color: #7c3aed;
-}
-
-.timestamp {
-    font-size: 0.875rem;
-    color: #6b7280;
 }
 
 .actions {
@@ -506,6 +412,11 @@
     
     .modern-table {
         font-size: 0.875rem;
+    }
+    
+    .action-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
     }
 }
 </style>

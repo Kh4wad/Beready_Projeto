@@ -7,7 +7,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\ORM\RulesChecker;
 
-class UsuariosTable extends Table
+class UsersTable extends Table
 {
     /**
      * Initialize method
@@ -16,21 +16,22 @@ class UsuariosTable extends Table
     {
         parent::initialize($config);
 
-        // Nome da tabela no banco
-        $this->setTable('usuarios');
-
-        // Campo de exibição
+        $this->setTable('users');
         $this->setDisplayField('nome');
-
-        // Chave primária
         $this->setPrimaryKey('id');
 
-        // Comportamento de timestamps (created, modified)
-        $this->addBehavior('Timestamp');
+        $this->addBehavior('Timestamp', [
+            'events' => [
+                'Model.beforeSave' => [
+                    'criado_em' => 'new',
+                    'atualizado_em' => 'always'
+                ]
+            ]
+        ]);
 
-        // Relacionamentos (exemplo, se existir)
+        // Relacionamentos
         // $this->hasMany('Flashcards', ['foreignKey' => 'usuario_id']);
-        // $this->hasMany('LoginsLog', ['foreignKey' => 'usuario_id']);
+        // $this->hasMany('LoginsLog', ['foreignKey' => 'user_id']);
     }
 
     /**
@@ -50,10 +51,49 @@ class UsuariosTable extends Table
             ->notEmptyString('email', 'O e-mail é obrigatório.');
 
         $validator
-            ->scalar('senha_hash')
-            ->maxLength('senha_hash', 255)
-            ->requirePresence('senha_hash', 'create')
-            ->notEmptyString('senha_hash', 'A senha é obrigatória.');
+            ->scalar('senha')
+            ->minLength('senha', 6, 'A senha deve ter pelo menos 6 caracteres.')
+            ->requirePresence('senha', 'create')
+            ->notEmptyString('senha', 'A senha é obrigatória.', 'create')
+            ->allowEmptyString('senha', 'update');
+
+        $validator
+            ->scalar('telefone')
+            ->maxLength('telefone', 20)
+            ->allowEmptyString('telefone');
+
+        $validator
+            ->scalar('nivel_ingles')
+            ->maxLength('nivel_ingles', 50)
+            ->allowEmptyString('nivel_ingles');
+
+        $validator
+            ->scalar('idioma_preferido')
+            ->maxLength('idioma_preferido', 10)
+            ->allowEmptyString('idioma_preferido');
+
+        $validator
+            ->scalar('objetivos_aprendizado')
+            ->allowEmptyString('objetivos_aprendizado');
+
+        $validator
+            ->scalar('status')
+            ->maxLength('status', 20)
+            ->notEmptyString('status')
+            ->inList('status', ['ativo', 'inativo'], 'Status deve ser "ativo" ou "inativo"');
+
+        // Validação para confirmação de senha (campo virtual)
+        $validator
+            ->add('confirmar_senha', 'custom', [
+                'rule' => function ($value, $context) {
+                    if (isset($context['data']['senha'])) {
+                        return $value === $context['data']['senha'];
+                    }
+                    return true; // Permite vazio se não houver senha (update)
+                },
+                'message' => 'As senhas não coincidem.'
+            ])
+            ->allowEmptyString('confirmar_senha');
 
         return $validator;
     }
@@ -63,9 +103,35 @@ class UsuariosTable extends Table
      */
     public function buildRules(RulesChecker $rules): RulesChecker
     {
-        // E-mail único
-        $rules->add($rules->isUnique(['email']), ['errorField' => 'email', 'message' => 'Este e-mail já está cadastrado.']);
+        $rules->add($rules->isUnique(['email']), [
+            'errorField' => 'email', 
+            'message' => 'Este e-mail já está cadastrado.'
+        ]);
 
         return $rules;
+    }
+
+    /**
+     * BeforeSave callback - para hash da senha
+     */
+    public function beforeSave($event, $entity, $options)
+    {
+        // Se a senha foi modificada, faz o hash
+        if ($entity->isDirty('senha') && !empty($entity->senha)) {
+            $entity->senha_hash = password_hash($entity->senha, PASSWORD_DEFAULT);
+        }
+
+        // Define valores padrão se não foram informados
+        if ($entity->isNew() && empty($entity->status)) {
+            $entity->status = 'ativo';
+        }
+
+        if ($entity->isNew() && empty($entity->nivel_ingles)) {
+            $entity->nivel_ingles = 'iniciante';
+        }
+
+        if ($entity->isNew() && empty($entity->idioma_preferido)) {
+            $entity->idioma_preferido = 'pt-BR';
+        }
     }
 }

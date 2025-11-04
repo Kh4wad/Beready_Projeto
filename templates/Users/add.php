@@ -15,7 +15,12 @@
         </div>
 
         <div class="card-body">
-            <?= $this->Form->create($usuario, ['class' => 'register-form']) ?>
+            <!-- Flash Messages Centralizadas e Melhoradas -->
+            <div class="flash-messages-container">
+                <?= $this->Flash->render() ?>
+            </div>
+
+            <?= $this->Form->create($usuario, ['class' => 'register-form', 'type' => 'file']) ?>
                 <div class="form-grid">
                     <!-- Informações Básicas -->
                     <div class="form-section">
@@ -57,8 +62,10 @@
                                 <i class="fas fa-phone input-icon"></i>
                                 <?= $this->Form->control('telefone', [
                                     'label' => false,
-                                    'placeholder' => '(11) 99999-9999',
-                                    'class' => 'form-input'
+                                    'placeholder' => '(99) 99999-9999',
+                                    'class' => 'form-input telefone-input',
+                                    'id' => 'telefone',
+                                    'maxlength' => 15
                                 ]) ?>
                             </div>
                         </div>
@@ -73,9 +80,9 @@
 
                         <div class="form-group">
                             <label class="form-label">Senha *</label>
-                            <div class="input-container">
+                            <div class="input-container password-container">
                                 <i class="fas fa-key input-icon"></i>
-                                <?= $this->Form->control('senha_hash', [
+                                <?= $this->Form->control('senha', [
                                     'type' => 'password',
                                     'label' => false,
                                     'placeholder' => 'Crie uma senha segura',
@@ -90,6 +97,26 @@
                                     <div class="strength-fill" id="strength-fill"></div>
                                 </div>
                                 <div class="strength-text" id="strength-text">Força da senha</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Confirmar Senha *</label>
+                            <div class="input-container password-container">
+                                <i class="fas fa-key input-icon"></i>
+                                <?= $this->Form->control('confirmar_senha', [
+                                    'type' => 'password',
+                                    'label' => false,
+                                    'placeholder' => 'Digite a senha novamente',
+                                    'required' => true,
+                                    'class' => 'form-input password-input',
+                                    'id' => 'confirmPassword'
+                                ]) ?>
+                                <i class="fas fa-eye toggle-password" id="toggleConfirmPassword"></i>
+                            </div>
+                            <div class="password-match" id="passwordMatch">
+                                <i class="fas fa-check-circle match-icon"></i>
+                                <span class="match-text">As senhas coincidem</span>
                             </div>
                         </div>
                     </div>
@@ -108,11 +135,9 @@
                                 <?= $this->Form->control('nivel_ingles', [
                                     'label' => false,
                                     'options' => [
-                                        'Iniciante' => 'Iniciante',
-                                        'Básico' => 'Básico',
-                                        'Intermediário' => 'Intermediário',
-                                        'Avançado' => 'Avançado',
-                                        'Fluente' => 'Fluente'
+                                        'iniciante' => 'Iniciante',
+                                        'intermediario' => 'Intermediário',
+                                        'avancado' => 'Avançado'
                                     ],
                                     'empty' => 'Selecione seu nível',
                                     'class' => 'form-input select-input'
@@ -128,10 +153,9 @@
                                 <?= $this->Form->control('idioma_preferido', [
                                     'label' => false,
                                     'options' => [
-                                        'Português' => 'Português',
-                                        'Inglês' => 'Inglês',
-                                        'Espanhol' => 'Espanhol',
-                                        'Francês' => 'Francês'
+                                        'pt-BR' => 'Português (Brasil)',
+                                        'en' => 'Inglês',
+                                        'es' => 'Espanhol'
                                     ],
                                     'empty' => 'Selecione o idioma',
                                     'class' => 'form-input select-input'
@@ -154,43 +178,7 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Foto de Perfil -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-camera"></i>
-                            Foto de Perfil
-                        </h3>
-
-                        <div class="form-group">
-                            <label class="form-label">Upload da Foto</label>
-                            <div class="file-upload-container">
-                                <div class="file-upload-area" id="fileUploadArea">
-                                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                                    <p class="upload-text">Clique para selecionar ou arraste uma foto</p>
-                                    <p class="upload-hint">PNG, JPG até 5MB</p>
-                                </div>
-                                <?= $this->Form->control('foto_perfil', [
-                                    'type' => 'file',
-                                    'label' => false,
-                                    'class' => 'file-input',
-                                    'id' => 'fotoPerfil'
-                                ]) ?>
-                                <div class="file-preview" id="filePreview"></div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-
-                <!-- Campos ocultos para valores padrão -->
-                <?= $this->Form->control('status', [
-                    'type' => 'hidden',
-                    'value' => 'ativo'
-                ]) ?>
-                <?= $this->Form->control('criado_em', [
-                    'type' => 'hidden',
-                    'value' => date('Y-m-d H:i:s')
-                ]) ?>
 
                 <div class="form-actions">
                     <?= $this->Html->link('Cancelar', ['action' => 'login'], [
@@ -280,6 +268,58 @@
     padding: 40px;
 }
 
+/* Flash Messages Centralizadas e Melhoradas */
+.flash-messages-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+}
+
+.flash-messages-container .alert {
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+.flash-messages-container .alert-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.flash-messages-container .alert-error,
+.flash-messages-container .alert-danger {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.flash-messages-container .message {
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: none;
+}
+
+.flash-messages-container .message.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+.flash-messages-container .message.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
 .form-grid {
     display: grid;
     gap: 30px;
@@ -325,6 +365,10 @@
     position: relative;
 }
 
+.password-container {
+    position: relative;
+}
+
 .input-icon {
     position: absolute;
     left: 16px;
@@ -345,6 +389,14 @@
     background: white;
     color: #374151;
     font-family: inherit;
+}
+
+.telefone-input {
+    padding-right: 16px !important;
+}
+
+.password-input {
+    padding-right: 50px !important;
 }
 
 .select-input {
@@ -393,6 +445,7 @@
     background: #ef4444;
     transition: all 0.3s ease;
     width: 0%;
+    border-radius: 3px;
 }
 
 .strength-fill.weak { background: #ef4444; width: 25%; }
@@ -404,6 +457,32 @@
     font-size: 12px;
     color: #6b7280;
     font-weight: 500;
+}
+
+/* Password Match */
+.password-match {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.password-match.visible {
+    display: flex;
+}
+
+.password-match.matching {
+    color: #059669;
+}
+
+.password-match.not-matching {
+    color: #dc2626;
+}
+
+.match-icon {
+    font-size: 14px;
 }
 
 /* File Upload */
@@ -480,6 +559,14 @@
     cursor: pointer;
     font-size: 18px;
     z-index: 2;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .toggle-password:hover {
@@ -587,66 +674,142 @@
     .btn {
         width: 100%;
     }
+
+    .flash-messages-container {
+        width: 95%;
+        max-width: 350px;
+    }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Máscara de telefone
+    const telefoneInput = document.getElementById('telefone');
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length <= 11) {
+                if (value.length <= 2) {
+                    value = value.replace(/^(\d{0,2})/, '($1');
+                } else if (value.length <= 6) {
+                    value = value.replace(/^(\d{2})(\d{0,4})/, '($1) $2');
+                } else if (value.length <= 10) {
+                    value = value.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+                } else {
+                    value = value.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+                }
+                
+                e.target.value = value;
+            }
+        });
+
+        // Permitir apenas backspace, delete, tab, esc, enter e .
+        telefoneInput.addEventListener('keydown', function(e) {
+            if (!/[0-9]|Backspace|Delete|Tab|Escape|Enter|\./.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+    }
+
     // Password strength indicator
     const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
     const strengthFill = document.getElementById('strength-fill');
     const strengthText = document.getElementById('strength-text');
+    const passwordMatch = document.getElementById('passwordMatch');
     const togglePassword = document.getElementById('togglePassword');
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+
+    // Função para verificar força da senha
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        let text = '';
+        let className = '';
+
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+        if (password.match(/\d/)) strength++;
+        if (password.match(/[^a-zA-Z\d]/)) strength++;
+
+        switch(strength) {
+            case 0:
+                text = 'Muito Fraca';
+                className = '';
+                break;
+            case 1:
+                text = 'Fraca';
+                className = 'weak';
+                break;
+            case 2:
+                text = 'Moderada';
+                className = 'medium';
+                break;
+            case 3:
+                text = 'Forte';
+                className = 'strong';
+                break;
+            case 4:
+                text = 'Muito Forte';
+                className = 'very-strong';
+                break;
+        }
+
+        return { text, className };
+    }
+
+    // Função para verificar se as senhas coincidem
+    function checkPasswordMatch() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        if (password && confirmPassword) {
+            passwordMatch.classList.add('visible');
+            if (password === confirmPassword) {
+                passwordMatch.classList.add('matching');
+                passwordMatch.classList.remove('not-matching');
+                passwordMatch.innerHTML = '<i class="fas fa-check-circle match-icon"></i><span class="match-text">As senhas coincidem</span>';
+            } else {
+                passwordMatch.classList.add('not-matching');
+                passwordMatch.classList.remove('matching');
+                passwordMatch.innerHTML = '<i class="fas fa-times-circle match-icon"></i><span class="match-text">As senhas não coincidem</span>';
+            }
+        } else {
+            passwordMatch.classList.remove('visible');
+        }
+    }
 
     if (passwordInput) {
         passwordInput.addEventListener('input', function() {
             const password = this.value;
-            let strength = 0;
-            let text = '';
-            let className = '';
-
-            if (password.length >= 8) strength++;
-            if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
-            if (password.match(/\d/)) strength++;
-            if (password.match(/[^a-zA-Z\d]/)) strength++;
-
-            switch(strength) {
-                case 0:
-                    text = 'Muito Fraca';
-                    className = '';
-                    break;
-                case 1:
-                    text = 'Fraca';
-                    className = 'weak';
-                    break;
-                case 2:
-                    text = 'Moderada';
-                    className = 'medium';
-                    break;
-                case 3:
-                    text = 'Forte';
-                    className = 'strong';
-                    break;
-                case 4:
-                    text = 'Muito Forte';
-                    className = 'very-strong';
-                    break;
-            }
-
+            const { text, className } = checkPasswordStrength(password);
+            
             strengthFill.className = 'strength-fill ' + className;
-            strengthText.textContent = Força da senha: ${text};
+            strengthText.textContent = `Força da senha: ${text}`;
+            
+            checkPasswordMatch();
         });
+    }
+
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
     }
 
     // Toggle password visibility
-    if (togglePassword) {
-        togglePassword.addEventListener('click', function() {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
-        });
+    function setupTogglePassword(toggleElement, passwordElement) {
+        if (toggleElement && passwordElement) {
+            toggleElement.addEventListener('click', function() {
+                const type = passwordElement.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordElement.setAttribute('type', type);
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        }
     }
+
+    setupTogglePassword(togglePassword, passwordInput);
+    setupTogglePassword(toggleConfirmPassword, confirmPasswordInput);
 
     // File upload preview
     const fileInput = document.getElementById('fotoPerfil');
@@ -658,13 +821,18 @@ document.addEventListener('DOMContentLoaded', function() {
             const file = e.target.files[0];
             if (file) {
                 if (file.type.startsWith('image/')) {
+                    if (file.size > 5 * 1024 * 1024) {
+                        filePreview.innerHTML = '<p class="text-error">Arquivo muito grande. Máximo 5MB.</p>';
+                        return;
+                    }
+                    
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        filePreview.innerHTML = <img src="${e.target.result}" alt="Preview">;
+                        filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
                     };
                     reader.readAsDataURL(file);
                 } else {
-                    filePreview.innerHTML = '<p class="text-error">Por favor, selecione uma imagem.</p>';
+                    filePreview.innerHTML = '<p class="text-error">Por favor, selecione uma imagem (PNG, JPG).</p>';
                 }
             }
         });
@@ -686,5 +854,19 @@ document.addEventListener('DOMContentLoaded', function() {
             fileInput.dispatchEvent(new Event('change'));
         });
     }
+
+    // Auto-remover mensagens flash após 5 segundos
+    setTimeout(function() {
+        const flashMessages = document.querySelector('.flash-messages-container');
+        if (flashMessages) {
+            flashMessages.style.transition = 'opacity 0.5s ease';
+            flashMessages.style.opacity = '0';
+            setTimeout(function() {
+                if (flashMessages.parentNode) {
+                    flashMessages.parentNode.removeChild(flashMessages);
+                }
+            }, 500);
+        }
+    }, 5000);
 });
 </script>
