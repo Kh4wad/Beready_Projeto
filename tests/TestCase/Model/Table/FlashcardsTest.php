@@ -24,9 +24,9 @@ class FlashcardTagsTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.FlashcardTags',
+        'app.flashcard_tags',
         'app.Flashcards',
-        'app.FlashcardsFlashcardtags',
+        'app.Flashcardsflashcard_tags',
         'app.Usuarios', // se houver relação
     ];
 
@@ -38,7 +38,7 @@ class FlashcardTagsTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('FlashcardTags') ? [] : ['className' => FlashcardTagsTable::class];
+        $config = $this->getTableLocator()->exists('Flashcard_tags') ? [] : ['className' => Flashcard_tagsTable::class];
         $this->FlashcardTags = $this->getTableLocator()->get('FlashcardTags', $config);
     }
 

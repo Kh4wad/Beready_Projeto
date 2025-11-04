@@ -22,7 +22,7 @@ class FlashcardTagsControllerTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.FlashcardTags', // Corrigido para FlashcardTags
+        'app.flashcard_tags', // Corrigido para FlashcardTags
         'app.Flashcards',    // Se houver relação
         'app.FlashcardsFlashcardtags' // Se houver tabela join
     ];

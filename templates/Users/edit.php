@@ -4,330 +4,664 @@
  * @var \App\Model\Entity\User $user
  */
 ?>
-<div class="register-container">
-    <div class="register-card">
-        <div class="card-header">
-            <div class="header-icon">
-                <i class="fas fa-user-edit"></i>
+
+<div class="edit-profile-container">
+    <div class="profile-header">
+        <div class="header-background"></div>
+        <div class="profile-content">
+            <div class="profile-avatar">
+                <div class="avatar-placeholder">
+                    <i class="fas fa-user-edit"></i>
+                </div>
             </div>
-            <h1 class="card-title">Editar Perfil</h1>
-            <p class="card-subtitle">Atualize suas informações pessoais</p>
+            <div class="profile-info">
+                <h1 class="profile-name">Editar Perfil</h1>
+                <p class="profile-email">Atualize suas informações pessoais</p>
+            </div>
+            <div class="profile-actions">
+                <?= $this->Html->link(
+                    '<i class="fas fa-arrow-left"></i> ' . __('Voltar'),
+                    ['action' => 'view', $user->id],
+                    ['class' => 'btn btn-back', 'escape' => false]
+                ) ?>
+            </div>
         </div>
+    </div>
 
-        <div class="card-body">
-            <!-- Flash Messages Centralizadas -->
-            <div class="flash-messages-container">
-                <?= $this->Flash->render() ?>
+    <div class="profile-body">
+        <div class="container-fluid">
+            <?= $this->Form->create($user, ['class' => 'edit-profile-form']) ?>
+            <div class="row">
+                <!-- Informações Pessoais -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user-circle"></i>
+                                <?= __('Informações Pessoais') ?>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Nome Completo *</label>
+                                <div class="input-container">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <?= $this->Form->control('nome', [
+                                        'label' => false,
+                                        'placeholder' => 'Seu nome completo',
+                                        'required' => true,
+                                        'class' => 'form-input'
+                                    ]) ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">E-mail *</label>
+                                <div class="input-container">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    <?= $this->Form->control('email', [
+                                        'type' => 'email',
+                                        'label' => false,
+                                        'placeholder' => 'seu.email@exemplo.com',
+                                        'required' => true,
+                                        'class' => 'form-input'
+                                    ]) ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Telefone</label>
+                                <div class="input-container">
+                                    <i class="fas fa-phone input-icon"></i>
+                                    <?= $this->Form->control('telefone', [
+                                        'label' => false,
+                                        'placeholder' => '(99) 99999-9999',
+                                        'class' => 'form-input telefone-input',
+                                        'id' => 'telefone',
+                                        'maxlength' => 15
+                                    ]) ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preferências de Aprendizado -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-graduation-cap"></i>
+                                <?= __('Preferências de Aprendizado') ?>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Nível de Inglês</label>
+                                <div class="input-container select-container">
+                                    <i class="fas fa-language input-icon"></i>
+                                    <?= $this->Form->control('nivel_ingles', [
+                                        'label' => false,
+                                        'options' => [
+                                            'iniciante' => 'Iniciante',
+                                            'intermediario' => 'Intermediário',
+                                            'avancado' => 'Avançado'
+                                        ],
+                                        'empty' => 'Selecione seu nível',
+                                        'class' => 'form-input select-input'
+                                    ]) ?>
+                                    <i class="fas fa-chevron-down select-arrow"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Idioma Preferido</label>
+                                <div class="input-container select-container">
+                                    <i class="fas fa-globe input-icon"></i>
+                                    <?= $this->Form->control('idioma_preferido', [
+                                        'label' => false,
+                                        'options' => [
+                                            'pt-BR' => 'Português (Brasil)',
+                                            'en' => 'Inglês',
+                                            'es' => 'Espanhol'
+                                        ],
+                                        'empty' => 'Selecione o idioma',
+                                        'class' => 'form-input select-input'
+                                    ]) ?>
+                                    <i class="fas fa-chevron-down select-arrow"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Status</label>
+                                <div class="input-container select-container">
+                                    <i class="fas fa-circle input-icon"></i>
+                                    <?= $this->Form->control('status', [
+                                        'label' => false,
+                                        'options' => [
+                                            'ativo' => 'Ativo',
+                                            'inativo' => 'Inativo'
+                                        ],
+                                        'class' => 'form-input select-input'
+                                    ]) ?>
+                                    <i class="fas fa-chevron-down select-arrow"></i>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Objetivos de Aprendizado</label>
+                                <div class="input-container textarea-container">
+                                    <i class="fas fa-bullseye input-icon textarea-icon"></i>
+                                    <?= $this->Form->control('objetivos_aprendizado', [
+                                        'type' => 'textarea',
+                                        'label' => false,
+                                        'placeholder' => 'Descreva seus objetivos de aprendizado...',
+                                        'rows' => 4,
+                                        'class' => 'form-input textarea-input'
+                                    ]) ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <?= $this->Form->create($user, ['class' => 'register-form', 'type' => 'file']) ?>
-                <div class="form-grid">
-                    <!-- Informações Básicas -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-user"></i>
-                            Informações Pessoais
-                        </h3>
-
-                        <div class="form-group">
-                            <label class="form-label">Nome Completo *</label>
-                            <div class="input-container">
-                                <i class="fas fa-user input-icon"></i>
-                                <?= $this->Form->control('nome', [
-                                    'label' => false,
-                                    'placeholder' => 'Seu nome completo',
-                                    'required' => true,
-                                    'class' => 'form-input'
-                                ]) ?>
-                            </div>
+            <!-- Segurança -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-lock"></i>
+                                <?= __('Alterar Senha') ?>
+                            </h3>
+                            <small class="text-muted">Deixe em branco para manter a senha atual</small>
                         </div>
-
-                        <div class="form-group">
-                            <label class="form-label">E-mail *</label>
-                            <div class="input-container">
-                                <i class="fas fa-envelope input-icon"></i>
-                                <?= $this->Form->control('email', [
-                                    'type' => 'email',
-                                    'label' => false,
-                                    'placeholder' => 'seu.email@exemplo.com',
-                                    'required' => true,
-                                    'class' => 'form-input'
-                                ]) ?>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Telefone</label>
-                            <div class="input-container">
-                                <i class="fas fa-phone input-icon"></i>
-                                <?= $this->Form->control('telefone', [
-                                    'label' => false,
-                                    'placeholder' => '(99) 99999-9999',
-                                    'class' => 'form-input telefone-input',
-                                    'id' => 'telefone',
-                                    'maxlength' => 15
-                                ]) ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Segurança -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-lock"></i>
-                            Segurança
-                        </h3>
-
-                        <div class="form-group">
-                            <label class="form-label">Nova Senha</label>
-                            <div class="input-container password-container">
-                                <i class="fas fa-key input-icon"></i>
-                                <?= $this->Form->control('senha', [
-                                    'type' => 'password',
-                                    'label' => false,
-                                    'placeholder' => 'Deixe em branco para manter a senha atual',
-                                    'class' => 'form-input password-input',
-                                    'id' => 'password'
-                                ]) ?>
-                                <i class="fas fa-eye toggle-password" id="togglePassword"></i>
-                            </div>
-                            <div class="password-strength">
-                                <div class="strength-bar">
-                                    <div class="strength-fill" id="strength-fill"></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Nova Senha</label>
+                                        <div class="input-container password-container">
+                                            <i class="fas fa-key input-icon"></i>
+                                            <?= $this->Form->control('senha', [
+                                                'type' => 'password',
+                                                'label' => false,
+                                                'placeholder' => 'Mínimo 6 caracteres',
+                                                'class' => 'form-input password-input',
+                                                'id' => 'password'
+                                            ]) ?>
+                                            <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+                                        </div>
+                                        <div class="password-strength">
+                                            <div class="strength-bar">
+                                                <div class="strength-fill" id="strength-fill"></div>
+                                            </div>
+                                            <div class="strength-text" id="strength-text">Força da senha</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="strength-text" id="strength-text">Força da senha</div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Confirmar Nova Senha</label>
-                            <div class="input-container password-container">
-                                <i class="fas fa-key input-icon"></i>
-                                <?= $this->Form->control('confirmar_senha', [
-                                    'type' => 'password',
-                                    'label' => false,
-                                    'placeholder' => 'Digite a nova senha novamente',
-                                    'class' => 'form-input password-input',
-                                    'id' => 'confirmPassword'
-                                ]) ?>
-                                <i class="fas fa-eye toggle-password" id="toggleConfirmPassword"></i>
-                            </div>
-                            <div class="password-match" id="passwordMatch">
-                                <i class="fas fa-check-circle match-icon"></i>
-                                <span class="match-text">As senhas coincidem</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Preferências de Aprendizado -->
-                    <div class="form-section">
-                        <h3 class="section-title">
-                            <i class="fas fa-graduation-cap"></i>
-                            Preferências de Aprendizado
-                        </h3>
-
-                        <div class="form-group">
-                            <label class="form-label">Nível de Inglês</label>
-                            <div class="input-container">
-                                <i class="fas fa-language input-icon"></i>
-                                <?= $this->Form->control('nivel_ingles', [
-                                    'label' => false,
-                                    'options' => [
-                                        'iniciante' => 'Iniciante',
-                                        'intermediario' => 'Intermediário',
-                                        'avancado' => 'Avançado'
-                                    ],
-                                    'empty' => 'Selecione seu nível',
-                                    'class' => 'form-input select-input'
-                                ]) ?>
-                                <i class="fas fa-chevron-down select-arrow"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Idioma Preferido</label>
-                            <div class="input-container">
-                                <i class="fas fa-globe input-icon"></i>
-                                <?= $this->Form->control('idioma_preferido', [
-                                    'label' => false,
-                                    'options' => [
-                                        'pt-BR' => 'Português (Brasil)',
-                                        'en' => 'Inglês',
-                                        'es' => 'Espanhol'
-                                    ],
-                                    'empty' => 'Selecione o idioma',
-                                    'class' => 'form-input select-input'
-                                ]) ?>
-                                <i class="fas fa-chevron-down select-arrow"></i>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Objetivos de Aprendizado</label>
-                            <div class="input-container">
-                                <i class="fas fa-bullseye input-icon"></i>
-                                <?= $this->Form->control('objetivos_aprendizado', [
-                                    'type' => 'textarea',
-                                    'label' => false,
-                                    'placeholder' => 'Descreva seus objetivos...',
-                                    'rows' => 3,
-                                    'class' => 'form-input textarea-input'
-                                ]) ?>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label">Confirmar Nova Senha</label>
+                                        <div class="input-container password-container">
+                                            <i class="fas fa-key input-icon"></i>
+                                            <?= $this->Form->control('confirmar_senha', [
+                                                'type' => 'password',
+                                                'label' => false,
+                                                'placeholder' => 'Digite a senha novamente',
+                                                'class' => 'form-input password-input',
+                                                'id' => 'confirmPassword'
+                                            ]) ?>
+                                            <i class="fas fa-eye toggle-password" id="toggleConfirmPassword"></i>
+                                        </div>
+                                        <div class="password-match" id="passwordMatch">
+                                            <i class="fas fa-check-circle match-icon"></i>
+                                            <span class="match-text">As senhas coincidem</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="form-actions">
-                    <?= $this->Html->link('Cancelar', ['action' => 'view', $user->id], [
-                        'class' => 'btn btn-secondary'
-                    ]) ?>
-                    <?= $this->Form->button(('Salvar Alterações'), [
-                        'class' => 'btn btn-primary submit-btn',
-                        'type' => 'submit'
-                    ]) ?>
+            <!-- Ações -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="form-actions">
+                        <?= $this->Html->link(
+                            '<i class="fas fa-times"></i> ' . __('Cancelar'),
+                            ['action' => 'view', $user->id],
+                            ['class' => 'btn btn-cancel', 'escape' => false]
+                        ) ?>
+                        <?= $this->Form->button(
+                             __('Salvar Alterações'),
+                            [
+                                'class' => 'btn btn-save',
+                                'type' => 'submit',
+                                'escape' => false
+                            ]
+                        ) ?>
+                    </div>
                 </div>
+            </div>
             <?= $this->Form->end() ?>
         </div>
     </div>
 </div>
 
 <style>
-/* Adicione todo o CSS do add.php aqui */
-.register-container {
-    padding: 20px;
-    max-width: 900px;
-    margin: 0 auto;
+.edit-profile-container {
+    min-height: 100vh;
+    background: #f8f9fa;
 }
 
-.register-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.card-header {
+.profile-header {
+    position: relative;
     background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
     color: white;
-    padding: 40px 32px;
-    text-align: center;
-    position: relative;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
 }
 
-.card-header::before {
-    content: '';
+.header-background {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M1200 120L0 16.48 0 0 1200 0 1200 120z" fill="%23ffffff" fill-opacity="0.1"/></svg>') bottom center no-repeat;
+    background-size: cover;
 }
 
-.header-icon {
+.profile-content {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.profile-avatar {
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
     width: 80px;
     height: 80px;
-    background: rgba(255, 255, 255, 0.2);
     border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 20px;
-    font-size: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.avatar-placeholder i {
+    font-size: 2rem;
+    color: white;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: white;
+}
+
+.profile-email {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-back {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-back:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.profile-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+}
+
+.profile-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.profile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    border-radius: 15px 15px 0 0 !important;
 }
 
 .card-title {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 0 0 8px 0;
-    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.card-subtitle {
-    font-size: 16px;
-    opacity: 0.9;
-    margin: 0;
-    font-weight: 400;
-    line-height: 1.5;
+.card-title i {
+    color: #7c3aed;
 }
 
 .card-body {
-    padding: 40px;
+    padding: 1.5rem;
 }
 
-/* Flash Messages Centralizadas */
-.flash-messages-container {
-    position: fixed;
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.input-container {
+    position: relative;
+}
+
+.password-container,
+.select-container,
+.textarea-container {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    width: 90%;
-    max-width: 400px;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: 1rem;
+    z-index: 2;
 }
 
-.flash-messages-container .alert {
-    padding: 20px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 500;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    border: none;
+.textarea-icon {
+    top: 1.25rem;
+    transform: none;
 }
 
-.flash-messages-container .alert-success {
-    background: linear-gradient(135deg, #10b981, #059669);
-    color: white;
+.form-input {
+    width: 100%;
+    padding: 0.875rem 1rem 0.875rem 3rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    color: #374151;
+    font-family: inherit;
 }
 
-.flash-messages-container .alert-error,
-.flash-messages-container .alert-danger {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
+.select-input {
+    appearance: none;
+    cursor: pointer;
+    padding-right: 3rem;
 }
 
-.current-photo {
-    margin-top: 10px;
-    font-size: 14px;
+.textarea-input {
+    padding: 1rem 1rem 1rem 3rem;
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    font-size: 0.875rem;
+    pointer-events: none;
+}
+
+.form-input:focus {
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+    outline: none;
+}
+
+/* Password Strength */
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.strength-fill {
+    height: 100%;
+    background: #ef4444;
+    transition: all 0.3s ease;
+    width: 0%;
+    border-radius: 3px;
+}
+
+.strength-fill.weak { background: #ef4444; width: 25%; }
+.strength-fill.medium { background: #f59e0b; width: 50%; }
+.strength-fill.strong { background: #10b981; width: 75%; }
+.strength-fill.very-strong { background: #059669; width: 100%; }
+
+.strength-text {
+    font-size: 0.8rem;
     color: #6b7280;
     font-weight: 500;
 }
 
-/* Adicione todo o resto do CSS do add.php aqui */
-.form-grid {
-    display: grid;
-    gap: 30px;
+/* Password Match */
+.password-match {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
 }
 
-.form-section {
-    background: #f8fafc;
-    padding: 25px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
+.password-match.visible {
+    display: flex;
 }
 
-.section-title {
+.password-match.matching {
+    color: #059669;
+}
+
+.password-match.not-matching {
+    color: #dc2626;
+}
+
+.match-icon {
+    font-size: 0.9rem;
+}
+
+/* Toggle Password */
+.toggle-password {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6b7280;
+    cursor: pointer;
+    font-size: 1rem;
+    z-index: 2;
+    background: none;
+    border: none;
+    padding: 0;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 2px solid #e5e7eb;
+    justify-content: center;
 }
 
-/* ... resto do CSS igual ao add.php ... */
+.toggle-password:hover {
+    color: #374151;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-cancel {
+    background: #6b7280;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background: #4b5563;
+    transform: translateY(-2px);
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    color: white;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+}
+
+.text-muted {
+    color: #6b7280 !important;
+    font-size: 0.875rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .profile-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-actions {
+        justify-content: center;
+    }
+
+    .profile-name {
+        font-size: 1.75rem;
+    }
+
+    .avatar-placeholder {
+        width: 70px;
+        height: 70px;
+    }
+
+    .avatar-placeholder i {
+        font-size: 1.75rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-header {
+        padding: 1.5rem 0;
+    }
+
+    .profile-name {
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .form-input {
+        padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+    }
+
+    .textarea-input {
+        padding: 0.75rem 0.875rem 0.75rem 2.5rem;
+    }
+
+    .input-icon {
+        left: 0.875rem;
+    }
+}
 </style>
 
 <script>
-// Adicione todo o JavaScript do add.php aqui
 document.addEventListener('DOMContentLoaded', function() {
     // Máscara de telefone
     const telefoneInput = document.getElementById('telefone');
@@ -338,15 +672,25 @@ document.addEventListener('DOMContentLoaded', function() {
             if (value.length <= 11) {
                 if (value.length <= 2) {
                     value = value.replace(/^(\d{0,2})/, '($1');
-                } else if (value.length <= 6) {
-                    value = value.replace(/^(\d{2})(\d{0,4})/, '($1) $2');
-                } else if (value.length <= 10) {
-                    value = value.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
-                } else {
+                } else if (value.length <= 7) {
+                    value = value.replace(/^(\d{2})(\d{0,5})/, '($1) $2');
+                } else if (value.length <= 11) {
                     value = value.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
                 }
                 
                 e.target.value = value;
+            }
+        });
+
+        // Permitir apenas números e teclas de controle
+        telefoneInput.addEventListener('keydown', function(e) {
+            const allowedKeys = [
+                'Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 
+                'Home', 'End', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'
+            ];
+            
+            if (!/[\d]/.test(e.key) && !allowedKeys.includes(e.key)) {
+                e.preventDefault();
             }
         });
     }
@@ -429,46 +773,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupTogglePassword(document.getElementById('togglePassword'), passwordInput);
     setupTogglePassword(document.getElementById('toggleConfirmPassword'), confirmPasswordInput);
-
-    // File upload preview
-    const fileInput = document.getElementById('fotoPerfil');
-    const fileUploadArea = document.getElementById('fileUploadArea');
-    const filePreview = document.getElementById('filePreview');
-
-    if (fileInput) {
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.type.startsWith('image/')) {
-                    if (file.size > 5 * 1024 * 1024) {
-                        filePreview.innerHTML = '<p class="text-error">Arquivo muito grande. Máximo 5MB.</p>';
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        filePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    filePreview.innerHTML = '<p class="text-error">Por favor, selecione uma imagem (PNG, JPG).</p>';
-                }
-            }
-        });
-    }
-
-    // Auto-remover mensagens flash após 5 segundos
-    setTimeout(function() {
-        const flashMessages = document.querySelector('.flash-messages-container');
-        if (flashMessages) {
-            flashMessages.style.transition = 'opacity 0.5s ease';
-            flashMessages.style.opacity = '0';
-            setTimeout(function() {
-                if (flashMessages.parentNode) {
-                    flashMessages.parentNode.removeChild(flashMessages);
-                }
-            }, 500);
-        }
-    }, 5000);
 });
 </script>

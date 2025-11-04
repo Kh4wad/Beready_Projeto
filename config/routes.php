@@ -11,7 +11,7 @@ return function (RouteBuilder $routes): void {
 
         // Rotas de Users
         $builder->connect('/login', ['controller' => 'Users', 'action' => 'login']);
-        $builder->connect('/logout', ['controller' => 'Users', 'action' => 'logout']);
+        $builder->connect('/    ', ['controller' => 'Users', 'action' => 'logout']);
         $builder->connect('/register', ['controller' => 'Users', 'action' => 'add']);
         $builder->connect('/forgot-password', ['controller' => 'Users', 'action' => 'forgotPassword']);
         $builder->connect('/reset-password/*', ['controller' => 'Users', 'action' => 'resetPassword']);

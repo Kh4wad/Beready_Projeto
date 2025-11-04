@@ -5,9 +5,14 @@
  * @var \App\View\AppView $this
  */
 
-// Verifica se há usuário na sessão (método alternativo)
-$isLoggedIn = isset($_SESSION['Auth']) && !empty($_SESSION['Auth']['id']);
-$username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['email'] ?? 'Usuário') : '';
+// Verifica se há usuário autenticado usando o Auth Component
+$authUser = $this->request->getSession()->read('Auth.User');
+$isLoggedIn = !empty($authUser);
+$username = $isLoggedIn ? ($authUser['nome'] ?? $authUser['email'] ?? 'Usuário') : '';
+$userId = $isLoggedIn ? $authUser['id'] : null;
+
+// Define a URL inicial baseada no status de login
+$homeUrl = $isLoggedIn ? $this->Url->build(['controller' => 'Users', 'action' => 'index', 'home']) : $this->Url->build('/');
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -63,60 +68,173 @@ $username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['e
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         .logo { 
             display: flex; 
             align-items: center; 
-            gap: 15px; 
+            gap: 12px; 
             text-decoration: none;
+            transition: transform 0.2s ease;
         }
         .logo:hover {
-            opacity: 0.9;
+            transform: scale(1.05);
         }
         .logo-icon { 
-            font-size: 2rem; 
+            font-size: 1.8rem; 
             color: white; 
         }
         .logo-text { 
-            font-size: 1.8rem; 
+            font-size: 1.6rem; 
             font-weight: 700; 
             letter-spacing: -0.5px; 
             color: white;
         }
 
+        .nav-container {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
         .nav-links { 
             display: flex; 
-            gap: 25px; 
+            gap: 8px; 
             align-items: center;
         }
+        
         .nav-links a { 
             color: white; 
             text-decoration: none; 
             font-weight: 500; 
-            transition: opacity 0.3s; 
+            font-size: 0.95rem;
+            transition: all 0.3s ease; 
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        
         .nav-links a:hover { 
-            opacity: 0.8; 
+            background: rgba(255, 255, 255, 0.2); 
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .user-menu {
+        .nav-links a i {
+            font-size: 1rem;
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .dropdown-toggle:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 5px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            overflow: hidden;
+            z-index: 1001;
+            padding: 8px 0;
+        }
+
+        .dropdown:hover .dropdown-menu,
+        .dropdown-menu:hover {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .dropdown {
+            position: relative;
+        }
+        
+        .dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            height: 10px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown-menu a {
             display: flex;
-            gap: 15px;
             align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            color: var(--dark-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            background: white;
+            border: none;
+            border-radius: 0;
+            white-space: nowrap;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f0f0f0;
+            padding-left: 25px;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .dropdown-menu a i {
+            font-size: 1rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        .dropdown-menu .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 5px 0;
         }
 
         .user-info {
             font-size: 0.9rem;
-            opacity: 0.9;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-weight: 500;
         }
 
         /* Main content */
@@ -124,7 +242,7 @@ $username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['e
             flex: 1; 
             padding: 20px; 
             width: 100%;
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
         }
 
@@ -149,40 +267,159 @@ $username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['e
             margin-top: auto;
         }
 
-        /* Alertas customizados */
-        .alert-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        /* Flash Messages Modernas */
+        .flash-messages-modern {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
         }
 
-        @media (max-width: 768px) {
+        .flash-message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: none;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInRight 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+        }
+
+        .flash-message.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .flash-message.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .flash-message.info {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        .flash-message .icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .flash-message .content {
+            flex: 1;
+        }
+
+        /* Para mensagens flash padrão do CakePHP */
+        .message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: none;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: slideInRight 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
+        }
+
+        .message.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .message.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .message.info {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
             .header-content { 
                 flex-direction: column; 
                 gap: 15px; 
                 text-align: center;
             }
+            
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+                width: 100%;
+            }
+            
             .nav-links { 
-                gap: 15px; 
+                gap: 8px; 
                 flex-wrap: wrap;
                 justify-content: center;
             }
             
-            .user-menu {
-                flex-direction: column;
-                gap: 10px;
+            .dropdown-menu {
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
             }
-            
+        }
+
+        @media (max-width: 768px) {
             main.main {
                 padding: 15px;
             }
             
             .logo-text {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
             
             .logo-icon {
-                font-size: 1.7rem;
+                font-size: 1.6rem;
+            }
+
+            .nav-links a {
+                font-size: 0.85rem;
+                padding: 8px 12px;
+            }
+
+            .flash-messages-modern {
+                top: 80px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
             }
         }
 
@@ -192,10 +429,16 @@ $username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['e
             }
             
             .nav-links {
-                gap: 10px;
+                gap: 6px;
             }
             
             .nav-links a {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+                gap: 6px;
+            }
+            
+            .nav-links a i {
                 font-size: 0.9rem;
             }
             
@@ -203,6 +446,17 @@ $username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['e
                 padding: 15px;
                 font-size: 0.9rem;
                 text-align: center;
+            }
+
+            .flash-message,
+            .message {
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+
+            .user-info {
+                font-size: 0.8rem;
+                padding: 8px 12px;
             }
         }
     </style>
@@ -216,54 +470,71 @@ $username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['e
         <!-- Header -->
         <header class="main-header">
             <div class="header-content">
-                <a href="<?= $this->Url->build('/') ?>" class="logo">
+                <a href="<?= $homeUrl ?>" class="logo">
                     <i class="fas fa-graduation-cap logo-icon"></i>
                     <span class="logo-text">Beready</span>
                 </a>
                 
-                <nav class="nav-links">
-                    <?php if ($isLoggedIn): ?>
-                        <!-- Menu para usuários logados -->
-                        <a href="<?= $this->Url->build('/flashcards') ?>">
-                            <i class="fas fa-cards"></i> Flashcards
-                        </a>
-                        <a href="<?= $this->Url->build('/tags') ?>">
-                            <i class="fas fa-tags"></i> Tags
-                        </a>
-                        <a href="<?= $this->Url->build('/users') ?>">
-                            <i class="fas fa-users"></i> Usuários
-                        </a>
-                        
-                        <div class="user-menu">
-                            <span class="user-info">
-                                <i class="fas fa-user"></i> 
-                                <?= h($username) ?>
-                            </span>
-                            <a href="<?= $this->Url->build('/profile') ?>">
-                                <i class="fas fa-edit"></i> Perfil
+                <?php if ($isLoggedIn): ?>
+                    <nav class="nav-container">
+                        <div class="nav-links">
+                            <a href="<?= $homeUrl ?>">
+                                <i class="fas fa-home"></i> Início
                             </a>
-                            <a href="<?= $this->Url->build('/logout') ?>">
-                                <i class="fas fa-sign-out-alt"></i> Sair
+                            
+                            <a href="<?= $this->Url->build('/flashcards/criar') ?>">
+                                <i class="fas fa-plus-circle"></i> Criar Flashcard
+                            </a>
+                            
+                            <a href="<?= $this->Url->build('/flashcards') ?>">
+                                <i class="fas fa-layer-group"></i> Flashcards
+                            </a>
+                            
+                            <a href="<?= $this->Url->build('/tags/add') ?>">
+                                <i class="fas fa-plus"></i> Criar Tag
+                            </a>
+                            
+                            <a href="<?= $this->Url->build('/tags') ?>">
+                                <i class="fas fa-tags"></i> Tags
                             </a>
                         </div>
-                    <?php else: ?>
-                        <!-- Menu para usuários não logados -->
+                        
+                        <div class="dropdown">
+                            <div class="user-info dropdown-toggle">
+                                <i class="fas fa-user-circle"></i> 
+                                <?= h($username) ?>
+                                <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 4px;"></i>
+                            </div>
+                            <div class="dropdown-menu">
+                                <?php if ($userId): ?>
+                                    <a href="<?= $this->Url->build(['controller' => 'Users', 'action' => 'edit', $userId]) ?>">
+                                        <i class="fas fa-user-edit"></i> Editar Perfil
+                                    </a>
+                                    <div class="divider"></div>
+                                <?php endif; ?>
+                                <?= $this->Html->link(
+                                    '<i class="fas fa-sign-out-alt"></i> Sair',
+                                    ['controller' => 'Users', 'action' => 'logout'],
+                                    ['class' => '', 'escape' => false]
+                                ) ?>
+                            </div>
+                        </div>
+                    </nav>
+                <?php else: ?>
+                    <nav class="nav-links">
                         <a href="<?= $this->Url->build('/') ?>">
                             <i class="fas fa-home"></i> Início
                         </a>
                         <a href="<?= $this->Url->build('/login') ?>">
-                            <i class="fas fa-sign-in-alt"></i> Login
+                            <i class="fas fa-sign-in-alt"></i> Entrar
                         </a>
-                        <a href="<?= $this->Url->build('/register') ?>">
-                            <i class="fas fa-user-plus"></i> Cadastrar
-                        </a>
-                    <?php endif; ?>
-                </nav>
+                    </nav>
+                <?php endif; ?>
             </div>
         </header>
 
-        <!-- Alertas -->
-        <div class="alert-container">
+        <!-- Flash Messages Modernas -->
+        <div class="flash-messages-modern">
             <?= $this->Flash->render() ?>
         </div>
 
@@ -280,5 +551,53 @@ $username = $isLoggedIn ? ($_SESSION['Auth']['username'] ?? $_SESSION['Auth']['e
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script para melhorar as flash messages -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Adiciona ícones às mensagens flash
+        const messages = document.querySelectorAll('.message, .flash-message');
+        
+        messages.forEach(message => {
+            // Determina o tipo da mensagem e adiciona o ícone correspondente
+            let iconClass = 'fas fa-info-circle';
+            if (message.classList.contains('success')) {
+                iconClass = 'fas fa-check-circle';
+            } else if (message.classList.contains('error')) {
+                iconClass = 'fas fa-exclamation-circle';
+            } else if (message.classList.contains('warning')) {
+                iconClass = 'fas fa-exclamation-triangle';
+            }
+            
+            // Adiciona o ícone se não existir
+            if (!message.querySelector('.icon')) {
+                const icon = document.createElement('i');
+                icon.className = `icon ${iconClass}`;
+                message.insertBefore(icon, message.firstChild);
+            }
+            
+            // Remove a mensagem após a animação
+            setTimeout(() => {
+                message.style.transition = 'opacity 0.5s ease';
+                message.style.opacity = '0';
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        message.parentNode.removeChild(message);
+                    }
+                }, 500);
+            }, 5000);
+        });
+        
+        // Remove o container de mensagens se estiver vazio
+        const flashContainer = document.querySelector('.flash-messages-modern');
+        if (flashContainer && flashContainer.children.length === 0) {
+            setTimeout(() => {
+                if (flashContainer.parentNode) {
+                    flashContainer.parentNode.removeChild(flashContainer);
+                }
+            }, 6000);
+        }
+    });
+    </script>
 </body>
 </html>

@@ -1,372 +1,501 @@
 <?php
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Usuario $usuario
+ * @var \App\Model\Entity\User $user
  */
 ?>
-<div class="row">
-    <aside class="column">
-        <div class="side-nav">
-            <h4 class="heading"><?= __('Actions') ?></h4>
-            <?= $this->Html->link(('Edit Usuario'), ['action' => 'edit', $usuario->id], ['class' => 'side-nav-item']) ?>
-            <?= $this->Form->postLink(('Delete Usuario'), ['action' => 'delete', $usuario->id], ['confirm' => __('Are you sure you want to delete # {0}?', $usuario->id), 'class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(('List Usuarios'), ['action' => 'index'], ['class' => 'side-nav-item']) ?>
-            <?= $this->Html->link(('New Usuario'), ['action' => 'add'], ['class' => 'side-nav-item']) ?>
+
+<div class="user-profile-container">
+    <div class="profile-header">
+        <div class="header-background"></div>
+        <div class="profile-content">
+            <div class="profile-avatar">
+                <div class="avatar-placeholder">
+                    <i class="fas fa-user"></i>
+                </div>
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name"><?= h($user->nome) ?></h1>
+                <p class="profile-email"><?= h($user->email) ?></p>
+                <div class="profile-badges">
+                    <span class="badge badge-level"><?= h(ucfirst($user->nivel_ingles)) ?></span>
+                    <span class="badge badge-status"><?= h(ucfirst($user->status)) ?></span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <?= $this->Html->link(
+                    '<i class="fas fa-edit"></i> ' . __('Editar'),
+                    ['action' => 'edit', $user->id],
+                    ['class' => 'btn btn-edit', 'escape' => false]
+                ) ?>
+                <?= $this->Form->postLink(
+                    '<i class="fas fa-trash"></i> ' . __('Excluir'),
+                    ['action' => 'delete', $user->id],
+                    [
+                        'confirm' => __('Tem certeza que deseja excluir o usuário {0}?', $user->nome),
+                        'class' => 'btn btn-delete',
+                        'escape' => false
+                    ]
+                ) ?>
+            </div>
         </div>
-    </aside>
-    <div class="column column-80">
-        <div class="usuarios view content">
-            <h3><?= h($usuario->nome) ?></h3>
-            <table>
-                <tr>
-                    <th><?= __('Nome') ?></th>
-                    <td><?= h($usuario->nome) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Email') ?></th>
-                    <td><?= h($usuario->email) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Senha Hash') ?></th>
-                    <td><?= h($usuario->senha_hash) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Telefone') ?></th>
-                    <td><?= h($usuario->telefone) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Foto Perfil') ?></th>
-                    <td><?= h($usuario->foto_perfil) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Nivel Ingles') ?></th>
-                    <td><?= h($usuario->nivel_ingles) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Idioma Preferido') ?></th>
-                    <td><?= h($usuario->idioma_preferido) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Status') ?></th>
-                    <td><?= h($usuario->status) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Progresso Usuario') ?></th>
-                    <td><?= $usuario->hasValue('progresso_usuario') ? $this->Html->link($usuario->progresso_usuario->id, ['controller' => 'ProgressoUsuario', 'action' => 'view', $usuario->progresso_usuario->id]) : '' ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Id') ?></th>
-                    <td><?= $this->Number->format($usuario->id) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Criado Em') ?></th>
-                    <td><?= h($usuario->criado_em) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Atualizado Em') ?></th>
-                    <td><?= h($usuario->atualizado_em) ?></td>
-                </tr>
-                <tr>
-                    <th><?= __('Ultimo Login') ?></th>
-                    <td><?= h($usuario->ultimo_login) ?></td>
-                </tr>
-            </table>
-            <div class="text">
-                <strong><?= __('Objetivos Aprendizado') ?></strong>
-                <blockquote>
-                    <?= $this->Text->autoParagraph(h($usuario->objetivos_aprendizado)); ?>
-                </blockquote>
-            </div>
-            <div class="related">
-                <h4><?= __('Related Flashcards') ?></h4>
-                <?php if (!empty($usuario->flashcards)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Usuario Id') ?></th>
-                            <th><?= __('Prompt Id') ?></th>
-                            <th><?= __('Texto Frente') ?></th>
-                            <th><?= __('Texto Verso') ?></th>
-                            <th><?= __('Imagem Frente Id') ?></th>
-                            <th><?= __('Imagem Verso Id') ?></th>
-                            <th><?= __('Audio Frente Url') ?></th>
-                            <th><?= __('Audio Verso Url') ?></th>
-                            <th><?= __('Nivel Dificuldade') ?></th>
-                            <th><?= __('Tipo Criacao') ?></th>
-                            <th><?= __('Vezes Revisado') ?></th>
-                            <th><?= __('Vezes Acertado') ?></th>
-                            <th><?= __('Ultima Revisao') ?></th>
-                            <th><?= __('Proxima Revisao') ?></th>
-                            <th><?= __('Arquivado') ?></th>
-                            <th><?= __('Criado Em') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($usuario->flashcards as $flashcard) : ?>
-                        <tr>
-                            <td><?= h($flashcard->id) ?></td>
-                            <td><?= h($flashcard->usuario_id) ?></td>
-                            <td><?= h($flashcard->prompt_id) ?></td>
-                            <td><?= h($flashcard->texto_frente) ?></td>
-                            <td><?= h($flashcard->texto_verso) ?></td>
-                            <td><?= h($flashcard->imagem_frente_id) ?></td>
-                            <td><?= h($flashcard->imagem_verso_id) ?></td>
-                            <td><?= h($flashcard->audio_frente_url) ?></td>
-                            <td><?= h($flashcard->audio_verso_url) ?></td>
-                            <td><?= h($flashcard->nivel_dificuldade) ?></td>
-                            <td><?= h($flashcard->tipo_criacao) ?></td>
-                            <td><?= h($flashcard->vezes_revisado) ?></td>
-                            <td><?= h($flashcard->vezes_acertado) ?></td>
-                            <td><?= h($flashcard->ultima_revisao) ?></td>
-                            <td><?= h($flashcard->proxima_revisao) ?></td>
-                            <td><?= h($flashcard->arquivado) ?></td>
-                            <td><?= h($flashcard->criado_em) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(('View'), ['controller' => 'Flashcards', 'action' => 'view', $flashcard->id]) ?>
-                                <?= $this->Html->link(('Edit'), ['controller' => 'Flashcards', 'action' => 'edit', $flashcard->id]) ?>
-                                <?= $this->Form->postLink(
-                                    __('Delete'),
-                                    ['controller' => 'Flashcards', 'action' => 'delete', $flashcard->id],
-                                    [
-                                        'method' => 'delete',
-                                        'confirm' => __('Are you sure you want to delete # {0}?', $flashcard->id),
-                                    ]
-                                ) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
+    </div>
+
+    <div class="profile-body">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Informações Pessoais -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-user-circle"></i>
+                                <?= __('Informações Pessoais') ?>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-phone"></i>
+                                        <?= __('Telefone') ?>
+                                    </div>
+                                    <div class="info-value"><?= $user->telefone ? h($user->telefone) : '<span class="text-muted">Não informado</span>' ?></div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-language"></i>
+                                        <?= __('Idioma Preferido') ?>
+                                    </div>
+                                    <div class="info-value">
+                                        <?= $user->idioma_preferido === 'pt-BR' ? 'Português (Brasil)' : 
+                                             ($user->idioma_preferido === 'en' ? 'Inglês' : 
+                                             ($user->idioma_preferido === 'es' ? 'Espanhol' : h($user->idioma_preferido))) ?>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-calendar"></i>
+                                        <?= __('Membro desde') ?>
+                                    </div>
+                                    <div class="info-value"><?= $user->criado_em->format('d/m/Y') ?></div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-clock"></i>
+                                        <?= __('Última atualização') ?>
+                                    </div>
+                                    <div class="info-value"><?= $user->atualizado_em->format('d/m/Y H:i') ?></div>
+                                </div>
+                                <?php if ($user->ultimo_login): ?>
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                        <?= __('Último login') ?>
+                                    </div>
+                                    <div class="info-value"><?= $user->ultimo_login->format('d/m/Y H:i') ?></div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <?php endif; ?>
-            </div>
-            <div class="related">
-                <h4><?= __('Related Preferencias Usuario') ?></h4>
-                <?php if (!empty($usuario->preferencias_usuario)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Usuario Id') ?></th>
-                            <th><?= __('Tema') ?></th>
-                            <th><?= __('Modo Daltonico') ?></th>
-                            <th><?= __('Notificacoes Ativas') ?></th>
-                            <th><?= __('Som Ativo') ?></th>
-                            <th><?= __('Traducao Automatica') ?></th>
-                            <th><?= __('Preferencia Dificuldade') ?></th>
-                            <th><?= __('Meta Diaria Minutos') ?></th>
-                            <th><?= __('Criado Em') ?></th>
-                            <th><?= __('Atualizado Em') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($usuario->preferencias_usuario as $preferenciasUsuario) : ?>
-                        <tr>
-                            <td><?= h($preferenciasUsuario->id) ?></td>
-                            <td><?= h($preferenciasUsuario->usuario_id) ?></td>
-                            <td><?= h($preferenciasUsuario->tema) ?></td>
-                            <td><?= h($preferenciasUsuario->modo_daltonico) ?></td>
-                            <td><?= h($preferenciasUsuario->notificacoes_ativas) ?></td>
-                            <td><?= h($preferenciasUsuario->som_ativo) ?></td>
-                            <td><?= h($preferenciasUsuario->traducao_automatica) ?></td>
-                            <td><?= h($preferenciasUsuario->preferencia_dificuldade) ?></td>
-                            <td><?= h($preferenciasUsuario->meta_diaria_minutos) ?></td>
-                            <td><?= h($preferenciasUsuario->criado_em) ?></td>
-                            <td><?= h($preferenciasUsuario->atualizado_em) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(('View'), ['controller' => 'PreferenciasUsuario', 'action' => 'view', $preferenciasUsuario->id]) ?>
-                                <?= $this->Html->link(('Edit'), ['controller' => 'PreferenciasUsuario', 'action' => 'edit', $preferenciasUsuario->id]) ?>
-                                <?= $this->Form->postLink(
-                                    __('Delete'),
-                                    ['controller' => 'PreferenciasUsuario', 'action' => 'delete', $preferenciasUsuario->id],
-                                    [
-                                        'method' => 'delete',
-                                        'confirm' => __('Are you sure you want to delete # {0}?', $preferenciasUsuario->id),
-                                    ]
-                                ) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
+
+                <!-- Objetivos de Aprendizado -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-bullseye"></i>
+                                <?= __('Objetivos de Aprendizado') ?>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($user->objetivos_aprendizado): ?>
+                                <div class="objectives-content">
+                                    <?= $this->Text->autoParagraph(h($user->objetivos_aprendizado)) ?>
+                                </div>
+                            <?php else: ?>
+                                <div class="empty-state">
+                                    <i class="fas fa-clipboard-list"></i>
+                                    <p class="text-muted"><?= __('Nenhum objetivo de aprendizado definido.') ?></p>
+                                    <?= $this->Html->link(
+                                        __('Definir objetivos'),
+                                        ['action' => 'edit', $user->id],
+                                        ['class' => 'btn btn-outline-primary btn-sm']
+                                    ) ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
-                <?php endif; ?>
             </div>
-            <div class="related">
-                <h4><?= __('Related Prompts') ?></h4>
-                <?php if (!empty($usuario->prompts)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Usuario Id') ?></th>
-                            <th><?= __('Texto Original') ?></th>
-                            <th><?= __('Idioma Original') ?></th>
-                            <th><?= __('Contexto') ?></th>
-                            <th><?= __('Midia Origem Id') ?></th>
-                            <th><?= __('Sessao Id') ?></th>
-                            <th><?= __('Criado Em') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($usuario->prompts as $prompt) : ?>
-                        <tr>
-                            <td><?= h($prompt->id) ?></td>
-                            <td><?= h($prompt->usuario_id) ?></td>
-                            <td><?= h($prompt->texto_original) ?></td>
-                            <td><?= h($prompt->idioma_original) ?></td>
-                            <td><?= h($prompt->contexto) ?></td>
-                            <td><?= h($prompt->midia_origem_id) ?></td>
-                            <td><?= h($prompt->sessao_id) ?></td>
-                            <td><?= h($prompt->criado_em) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(('View'), ['controller' => 'Prompts', 'action' => 'view', $prompt->id]) ?>
-                                <?= $this->Html->link(('Edit'), ['controller' => 'Prompts', 'action' => 'edit', $prompt->id]) ?>
-                                <?= $this->Form->postLink(
-                                    __('Delete'),
-                                    ['controller' => 'Prompts', 'action' => 'delete', $prompt->id],
-                                    [
-                                        'method' => 'delete',
-                                        'confirm' => __('Are you sure you want to delete # {0}?', $prompt->id),
-                                    ]
-                                ) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
+
+            <!-- Estatísticas (placeholder para futuras implementações) -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card profile-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-line"></i>
+                                <?= __('Estatísticas de Aprendizado') ?>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-number">0</div>
+                                    <div class="stat-label">Flashcards</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">0</div>
+                                    <div class="stat-label">Quizzes</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">0%</div>
+                                    <div class="stat-label">Progresso</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">0</div>
+                                    <div class="stat-label">Dias Ativos</div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-3">
+                                <small class="text-muted"><?= __('Estatísticas em desenvolvimento') ?></small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <?php endif; ?>
-            </div>
-            <div class="related">
-                <h4><?= __('Related Quizes') ?></h4>
-                <?php if (!empty($usuario->quizes)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Usuario Id') ?></th>
-                            <th><?= __('Titulo') ?></th>
-                            <th><?= __('Descricao') ?></th>
-                            <th><?= __('Tipo Criacao') ?></th>
-                            <th><?= __('Nivel Dificuldade') ?></th>
-                            <th><?= __('Total Questoes') ?></th>
-                            <th><?= __('Tempo Limite') ?></th>
-                            <th><?= __('Publico') ?></th>
-                            <th><?= __('Criado Em') ?></th>
-                            <th><?= __('Atualizado Em') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($usuario->quizes as $quize) : ?>
-                        <tr>
-                            <td><?= h($quize->id) ?></td>
-                            <td><?= h($quize->usuario_id) ?></td>
-                            <td><?= h($quize->titulo) ?></td>
-                            <td><?= h($quize->descricao) ?></td>
-                            <td><?= h($quize->tipo_criacao) ?></td>
-                            <td><?= h($quize->nivel_dificuldade) ?></td>
-                            <td><?= h($quize->total_questoes) ?></td>
-                            <td><?= h($quize->tempo_limite) ?></td>
-                            <td><?= h($quize->publico) ?></td>
-                            <td><?= h($quize->criado_em) ?></td>
-                            <td><?= h($quize->atualizado_em) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(('View'), ['controller' => 'Quizes', 'action' => 'view', $quize->id]) ?>
-                                <?= $this->Html->link(('Edit'), ['controller' => 'Quizes', 'action' => 'edit', $quize->id]) ?>
-                                <?= $this->Form->postLink(
-                                    __('Delete'),
-                                    ['controller' => 'Quizes', 'action' => 'delete', $quize->id],
-                                    [
-                                        'method' => 'delete',
-                                        'confirm' => __('Are you sure you want to delete # {0}?', $quize->id),
-                                    ]
-                                ) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-                <?php endif; ?>
-            </div>
-            <div class="related">
-                <h4><?= __('Related Tentativas Quiz') ?></h4>
-                <?php if (!empty($usuario->tentativas_quiz)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Quiz Id') ?></th>
-                            <th><?= __('Usuario Id') ?></th>
-                            <th><?= __('Pontuacao') ?></th>
-                            <th><?= __('Pontuacao Maxima') ?></th>
-                            <th><?= __('Porcentagem') ?></th>
-                            <th><?= __('Tempo Gasto') ?></th>
-                            <th><?= __('Respostas') ?></th>
-                            <th><?= __('Concluido Em') ?></th>
-                            <th><?= __('Criado Em') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($usuario->tentativas_quiz as $tentativasQuiz) : ?>
-                        <tr>
-                            <td><?= h($tentativasQuiz->id) ?></td>
-                            <td><?= h($tentativasQuiz->quiz_id) ?></td>
-                            <td><?= h($tentativasQuiz->usuario_id) ?></td>
-                            <td><?= h($tentativasQuiz->pontuacao) ?></td>
-                            <td><?= h($tentativasQuiz->pontuacao_maxima) ?></td>
-                            <td><?= h($tentativasQuiz->porcentagem) ?></td>
-                            <td><?= h($tentativasQuiz->tempo_gasto) ?></td>
-                            <td><?= h($tentativasQuiz->respostas) ?></td>
-                            <td><?= h($tentativasQuiz->concluido_em) ?></td>
-                            <td><?= h($tentativasQuiz->criado_em) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(('View'), ['controller' => 'TentativasQuiz', 'action' => 'view', $tentativasQuiz->id]) ?>
-                                <?= $this->Html->link(('Edit'), ['controller' => 'TentativasQuiz', 'action' => 'edit', $tentativasQuiz->id]) ?>
-                                <?= $this->Form->postLink(
-                                    __('Delete'),
-                                    ['controller' => 'TentativasQuiz', 'action' => 'delete', $tentativasQuiz->id],
-                                    [
-                                        'method' => 'delete',
-                                        'confirm' => __('Are you sure you want to delete # {0}?', $tentativasQuiz->id),
-                                    ]
-                                ) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-                <?php endif; ?>
-            </div>
-            <div class="related">
-                <h4><?= __('Related Vocabulario') ?></h4>
-                <?php if (!empty($usuario->vocabulario)) : ?>
-                <div class="table-responsive">
-                    <table>
-                        <tr>
-                            <th><?= __('Id') ?></th>
-                            <th><?= __('Usuario Id') ?></th>
-                            <th><?= __('Palavra Frase') ?></th>
-                            <th><?= __('Criado Em') ?></th>
-                            <th class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                        <?php foreach ($usuario->vocabulario as $vocabulario) : ?>
-                        <tr>
-                            <td><?= h($vocabulario->id) ?></td>
-                            <td><?= h($vocabulario->usuario_id) ?></td>
-                            <td><?= h($vocabulario->palavra_frase) ?></td>
-                            <td><?= h($vocabulario->criado_em) ?></td>
-                            <td class="actions">
-                                <?= $this->Html->link(('View'), ['controller' => 'Vocabulario', 'action' => 'view', $vocabulario->id]) ?>
-                                <?= $this->Html->link(('Edit'), ['controller' => 'Vocabulario', 'action' => 'edit', $vocabulario->id]) ?>
-                                <?= $this->Form->postLink(
-                                    __('Delete'),
-                                    ['controller' => 'Vocabulario', 'action' => 'delete', $vocabulario->id],
-                                    [
-                                        'method' => 'delete',
-                                        'confirm' => __('Are you sure you want to delete # {0}?', $vocabulario->id),
-                                    ]
-                                ) ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </table>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+.user-profile-container {
+    min-height: 100vh;
+    background: #f8f9fa;
+}
+
+.profile-header {
+    position: relative;
+    background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+    color: white;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.header-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M1200 120L0 16.48 0 0 1200 0 1200 120z" fill="%23ffffff" fill-opacity="0.1"/></svg>') bottom center no-repeat;
+    background-size: cover;
+}
+
+.profile-content {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.profile-avatar {
+    flex-shrink: 0;
+}
+
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.avatar-placeholder i {
+    font-size: 3rem;
+    color: white;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+    color: white;
+}
+
+.profile-email {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    margin: 0 0 1rem 0;
+}
+
+.profile-badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-level {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.badge-status {
+    background: #10b981;
+    border: 1px solid #059669;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-edit:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    transform: translateY(-2px);
+}
+
+.profile-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+}
+
+.profile-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1.5rem;
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-title i {
+    color: #7c3aed;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #6b7280;
+    min-width: 150px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-value {
+    color: #374151;
+    font-weight: 500;
+    flex: 1;
+}
+
+.objectives-content {
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    text-align: center;
+}
+
+.stat-item {
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #7c3aed;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.text-muted {
+    color: #6b7280 !important;
+}
+
+.btn-outline-primary {
+    border: 2px solid #7c3aed;
+    color: #7c3aed;
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: #7c3aed;
+    color: white;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .profile-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-actions {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+    }
+
+    .avatar-placeholder {
+        width: 100px;
+        height: 100px;
+    }
+
+    .avatar-placeholder i {
+        font-size: 2.5rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: left;
+    }
+
+    .info-label {
+        min-width: auto;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-header {
+        padding: 1.5rem 0;
+    }
+
+    .profile-name {
+        font-size: 1.75rem;P
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+</style>

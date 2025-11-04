@@ -15,7 +15,7 @@
             <div class="user-actions">
                 <?= $this->Html->link(
                     '<i class="fas fa-user-edit"></i> Editar Perfil',
-                    ['action' => 'edit', $this->request->getAttribute('identity')->id],
+                    ['action' => 'edit', $this->request->getAttribute('identity') ? $this->request->getAttribute('identity')->id : null],
                     ['class' => 'btn btn-outline', 'escape' => false]
                 ) ?>
                 <?= $this->Html->link(

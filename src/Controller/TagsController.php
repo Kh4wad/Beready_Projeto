@@ -47,7 +47,7 @@ class TagsController extends AppController
      */
     public function view($id = null)
     {
-        $tag = $this->Tags->get($id, contain: ['FlashcardTags']); // 🔥 AGORA VAI FUNCIONAR
+        $tag = $this->Tags->get($id, contain: ['flashcard_tags']); // 🔥 AGORA VAI FUNCIONAR
         $this->set(compact('tag'));
     }
 
