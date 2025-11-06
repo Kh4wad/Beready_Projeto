@@ -53,7 +53,13 @@
                         <td><?= $this->Number->format($flashcard->id) ?></td>
                         <td><?= h($flashcard->question) ?></td>
                         <td><?= h($flashcard->answer) ?></td>
-                        <td><?= h($flashcard->created->format('d/m/Y H:i')) ?></td>
+                        <td>
+                            <?php
+                            // Adiciona 3 horas para corrigir o fuso horário
+                            $created = $flashcard->created->modify('-1 hours');
+                            echo h($created->format('d/m/Y H:i'));
+                            ?>
+                        </td>
                         <td class="actions">
                             <div class="action-buttons">
                                 <?= $this->Html->link(
