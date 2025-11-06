@@ -38,7 +38,7 @@ class FlashcardTagsTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Flashcard_tags') ? [] : ['className' => Flashcard_tagsTable::class];
+        $config = $this->getTableLocator()->exists('flashcard_tags') ? [] : ['className' => flashcardsTable::class];
         $this->FlashcardTags = $this->getTableLocator()->get('FlashcardTags', $config);
     }
 

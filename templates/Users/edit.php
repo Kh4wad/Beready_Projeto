@@ -30,7 +30,7 @@
 
     <div class="profile-body">
         <div class="container-fluid">
-            <?= $this->Form->create($user, ['class' => 'edit-profile-form']) ?>
+            <?= $this->Form->create($user, ['class' => 'edit-profile-form', 'id' => 'editProfileForm']) ?>
             <div class="row">
                 <!-- Informações Pessoais -->
                 <div class="col-lg-6 mb-4">
@@ -184,7 +184,7 @@
                                         <label class="form-label">Nova Senha</label>
                                         <div class="input-container password-container">
                                             <i class="fas fa-key input-icon"></i>
-                                            <?= $this->Form->control('senha', [
+                                            <?= $this->Form->control('nova_senha', [
                                                 'type' => 'password',
                                                 'label' => false,
                                                 'placeholder' => 'Mínimo 6 caracteres',
@@ -241,7 +241,8 @@
                             [
                                 'class' => 'btn btn-save',
                                 'type' => 'submit',
-                                'escape' => false
+                                'escape' => false,
+                                'id' => 'submitButton'
                             ]
                         ) ?>
                     </div>
@@ -594,9 +595,31 @@
     box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
 }
 
+.btn-save:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .text-muted {
     color: #6b7280 !important;
     font-size: 0.875rem;
+}
+
+/* Validation Error */
+.validation-error {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #dc2626;
+}
+
+.validation-error.visible {
+    display: flex;
 }
 
 /* Responsividade */
@@ -701,6 +724,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const strengthFill = document.getElementById('strength-fill');
     const strengthText = document.getElementById('strength-text');
     const passwordMatch = document.getElementById('passwordMatch');
+    const submitButton = document.getElementById('submitButton');
+    const form = document.getElementById('editProfileForm');
+
+    // Criar elemento de erro de validação
+    const validationError = document.createElement('div');
+    validationError.className = 'validation-error';
+    validationError.innerHTML = '<i class="fas fa-exclamation-circle"></i><span class="error-text"></span>';
+    if (passwordInput && passwordInput.parentNode) {
+        passwordInput.parentNode.parentNode.appendChild(validationError);
+    }
 
     function checkPasswordStrength(password) {
         let strength = 0;
@@ -733,14 +766,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 passwordMatch.classList.add('matching');
                 passwordMatch.classList.remove('not-matching');
                 passwordMatch.innerHTML = '<i class="fas fa-check-circle match-icon"></i><span class="match-text">As senhas coincidem</span>';
+                validationError.classList.remove('visible');
+                return true;
             } else {
                 passwordMatch.classList.add('not-matching');
                 passwordMatch.classList.remove('matching');
                 passwordMatch.innerHTML = '<i class="fas fa-times-circle match-icon"></i><span class="match-text">As senhas não coincidem</span>';
+                return false;
             }
         } else {
             passwordMatch.classList.remove('visible');
+            validationError.classList.remove('visible');
+            return true;
         }
+    }
+
+    function validateForm() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        
+        // Se ambos os campos de senha estão vazios, permitir o envio
+        if (!password && !confirmPassword) {
+            validationError.classList.remove('visible');
+            submitButton.disabled = false;
+            return true;
+        }
+        
+        // Verificar se as senhas coincidem
+        if (password !== confirmPassword) {
+            validationError.querySelector('.error-text').textContent = 'As senhas não coincidem';
+            validationError.classList.add('visible');
+            submitButton.disabled = true;
+            return false;
+        }
+        
+        // Verificar se a senha tem pelo menos 6 caracteres
+        if (password.length > 0 && password.length < 6) {
+            validationError.querySelector('.error-text').textContent = 'A senha deve ter pelo menos 6 caracteres';
+            validationError.classList.add('visible');
+            submitButton.disabled = true;
+            return false;
+        }
+        
+        // Se chegou aqui, as validações passaram
+        validationError.classList.remove('visible');
+        submitButton.disabled = false;
+        return true;
     }
 
     if (passwordInput) {
@@ -752,11 +823,25 @@ document.addEventListener('DOMContentLoaded', function() {
             strengthText.textContent = `Força da senha: ${text}`;
             
             checkPasswordMatch();
+            validateForm();
         });
     }
 
     if (confirmPasswordInput) {
-        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        confirmPasswordInput.addEventListener('input', function() {
+            checkPasswordMatch();
+            validateForm();
+        });
+    }
+
+    // Validar formulário antes do envio
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+        });
     }
 
     // Toggle password visibility
@@ -773,5 +858,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setupTogglePassword(document.getElementById('togglePassword'), passwordInput);
     setupTogglePassword(document.getElementById('toggleConfirmPassword'), confirmPasswordInput);
+
+    // Validar inicialmente o formulário
+    validateForm();
 });
 </script>

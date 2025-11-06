@@ -3,6 +3,9 @@
  * @var \App\View\AppView $this
  * @var iterable<\App\Model\Entity\User> $users
  */
+
+// Configurar o fuso horário do Brasil
+$timezone = new DateTimeZone('America/Sao_Paulo');
 ?>
 <div class="dashboard-container">
     <!-- Header -->
@@ -117,6 +120,14 @@
                 <tbody>
                     <?php foreach ($users as $user): ?>
                     <tr>
+                        <td>
+                            <div class="user-details">
+                                <strong><?= h($user->nome) ?></strong>
+                                <?php if ($user->telefone): ?>
+                                    <span class="user-phone"><?= h($user->telefone) ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </td>
                         <td><?= h($user->email) ?></td>
                         <td>
                             <span class="badge badge-<?= $user->nivel_ingles ?>">
@@ -130,7 +141,13 @@
                         </td>
                         <td>
                             <?php if ($user->ultimo_login): ?>
-                                <span class="timestamp"><?= $user->ultimo_login->format('d/m/Y H:i') ?></span>
+                                <?php
+                                // Converter para o fuso horário do Brasil
+                                $ultimoLogin = $user->ultimo_login->setTimezone($timezone);
+                                ?>
+                                <span class="timestamp" title="<?= $ultimoLogin->format('d/m/Y H:i:s T') ?>">
+                                    <?= $ultimoLogin->format('d/m/Y H:i') ?>
+                                </span>
                             <?php else: ?>
                                 <span class="timestamp never">Nunca logou</span>
                             <?php endif; ?>
@@ -332,21 +349,6 @@
     background: #f9fafb;
 }
 
-.user-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.user-avatar.default {
-    background: #e5e7eb;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6b7280;
-}
-
 .user-details {
     display: flex;
     flex-direction: column;
@@ -355,6 +357,7 @@
 .user-phone {
     font-size: 0.875rem;
     color: #6b7280;
+    margin-top: 4px;
 }
 
 /* Badges */
@@ -384,11 +387,13 @@
 .timestamp {
     font-size: 0.875rem;
     color: #6b7280;
+    cursor: help;
 }
 
 .timestamp.never {
     color: #9ca3af;
     font-style: italic;
+    cursor: default;
 }
 
 /* Action Buttons */
