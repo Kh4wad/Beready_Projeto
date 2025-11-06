@@ -81,7 +81,13 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <span class="timestamp"><?= $tag->criado_em->format('d/m/Y H:i') ?></span>
+                            <span class="timestamp">
+                                <?php // Subtrai 1 hora para corrigir o fuso horário
+                                // Subtrai 1 hora para corrigir o fuso horário
+                                $criadoEm = $tag->criado_em->modify('-1 hour');
+                                echo $criadoEm->format('d/m/Y H:i');
+                                ?>
+                            </span>
                         </td>
                         <td class="actions">
                             <div class="action-buttons">
