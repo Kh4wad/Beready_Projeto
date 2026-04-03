@@ -27,17 +27,19 @@ if (!defined('DS')) {
 
 /*
  * The full path to the directory which holds "src", WITHOUT a trailing DS.
+ * 🔥 CORRIGIDO: Sobe 2 níveis para sair da pasta backend 🔥
  */
 if (!defined('ROOT')) {
-    define('ROOT', dirname(__DIR__));
+    define('ROOT', dirname(__DIR__, 2));
 }
 
 /*
  * The actual directory name for the application directory. Normally
  * named 'src'.
+ * 🔥 CORRIGIDO: Inclui o caminho backend 🔥
  */
 if (!defined('APP_DIR')) {
-    define('APP_DIR', 'src');
+    define('APP_DIR', 'backend' . DS . 'src');
 }
 
 /*
@@ -49,37 +51,39 @@ if (!defined('APP')) {
 
 /*
  * Path to the config directory.
+ * 🔥 CORRIGIDO: config está dentro de backend 🔥
  */
 if (!defined('CONFIG')) {
-    define('CONFIG', ROOT . DS . 'config' . DS);
+    define('CONFIG', ROOT . DS . 'backend' . DS . 'config' . DS);
 }
 
 /*
  * File path to the webroot directory.
+ * 🔥 CORRIGIDO: webroot está dentro de backend 🔥
  */
 if (!defined('WWW_ROOT')) {
-    define('WWW_ROOT', ROOT . DS . 'webroot' . DS);
+    define('WWW_ROOT', ROOT . DS . 'backend' . DS . 'webroot' . DS);
 }
 
 /*
  * Path to the tests directory.
  */
 if (!defined('TESTS')) {
-    define('TESTS', ROOT . DS . 'tests' . DS);
+    define('TESTS', ROOT . DS . 'backend' . DS . 'tests' . DS);
 }
 
 /*
  * Path to the temporary files directory.
  */
 if (!defined('TMP')) {
-    define('TMP', ROOT . DS . 'tmp' . DS);
+    define('TMP', ROOT . DS . 'backend' . DS . 'tmp' . DS);
 }
 
 /*
  * Path to the logs directory.
  */
 if (!defined('LOGS')) {
-    define('LOGS', ROOT . DS . 'logs' . DS);
+    define('LOGS', ROOT . DS . 'backend' . DS . 'logs' . DS);
 }
 
 /*
@@ -93,7 +97,7 @@ if (!defined('CACHE')) {
  * Path to the resources directory.
  */
 if (!defined('RESOURCES')) {
-    define('RESOURCES', ROOT . DS . 'resources' . DS);
+    define('RESOURCES', ROOT . DS . 'backend' . DS . 'resources' . DS);
 }
 
 /*
@@ -102,7 +106,7 @@ if (!defined('RESOURCES')) {
  * CakePHP should always be installed with composer, so look there.
  */
 if (!defined('CAKE_CORE_INCLUDE_PATH')) {
-    define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
+    define('CAKE_CORE_INCLUDE_PATH', ROOT . DS . 'backend' . DS . 'vendor' . DS . 'cakephp' . DS . 'cakephp');
 }
 
 /*
