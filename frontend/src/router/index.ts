@@ -1,14 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
+
+// Views
+import Home from '../views/Home.vue'
 import Dashboard from '../views/Dashboard.vue'
+
+// Users Views
+import Login from '../views/Users/Login.vue'
+import Register from '../views/Users/Register.vue'
+import Profile from '../views/Users/Profile.vue'
+import ProfileEdit from '../views/Users/ProfileEdit.vue'
+import ForgotPassword from '../views/Users/ForgotPassword.vue'
+import ResetPassword from '../views/Users/ResetPassword.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      redirect: '/login',
+      name: 'home',
+      component: Home,
+      meta: { requiresAuth: false },
     },
     {
       path: '/login',
@@ -28,16 +39,43 @@ const router = createRouter({
       component: Dashboard,
       meta: { requiresAuth: true },
     },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: Profile,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/profile/edit',
+      name: 'profile-edit',
+      component: ProfileEdit,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgot-password',
+      component: ForgotPassword,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/reset-password/:token',
+      name: 'reset-password',
+      component: ResetPassword,
+      meta: { requiresAuth: false },
+    },
   ],
 })
 
-// Guarda de rotas - protege páginas que precisam de autenticação
+// Guarda de rotas
 router.beforeEach((to, from, next) => {
   const isAuthenticated = localStorage.getItem('user') !== null
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login')
-  } else if (to.path === '/login' && isAuthenticated) {
+  } else if (
+    (to.path === '/login' || to.path === '/register' || to.path === '/') &&
+    isAuthenticated
+  ) {
     next('/dashboard')
   } else {
     next()
