@@ -37,6 +37,26 @@ $routes->connect('/users/{id}', ['controller' => 'Users', 'action' => 'delete'])
     ->setMethods(['DELETE'])
     ->setPass(['id']);
 
+// Rotas para Quizes (API CRUD completo)
+$routes->connect('/quizes', ['controller' => 'Quizes', 'action' => 'index'])->setMethods(['GET']);
+$routes->connect('/quizes', ['controller' => 'Quizes', 'action' => 'add'])->setMethods(['POST']);
+$routes->connect('/quizes/user/{usuarioId}', ['controller' => 'Quizes', 'action' => 'userQuizes'])
+    ->setPatterns(['usuarioId' => '\d+'])
+    ->setMethods(['GET'])
+    ->setPass(['usuarioId']);
+$routes->connect('/quizes/{id}', ['controller' => 'Quizes', 'action' => 'view'])
+    ->setPatterns(['id' => '\d+'])
+    ->setMethods(['GET'])
+    ->setPass(['id']);
+$routes->connect('/quizes/{id}', ['controller' => 'Quizes', 'action' => 'edit'])
+    ->setPatterns(['id' => '\d+'])
+    ->setMethods(['PUT'])
+    ->setPass(['id']);
+$routes->connect('/quizes/{id}', ['controller' => 'Quizes', 'action' => 'delete'])
+    ->setPatterns(['id' => '\d+'])
+    ->setMethods(['DELETE'])
+    ->setPass(['id']);
+
 // Fallback
 $routes->connect('/*', ['controller' => 'Users', 'action' => 'notFound']);
 $routes->fallbacks();

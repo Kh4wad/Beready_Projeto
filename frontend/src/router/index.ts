@@ -12,6 +12,19 @@ import ProfileEdit from '../views/Users/ProfileEdit.vue'
 import ForgotPassword from '../views/Users/ForgotPassword.vue'
 import ResetPassword from '../views/Users/ResetPassword.vue'
 
+// Flashcards Views
+import Flashcards from '../views/flashcards/Flashcards.vue'
+
+// Quizes Views
+import Quizes from '../views/quizes/Quizes.vue'
+import QuizView from '../views/quizes/QuizView.vue'
+import QuizPlay from '../views/quizes/QuizPlay.vue'
+import QuizAdd from '../views/quizes/QuizAdd.vue'
+import QuizEdit from '../views/quizes/QuizEdit.vue'
+
+// Prompts Views
+import Prompts from '../views/prompts/Prompts.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -63,9 +76,55 @@ const router = createRouter({
       component: ResetPassword,
       meta: { requiresAuth: false },
     },
+    // Flashcards Routes
+    {
+      path: '/flashcards',
+      name: 'flashcards',
+      component: Flashcards,
+      meta: { requiresAuth: true },
+    },
+    // Quizes Routes
+    {
+      path: '/quizes',
+      name: 'quizes',
+      component: Quizes,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/quizes/add',
+      name: 'quiz-add',
+      component: QuizAdd,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/quizes/edit/:id',
+      name: 'quiz-edit',
+      component: QuizEdit,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/quizes/:id',
+      name: 'quiz-view',
+      component: QuizView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/quizes/:id/play',
+      name: 'quiz-play',
+      component: QuizPlay,
+      meta: { requiresAuth: true },
+    },
+    // Prompts Routes
+    {
+      path: '/prompts',
+      name: 'prompts',
+      component: Prompts,
+      meta: { requiresAuth: true },
+    },
   ],
 })
 
+// Guarda de rotas corrigida (sem next callback)
 router.beforeEach((to, from) => {
   const isAuthenticated = localStorage.getItem('user') !== null
 
