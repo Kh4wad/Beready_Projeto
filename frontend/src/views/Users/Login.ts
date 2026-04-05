@@ -25,12 +25,24 @@ export function useLogin() {
     loading.value = true
 
     try {
-      // 🔥 URL CORRETA
       const response = await fetch('http://localhost:8765/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, password: form.password }),
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          email: form.email,
+          password: form.password,
+        }),
       })
+
+      // Verifica se a resposta é OK
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
       const data = await response.json()
 
       if (data.success) {
@@ -46,7 +58,7 @@ export function useLogin() {
       }
     } catch (err) {
       console.error('Erro:', err)
-      error('Erro de conexão com o servidor')
+      error('Erro de conexão com o servidor. Verifique se o backend está rodando.')
     } finally {
       loading.value = false
     }

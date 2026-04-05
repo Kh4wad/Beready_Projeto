@@ -17,14 +17,34 @@ export function useDashboard() {
   const handleLogout = async () => {
     loading.value = true
     try {
-      await fetch('http://localhost:8765/auth/logout', { method: 'POST' })
-      success('Logout realizado com sucesso!')
-      setTimeout(() => {
-        clearAllAlerts()
-        router.push('/login')
-      }, 500)
+      const response = await fetch('http://localhost:8765/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Limpa o localStorage
+        localStorage.removeItem('user')
+        localStorage.removeItem('token')
+
+        success('Logout realizado com sucesso!')
+        setTimeout(() => {
+          clearAllAlerts()
+          router.push('/login')
+        }, 500)
+      } else {
+        console.error('Erro no logout:', data.message)
+      }
     } catch (err) {
       console.error('Erro no logout:', err)
+      // Mesmo com erro, limpa o localStorage e redireciona
+      localStorage.removeItem('user')
+      localStorage.removeItem('token')
+      router.push('/login')
     } finally {
       loading.value = false
     }
@@ -53,6 +73,6 @@ export function useDashboard() {
     user,
     loading,
     userName,
-    handleLogout
+    handleLogout,
   }
 }

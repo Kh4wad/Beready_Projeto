@@ -403,6 +403,7 @@
 import { useProfileEdit } from './ProfileEdit'
 import Card from '@/components/common/Card.vue'
 import Input from '@/components/common/Input.vue'
+import Button from '@/components/common/Button.vue'
 
 const {
   form,

@@ -48,7 +48,12 @@ export function useRegister() {
     },
   }
 
-  const checkPasswordMatch = () => {}
+  const checkPasswordMatch = () => {
+    // Força a revalidação do campo confirmar_senha
+    if (form.confirmar_senha) {
+      validate(rules)
+    }
+  }
 
   const handleSubmit = async () => {
     // Validar telefone se foi preenchido
@@ -67,26 +72,31 @@ export function useRegister() {
     try {
       const response = await fetch('http://localhost:8765/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
         body: JSON.stringify({
           nome: form.nome,
           email: form.email,
           senha: form.senha,
           telefone: form.telefone,
-          nivel_ingles: form.nivel_ingles,
-          idioma_preferido: form.idioma_preferido,
+          nivel_ingles: form.nivel_ingles || 'iniciante',
+          idioma_preferido: form.idioma_preferido || 'pt-BR',
           objetivos_aprendizado: form.objetivos_aprendizado,
         }),
       })
+
       const data = await response.json()
 
-      if (data.success) {
+      if (response.ok && data.success) {
         success('Cadastro realizado com sucesso! Redirecionando...')
         setTimeout(() => router.push('/login'), 2000)
       } else {
         error(data.message || 'Erro ao cadastrar')
       }
     } catch (err) {
+      console.error('Erro:', err)
       error('Erro de conexão com o servidor')
     } finally {
       loading.value = false
