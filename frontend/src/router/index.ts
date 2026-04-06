@@ -14,6 +14,8 @@ import ResetPassword from '../views/Users/ResetPassword.vue'
 
 // Flashcards Views
 import Flashcards from '../views/flashcards/Flashcards.vue'
+import FlashcardView from '../views/flashcards/FlashcardView.vue'
+import FlashcardStudy from '../views/flashcards/FlashcardStudy.vue'
 
 // Quizes Views
 import Quizes from '../views/Quizes/Quizes.vue'
@@ -81,6 +83,18 @@ const router = createRouter({
       path: '/flashcards',
       name: 'flashcards',
       component: Flashcards,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/flashcards/:id',
+      name: 'flashcard-view',
+      component: FlashcardView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/flashcards/:id/study',
+      name: 'flashcard-study',
+      component: FlashcardStudy,
       meta: { requiresAuth: true },
     },
     // Quizes Routes

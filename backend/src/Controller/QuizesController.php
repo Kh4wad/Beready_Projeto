@@ -52,12 +52,47 @@ class QuizesController extends AppController
     }
 
     /**
+     * GET /quizes/{id} - Busca um quiz específico
+     */
+    public function view($id = null): Response
+    {
+        $quizId = $id ?? $this->request->getParam('id');
+        
+        if (!$quizId) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'ID do quiz não informado'
+            ], 400);
+        }
+        
+        try {
+            $quiz = $this->QuizesTable->get($quizId);
+            
+            return $this->jsonResponse([
+                'success' => true,
+                'data' => $quiz
+            ]);
+        } catch (RecordNotFoundException $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Quiz não encontrado'
+            ], 404);
+        } catch (\Exception $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Erro ao buscar quiz: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * POST /quizes - Cria um novo quiz
      */
     public function add(): Response
     {
         try {
-            $input = $this->request->getInput();
+            // 🔥 CORREÇÃO: Usar file_get_contents em vez de getInput
+            $input = file_get_contents('php://input');
             $data = json_decode($input, true);
             
             if (!$data) {
@@ -117,7 +152,9 @@ class QuizesController extends AppController
      */
     public function edit($id = null): Response
     {
-        if (!$id) {
+        $quizId = $id ?? $this->request->getParam('id');
+        
+        if (!$quizId) {
             return $this->jsonResponse([
                 'success' => false,
                 'message' => 'ID do quiz não informado'
@@ -125,14 +162,15 @@ class QuizesController extends AppController
         }
         
         try {
-            $input = $this->request->getInput();
+            // 🔥 CORREÇÃO: Usar file_get_contents em vez de getInput
+            $input = file_get_contents('php://input');
             $data = json_decode($input, true);
             
             if (!$data) {
                 $data = $this->request->getData();
             }
             
-            $quiz = $this->QuizesTable->get($id);
+            $quiz = $this->QuizesTable->get($quizId);
             unset($data['usuario_id']);
             
             $quiz = $this->QuizesTable->patchEntity($quiz, $data);
@@ -168,7 +206,9 @@ class QuizesController extends AppController
      */
     public function delete($id = null): Response
     {
-        if (!$id) {
+        $quizId = $id ?? $this->request->getParam('id');
+        
+        if (!$quizId) {
             return $this->jsonResponse([
                 'success' => false,
                 'message' => 'ID do quiz não informado'
@@ -176,7 +216,7 @@ class QuizesController extends AppController
         }
         
         try {
-            $quiz = $this->QuizesTable->get($id);
+            $quiz = $this->QuizesTable->get($quizId);
             
             if ($this->QuizesTable->delete($quiz)) {
                 return $this->jsonResponse([

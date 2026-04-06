@@ -1,4 +1,4 @@
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/composables/useAlert'
 import { usePhoneMask } from '@/composables/usePhoneMask'
@@ -131,8 +131,36 @@ export function useProfile() {
     if (!user.value) router.push('/login')
   }
 
+  // 🔥 Evento para recarregar dados quando voltar da edição
+  const handleUserUpdated = (event: CustomEvent) => {
+    if (event.detail) {
+      user.value = event.detail
+      // Atualiza o localStorage com os novos dados
+      localStorage.setItem('user', JSON.stringify(event.detail))
+    } else {
+      // Se não veio dados no evento, recarrega do backend
+      loadUserData()
+    }
+  }
+
+  // 🔥 Evento para quando a página é focada (voltar da edição com botão voltar)
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      loadUserData()
+    }
+  }
+
   onMounted(() => {
     loadUserData()
+    // Adiciona listeners para atualizar os dados quando voltar da edição
+    window.addEventListener('user-updated', handleUserUpdated as EventListener)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+  })
+
+  onUnmounted(() => {
+    // Remove listeners ao desmontar o componente
+    window.removeEventListener('user-updated', handleUserUpdated as EventListener)
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
   })
 
   return {

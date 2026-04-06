@@ -35,7 +35,6 @@ export function useProfileEdit() {
   })
 
   const checkPasswordMatch = () => {
-    // Força a reatividade
     passwordsMatch.value
   }
 
@@ -45,7 +44,6 @@ export function useProfileEdit() {
   }
 
   const handleConfirmPasswordInput = (event: Event) => {
-    // O v-model já atualiza form.confirmar_senha; apenas aciona a reatividade
     passwordsMatch.value
   }
 
@@ -60,9 +58,8 @@ export function useProfileEdit() {
       const user = JSON.parse(userData)
       userId.value = user.id
 
-      console.log('User ID carregado:', userId.value) // 🔥 DEBUG
+      console.log('User ID carregado:', userId.value)
 
-      // Busca os dados atualizados do backend
       const response = await fetch(`http://localhost:8765/users/${user.id}`, {
         method: 'GET',
         headers: {
@@ -76,7 +73,6 @@ export function useProfileEdit() {
         if (data.success) {
           form.nome = data.user.nome || ''
           form.email = data.user.email || ''
-          // Formata o telefone ao carregar
           form.telefone = formatPhone(data.user.telefone || '')
           form.nivel_ingles = data.user.nivel_ingles || 'iniciante'
           form.idioma_preferido = data.user.idioma_preferido || 'pt-BR'
@@ -84,10 +80,9 @@ export function useProfileEdit() {
           form.objetivos_aprendizado = data.user.objetivos_aprendizado || ''
         }
       } else {
-        // Fallback para dados do localStorage
+        const user = JSON.parse(userData)
         form.nome = user.nome || ''
         form.email = user.email || ''
-        // Formata o telefone ao carregar
         form.telefone = formatPhone(user.telefone || '')
         form.nivel_ingles = user.nivel_ingles || 'iniciante'
         form.idioma_preferido = user.idioma_preferido || 'pt-BR'
@@ -97,10 +92,9 @@ export function useProfileEdit() {
     } catch (e) {
       console.error('Erro ao carregar dados do usuário:', e)
       const user = JSON.parse(userData)
-      userId.value = user.id // 🔥 Garante que o ID é setado mesmo em erro
+      userId.value = user.id
       form.nome = user.nome || ''
       form.email = user.email || ''
-      // Formata o telefone ao carregar
       form.telefone = formatPhone(user.telefone || '')
       form.nivel_ingles = user.nivel_ingles || 'iniciante'
       form.idioma_preferido = user.idioma_preferido || 'pt-BR'
@@ -110,9 +104,8 @@ export function useProfileEdit() {
   }
 
   const handleSubmit = async () => {
-    console.log('Submit - userId.value:', userId.value) // 🔥 DEBUG
+    console.log('Submit - userId.value:', userId.value)
 
-    // 🔥 PEGA O ID DIRETAMENTE DO LOCALSTORAGE SE userId.value estiver vazio
     let currentUserId = userId.value
 
     if (!currentUserId) {
@@ -131,7 +124,7 @@ export function useProfileEdit() {
       return
     }
 
-    // Validar telefone se foi alterado
+    // Validar telefone
     if (form.telefone) {
       const digits = form.telefone.replace(/\D/g, '')
       if (digits.length > 0 && digits.length < 11) {
@@ -140,7 +133,7 @@ export function useProfileEdit() {
       }
     }
 
-    // Validar senha se foi preenchida
+    // Validar senha
     if (form.nova_senha) {
       if (form.nova_senha.length < 6) {
         error('A nova senha deve ter pelo menos 6 caracteres')
@@ -155,19 +148,17 @@ export function useProfileEdit() {
     loading.value = true
 
     try {
-      const submitData: any = {
-        nome: form.nome,
-        email: form.email,
-        telefone: form.telefone, // Envia já formatado
-        nivel_ingles: form.nivel_ingles,
-        idioma_preferido: form.idioma_preferido,
-        status: form.status,
-        objetivos_aprendizado: form.objetivos_aprendizado,
-      }
+      // 🔥 Enviar apenas os campos que mudaram
+      const submitData: any = {}
 
-      if (form.nova_senha) {
-        submitData.senha = form.nova_senha
-      }
+      if (form.nome) submitData.nome = form.nome
+      if (form.email) submitData.email = form.email
+      if (form.telefone) submitData.telefone = form.telefone
+      if (form.nivel_ingles) submitData.nivel_ingles = form.nivel_ingles
+      if (form.idioma_preferido) submitData.idioma_preferido = form.idioma_preferido
+      if (form.status) submitData.status = form.status
+      if (form.objetivos_aprendizado) submitData.objetivos_aprendizado = form.objetivos_aprendizado
+      if (form.nova_senha) submitData.senha = form.nova_senha
 
       const url = `http://localhost:8765/users/${currentUserId}`
       console.log('Enviando PUT para:', url)
@@ -187,10 +178,9 @@ export function useProfileEdit() {
       console.log('Response data:', data)
 
       if (response.ok && data.success) {
-        // Atualiza o localStorage com os novos dados
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
-        const updatedUser = {
-          ...currentUser,
+        // 🔥 Usar os dados retornados pelo servidor
+        const updatedUser = data.user || {
+          id: currentUserId,
           nome: form.nome,
           email: form.email,
           telefone: form.telefone,
@@ -199,10 +189,18 @@ export function useProfileEdit() {
           status: form.status,
           objetivos_aprendizado: form.objetivos_aprendizado,
         }
+
+        // Salva no localStorage
         localStorage.setItem('user', JSON.stringify(updatedUser))
 
+        // 🔥 Dispara evento para atualizar outras telas
+        window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }))
+
         success('Perfil atualizado com sucesso!')
-        setTimeout(() => router.push('/profile'), 1500)
+
+        setTimeout(() => {
+          router.push('/profile')
+        }, 1500)
       } else {
         error(data.message || 'Erro ao atualizar perfil')
       }

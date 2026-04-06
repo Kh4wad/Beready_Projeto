@@ -13,8 +13,8 @@ interface Quiz {
   total_questoes: number
   tempo_limite: number | null
   publico: boolean
-  created_at?: string
-  updated_at?: string
+  criado_em?: string
+  atualizado_em?: string
 }
 
 interface NewQuiz {
@@ -68,6 +68,10 @@ export function useQuizes() {
     tempo_limite: null,
     publico: false,
   })
+
+  const addQuiz = () => {
+    showCreateModal.value = true
+  }
 
   const loadQuizes = async () => {
     loading.value = true
@@ -278,7 +282,7 @@ export function useQuizes() {
     return texts[level] || level
   }
 
-  const formatDate = (date: string): string => {
+  const formatDate = (date: string | undefined): string => {
     if (!date) return 'Data não informada'
     return new Date(date).toLocaleDateString('pt-BR')
   }
@@ -296,12 +300,13 @@ export function useQuizes() {
     showCreateModal,
     showEditModal,
     showConfirmModal,
-    quizToDeleteId,
-    quizToDeleteTitle,
     newQuiz,
     editForm,
+    quizToDeleteId,
+    quizToDeleteTitle,
     viewQuiz,
     startQuiz,
+    addQuiz,
     editQuiz,
     updateQuiz,
     openDeleteModal,

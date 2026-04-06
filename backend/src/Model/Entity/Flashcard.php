@@ -9,14 +9,14 @@ use Cake\ORM\Entity;
  * Flashcard Entity
  *
  * @property int $id
- * @property int $user_id
- * @property string $question
- * @property string $answer
- * @property \Cake\I18n\DateTime|null $created
- * @property \Cake\I18n\DateTime|null $modified
+ * @property int|null $usuario_id
+ * @property string|null $frente
+ * @property string|null $verso
+ * @property string|null $nivel_dificuldade
+ * @property \Cake\I18n\DateTime|null $criado_em
+ * @property \Cake\I18n\DateTime|null $atualizado_em
  *
- * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\Tag[] $tags
+ * @property \App\Model\Entity\User $usuario
  */
 class Flashcard extends Entity
 {
@@ -26,12 +26,11 @@ class Flashcard extends Entity
      * @var array<string, bool>
      */
     protected array $_accessible = [
-        'user_id' => true,
-        'question' => true,
-        'answer' => true,
-        'created' => true,
-        'modified' => true,
-        'user' => true,
-        'tags' => true,
+        'usuario_id' => true,
+        'frente' => true,
+        'verso' => true,
+        'nivel_dificuldade' => true,
+        'criado_em' => true,
+        'atualizado_em' => true,
     ];
 }
