@@ -263,22 +263,21 @@ class UsersController extends AppController
     }
     
     // PUT /users/{id}
-    public function update($id = null)
+  public function update($id = null)
   {
-      
       $requestId = $this->request->getParam('id');
+      error_log("=== UPDATE USER ===");
+      error_log("ID do parâmetro: " . ($id ?? 'null'));
       error_log("ID do request param: " . ($requestId ?? 'null'));
       
       // Usa o ID do parâmetro ou do request
       $userId = $id ?? $requestId;
       
       if (!$userId) {
-          $this->response = $this->response->withStatus(400);
-          $this->response->getBody()->write(json_encode([
+          return $this->jsonResponse([
               'success' => false,
               'message' => 'ID do usuário não informado'
-          ]));
-          return $this->response;
+          ], 400);
       }
       
       $input = file_get_contents('php://input');
@@ -288,54 +287,93 @@ class UsersController extends AppController
           $data = $this->request->getData();
       }
       
+      error_log("Dados recebidos: " . print_r($data, true));
       
       try {
+          // 🔥 Busca o usuário pelo ID
           $user = $this->UsersTable->get($userId);
           
           if (!$user) {
-              $this->response = $this->response->withStatus(404);
-              $this->response->getBody()->write(json_encode([
+              return $this->jsonResponse([
                   'success' => false,
                   'message' => 'Usuário não encontrado'
-              ]));
-              return $this->response;
+              ], 404);
           }
           
+          error_log("Usuário ANTES do update - ID: {$user->id}, Nome: {$user->nome}");
+          
+          // 🔥 Atualiza os dados individualmente
+          if (isset($data['nome'])) {
+              $user->nome = $data['nome'];
+          }
+          if (isset($data['email'])) {
+              $user->email = $data['email'];
+          }
+          if (isset($data['telefone'])) {
+              $user->telefone = $data['telefone'];
+          }
+          if (isset($data['nivel_ingles'])) {
+              $user->nivel_ingles = $data['nivel_ingles'];
+          }
+          if (isset($data['idioma_preferido'])) {
+              $user->idioma_preferido = $data['idioma_preferido'];
+          }
+          if (isset($data['status'])) {
+              $user->status = $data['status'];
+          }
+          if (isset($data['objetivos_aprendizado'])) {
+              $user->objetivos_aprendizado = $data['objetivos_aprendizado'];
+          }
+          
+          // Se veio senha, converte para senha_hash
           if (isset($data['senha'])) {
-              $data['senha_hash'] = password_hash($data['senha'], PASSWORD_DEFAULT);
-              unset($data['senha']);
+              $user->senha_hash = password_hash($data['senha'], PASSWORD_DEFAULT);
           }
           
-          $user = $this->UsersTable->patchEntity($user, $data);
+          // 🔥 Atualiza o timestamp manualmente
+          $user->atualizado_em = new \DateTime('now');
           
+          error_log("Usuário DEPOIS da atualização - ID: {$user->id}, Nome: {$user->nome}");
+          
+          // 🔥 Salva diretamente
           if ($this->UsersTable->save($user)) {
+              error_log("✅ Usuário salvo com SUCESSO! ID: {$user->id}");
+              
               $userArray = $user->toArray();
               unset($userArray['senha_hash']);
+              unset($userArray['token']);
+              unset($userArray['token_expires']);
               
-              $this->response->getBody()->write(json_encode([
+              return $this->jsonResponse([
                   'success' => true,
                   'message' => 'Perfil atualizado com sucesso',
                   'user' => $userArray
-              ]));
-              return $this->response;
+              ]);
           } else {
-              $this->response = $this->response->withStatus(422);
-              $this->response->getBody()->write(json_encode([
+              error_log("❌ Erro ao salvar usuário: " . print_r($user->getErrors(), true));
+              return $this->jsonResponse([
                   'success' => false,
                   'message' => 'Erro ao atualizar usuário',
                   'errors' => $user->getErrors()
-              ]));
-              return $this->response;
+              ], 422);
           }
       } catch (\Exception $e) {
-          error_log("Erro no update: " . $e->getMessage());
-          $this->response = $this->response->withStatus(500);
-          $this->response->getBody()->write(json_encode([
+          error_log("❌ Exceção no update: " . $e->getMessage());
+          error_log("Stack trace: " . $e->getTraceAsString());
+          return $this->jsonResponse([
               'success' => false,
               'message' => 'Erro interno: ' . $e->getMessage()
-          ]));
-          return $this->response;
+          ], 500);
       }
+  }
+
+  // 🔥 Método auxiliar para resposta JSON
+  private function jsonResponse($data, $status = 200)
+  {
+      $this->response = $this->response->withStatus($status);
+      $this->response = $this->response->withType('application/json');
+      $this->response->getBody()->write(json_encode($data, JSON_UNESCAPED_UNICODE));
+      return $this->response;
   }
     
     // DELETE /users/{id}

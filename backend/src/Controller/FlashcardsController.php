@@ -3,145 +3,233 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-/**
- * Flashcards Controller
- * 
- * @property \App\Model\Table\FlashcardsTable $Flashcards
- */
+use Cake\ORM\TableRegistry;
+use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Response;
+
 class FlashcardsController extends AppController
 {
-    public function beforeFilter(\Cake\Event\EventInterface $event)
+    private $FlashcardsTable;
+
+    public function initialize(): void
     {
-        parent::beforeFilter($event);
-        // Permitir acesso sem autenticação às ações públicas (ajuste conforme necessário)
-        $this->Auth->allow(['listar', 'ver']);
+        parent::initialize();
+        $this->FlashcardsTable = TableRegistry::getTableLocator()->get('Flashcards');
+    }
+
+    private function jsonResponse($data, int $statusCode = 200): Response
+    {
+        $this->response = $this->response->withStatus($statusCode);
+        $this->response = $this->response->withType('application/json');
+        $this->response = $this->response->withStringBody(json_encode($data, JSON_UNESCAPED_UNICODE));
+        return $this->response;
     }
 
     /**
-     * Listar method - Lista todos os flashcards
-     *
-     * @return \Cake\Http\Response|null|void Renders view
+     * GET /flashcards - Lista todos os flashcards
      */
-    public function listar()
+    public function index(): Response
     {
-        // Busca flashcards do usuário logado
-        $userId = $this->Auth->user('id');
-        
-        $query = $this->Flashcards->find()
-            ->where(['Flashcards.user_id' => $userId])
-            ->order(['Flashcards.created' => 'DESC']);
-        
-        $flashcards = $this->paginate($query);
-        
-        $this->set(compact('flashcards'));
+        try {
+            $flashcards = $this->FlashcardsTable->find()
+                ->select(['id', 'usuario_id', 'frente', 'verso', 'nivel_dificuldade', 'criado_em', 'atualizado_em'])
+                ->orderBy(['criado_em' => 'DESC'])
+                ->all();
+            
+            return $this->jsonResponse([
+                'success' => true,
+                'data' => $flashcards->toArray()
+            ]);
+        } catch (\Exception $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Erro ao carregar flashcards: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Ver method - Visualiza um flashcard específico
-     *
-     * @param string|null $id Flashcard id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * GET /flashcards/{id} - Busca um flashcard específico
      */
-    public function ver($id = null)
+    public function view($id = null): Response
     {
-        $userId = $this->Auth->user('id');
+        $flashcardId = $id ?? $this->request->getParam('id');
         
-        $flashcard = $this->Flashcards->get($id, [
-            'conditions' => ['Flashcards.user_id' => $userId],
-            'contain' => ['Tags']
-        ]);
+        if (!$flashcardId) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'ID do flashcard não informado'
+            ], 400);
+        }
         
-        $this->set(compact('flashcard'));
+        try {
+            $flashcard = $this->FlashcardsTable->get($flashcardId);
+            
+            return $this->jsonResponse([
+                'success' => true,
+                'data' => $flashcard
+            ]);
+        } catch (RecordNotFoundException $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Flashcard não encontrado'
+            ], 404);
+        } catch (\Exception $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Erro ao buscar flashcard: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Criar method - Cria um novo flashcard
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
+     * POST /flashcards - Cria um novo flashcard
      */
-    public function criar()
+    public function add(): Response
     {
-        $flashcard = $this->Flashcards->newEmptyEntity();
-        
-        if ($this->request->is('post')) {
-            $data = $this->request->getData();
+        try {
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
             
-            // Adiciona o user_id automaticamente
-            $data['user_id'] = $this->Auth->user('id');
-            
-            $flashcard = $this->Flashcards->patchEntity($flashcard, $data);
-            
-            if ($this->Flashcards->save($flashcard)) {
-                $this->Flash->success(__('Flashcard criado com sucesso!'));
-                return $this->redirect(['action' => 'listar']);
+            if (!$data) {
+                $data = $this->request->getData();
             }
             
-            $this->Flash->error(__('Não foi possível criar o flashcard. Tente novamente.'));
-        }
-        
-        // Busca tags para seleção (se houver relacionamento)
-        $tags = $this->Flashcards->Tags->find('list', ['limit' => 200])->all();
-        
-        $this->set(compact('flashcard', 'tags'));
-    }
-
-    /**
-     * Editar method - Edita um flashcard existente
-     *
-     * @param string|null $id Flashcard id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function editar($id = null)
-    {
-        $userId = $this->Auth->user('id');
-        
-        $flashcard = $this->Flashcards->get($id, [
-            'conditions' => ['Flashcards.user_id' => $userId],
-            'contain' => []
-        ]);
-        
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $flashcard = $this->Flashcards->patchEntity($flashcard, $this->request->getData());
-            
-            if ($this->Flashcards->save($flashcard)) {
-                $this->Flash->success(__('Flashcard atualizado com sucesso!'));
-                return $this->redirect(['action' => 'listar']);
+            if (empty($data['frente'])) {
+                return $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'A pergunta (frente) é obrigatória'
+                ], 400);
             }
             
-            $this->Flash->error(__('Não foi possível atualizar o flashcard. Tente novamente.'));
+            if (empty($data['verso'])) {
+                return $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'A resposta (verso) é obrigatória'
+                ], 400);
+            }
+            
+            $flashcardData = [
+                'usuario_id' => $data['usuario_id'] ?? 1,
+                'frente' => trim($data['frente']),
+                'verso' => trim($data['verso']),
+                'nivel_dificuldade' => $data['nivel_dificuldade'] ?? 'iniciante'
+            ];
+            
+            $flashcard = $this->FlashcardsTable->newEntity($flashcardData);
+            
+            if ($this->FlashcardsTable->save($flashcard)) {
+                return $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Flashcard criado com sucesso',
+                    'data' => $flashcard
+                ], 201);
+            } else {
+                return $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Erro ao criar flashcard',
+                    'errors' => $flashcard->getErrors()
+                ], 422);
+            }
+        } catch (\Exception $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Erro ao criar flashcard: ' . $e->getMessage()
+            ], 500);
         }
-        
-        // Busca tags para seleção (se houver relacionamento)
-        $tags = $this->Flashcards->Tags->find('list', ['limit' => 200])->all();
-        
-        $this->set(compact('flashcard', 'tags'));
     }
 
     /**
-     * Excluir method - Deleta um flashcard
-     *
-     * @param string|null $id Flashcard id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * PUT /flashcards/{id} - Atualiza um flashcard
      */
-    public function excluir($id = null)
+    public function edit($id = null): Response
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $flashcardId = $id ?? $this->request->getParam('id');
         
-        $userId = $this->Auth->user('id');
-        
-        $flashcard = $this->Flashcards->get($id, [
-            'conditions' => ['Flashcards.user_id' => $userId]
-        ]);
-        
-        if ($this->Flashcards->delete($flashcard)) {
-            $this->Flash->success(__('Flashcard excluído com sucesso!'));
-        } else {
-            $this->Flash->error(__('Não foi possível excluir o flashcard. Tente novamente.'));
+        if (!$flashcardId) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'ID do flashcard não informado'
+            ], 400);
         }
         
-        return $this->redirect(['action' => 'listar']);
+        try {
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
+            
+            if (!$data) {
+                $data = $this->request->getData();
+            }
+            
+            $flashcard = $this->FlashcardsTable->get($flashcardId);
+            unset($data['usuario_id']);
+            
+            $flashcard = $this->FlashcardsTable->patchEntity($flashcard, $data);
+            
+            if ($this->FlashcardsTable->save($flashcard)) {
+                return $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Flashcard atualizado com sucesso',
+                    'data' => $flashcard
+                ]);
+            } else {
+                return $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Erro ao atualizar flashcard',
+                    'errors' => $flashcard->getErrors()
+                ], 422);
+            }
+        } catch (RecordNotFoundException $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Flashcard não encontrado'
+            ], 404);
+        } catch (\Exception $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Erro ao atualizar flashcard: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * DELETE /flashcards/{id} - Remove um flashcard
+     */
+    public function delete($id = null): Response
+    {
+        $flashcardId = $id ?? $this->request->getParam('id');
+        
+        if (!$flashcardId) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'ID do flashcard não informado'
+            ], 400);
+        }
+        
+        try {
+            $flashcard = $this->FlashcardsTable->get($flashcardId);
+            
+            if ($this->FlashcardsTable->delete($flashcard)) {
+                return $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Flashcard excluído com sucesso'
+                ]);
+            } else {
+                return $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Erro ao excluir flashcard'
+                ], 500);
+            }
+        } catch (RecordNotFoundException $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Flashcard não encontrado'
+            ], 404);
+        } catch (\Exception $e) {
+            return $this->jsonResponse([
+                'success' => false,
+                'message' => 'Erro ao excluir flashcard: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

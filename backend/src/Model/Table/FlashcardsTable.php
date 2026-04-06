@@ -25,67 +25,49 @@ class FlashcardsTable extends Table
         parent::initialize($config);
 
         $this->setTable('flashcards');
-        $this->setDisplayField('question');
+        $this->setDisplayField('frente');
         $this->setPrimaryKey('id');
 
-        $this->addBehavior('Timestamp');
+        
+        // Timestamp behavior
+        $this->addBehavior('Timestamp', [
+            'events' => [
+                'Model.beforeSave' => [
+                    'criado_em' => 'new',
+                    'atualizado_em' => 'always'
+                ]
+            ]
+        ]);
 
         // Relacionamento com Users
         $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER',
-        ]);
-
-        // Relacionamento Many-to-Many com Tags através de FlashcardTags
-        $this->belongsToMany('Tags', [
-            'foreignKey' => 'flashcard_id',
-            'targetForeignKey' => 'tag_id',
-            'joinTable' => 'flashcard_tags',
+            'foreignKey' => 'usuario_id',
+            'joinType' => 'LEFT',
+            'className' => 'Users'
         ]);
     }
 
-    /**
-     * Default validation rules.
-     *
-     * @param \Cake\Validation\Validator $validator Validator instance.
-     * @return \Cake\Validation\Validator
-     */
     public function validationDefault(Validator $validator): Validator
     {
         $validator
-            ->integer('user_id')
-            ->requirePresence('user_id', 'create')
-            ->notEmptyString('user_id');
+            ->integer('usuario_id')
+            ->allowEmptyString('usuario_id');
 
         $validator
-            ->scalar('question')
-            ->maxLength('question', 1000)
-            ->requirePresence('question', 'create')
-            ->notEmptyString('question', 'A pergunta é obrigatória');
+            ->scalar('frente')
+            ->maxLength('frente', 1000)
+            ->allowEmptyString('frente');
 
         $validator
-            ->scalar('answer')
-            ->maxLength('answer', 2000)
-            ->requirePresence('answer', 'create')
-            ->notEmptyString('answer', 'A resposta é obrigatória');
+            ->scalar('verso')
+            ->maxLength('verso', 2000)
+            ->allowEmptyString('verso');
+
+        $validator
+            ->scalar('nivel_dificuldade')
+            ->maxLength('nivel_dificuldade', 20)
+            ->allowEmptyString('nivel_dificuldade');
 
         return $validator;
-    }
-
-    /**
-     * Returns a rules checker object that will be used for validating
-     * application integrity.
-     *
-     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
-     * @return \Cake\ORM\RulesChecker
-     */
-    public function buildRules(\Cake\ORM\RulesChecker $rules): \Cake\ORM\RulesChecker
-    {
-        $rules->add($rules->existsIn('user_id', 'Users'), [
-            'errorField' => 'user_id',
-            'message' => 'Usuário não encontrado'
-        ]);
-
-        return $rules;
     }
 }

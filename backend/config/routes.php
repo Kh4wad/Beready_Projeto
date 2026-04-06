@@ -37,7 +37,7 @@ $routes->connect('/users/{id}', ['controller' => 'Users', 'action' => 'delete'])
     ->setMethods(['DELETE'])
     ->setPass(['id']);
 
-// Rotas para Quizes (API CRUD completo)
+// Rotas para Quizes
 $routes->connect('/quizes', ['controller' => 'Quizes', 'action' => 'index'])->setMethods(['GET']);
 $routes->connect('/quizes', ['controller' => 'Quizes', 'action' => 'add'])->setMethods(['POST']);
 $routes->connect('/quizes/user/{usuarioId}', ['controller' => 'Quizes', 'action' => 'userQuizes'])
@@ -53,6 +53,22 @@ $routes->connect('/quizes/{id}', ['controller' => 'Quizes', 'action' => 'edit'])
     ->setMethods(['PUT'])
     ->setPass(['id']);
 $routes->connect('/quizes/{id}', ['controller' => 'Quizes', 'action' => 'delete'])
+    ->setPatterns(['id' => '\d+'])
+    ->setMethods(['DELETE'])
+    ->setPass(['id']);
+
+// Rotas para Flashcards
+$routes->connect('/flashcards', ['controller' => 'Flashcards', 'action' => 'index'])->setMethods(['GET']);
+$routes->connect('/flashcards', ['controller' => 'Flashcards', 'action' => 'add'])->setMethods(['POST']);
+$routes->connect('/flashcards/{id}', ['controller' => 'Flashcards', 'action' => 'view'])
+    ->setPatterns(['id' => '\d+'])
+    ->setMethods(['GET'])
+    ->setPass(['id']);
+$routes->connect('/flashcards/{id}', ['controller' => 'Flashcards', 'action' => 'edit'])
+    ->setPatterns(['id' => '\d+'])
+    ->setMethods(['PUT'])
+    ->setPass(['id']);
+$routes->connect('/flashcards/{id}', ['controller' => 'Flashcards', 'action' => 'delete'])
     ->setPatterns(['id' => '\d+'])
     ->setMethods(['DELETE'])
     ->setPass(['id']);
