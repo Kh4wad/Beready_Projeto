@@ -1,1 +1,23 @@
-curl -X POST http://localhost:8765/auth/logout -H "Origin: http://localhost:5173" -H "Content-Type: application/json" -v
+### Flashcards - PUT sem /edit/ (rota alternativa)
+PUT http://localhost:8765/flashcards/7
+Content-Type: application/json
+
+{
+  "frente": "Pergunta atualizada",
+  "verso": "Resposta atualizada"
+}
+
+### Quizes - PUT sem /edit/ (rota alternativa)
+PUT http://localhost:8765/quizes/9
+Content-Type: application/json
+
+{
+  "titulo": "Quiz Atualizado",
+  "descricao": "Nova descrição"
+}
+
+### Flashcards - DELETE sem /delete/
+DELETE http://localhost:8765/flashcards/7
+
+### Quizes - DELETE sem /delete/
+DELETE http://localhost:8765/quizes/9

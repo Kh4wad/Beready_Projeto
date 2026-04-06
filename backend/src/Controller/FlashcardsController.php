@@ -3,233 +3,219 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use Cake\ORM\TableRegistry;
-use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\Http\Response;
+use App\Services\FlashcardService;
+use App\Repositories\FlashcardRepository;
 
 class FlashcardsController extends AppController
 {
-    private $FlashcardsTable;
-
+    private FlashcardService $flashcardService;
+    
     public function initialize(): void
     {
         parent::initialize();
-        $this->FlashcardsTable = TableRegistry::getTableLocator()->get('Flashcards');
+        $this->flashcardService = new FlashcardService(new FlashcardRepository());
     }
-
-    private function jsonResponse($data, int $statusCode = 200): Response
-    {
-        $this->response = $this->response->withStatus($statusCode);
-        $this->response = $this->response->withType('application/json');
-        $this->response = $this->response->withStringBody(json_encode($data, JSON_UNESCAPED_UNICODE));
-        return $this->response;
-    }
-
-    /**
-     * GET /flashcards - Lista todos os flashcards
-     */
-    public function index(): Response
+    
+    // GET /flashcards
+    public function index()
     {
         try {
-            $flashcards = $this->FlashcardsTable->find()
-                ->select(['id', 'usuario_id', 'frente', 'verso', 'nivel_dificuldade', 'criado_em', 'atualizado_em'])
-                ->orderBy(['criado_em' => 'DESC'])
-                ->all();
+            $flashcards = $this->flashcardService->getAllFlashcards();
             
-            return $this->jsonResponse([
+            $this->response->getBody()->write(json_encode([
                 'success' => true,
-                'data' => $flashcards->toArray()
-            ]);
+                'data' => $flashcards
+            ]));
+            return $this->response;
+            
         } catch (\Exception $e) {
-            return $this->jsonResponse([
+            $this->response = $this->response->withStatus(500);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'Erro ao carregar flashcards: ' . $e->getMessage()
-            ], 500);
+            ]));
+            return $this->response;
         }
     }
-
-    /**
-     * GET /flashcards/{id} - Busca um flashcard específico
-     */
-    public function view($id = null): Response
+    
+    // GET /flashcards/view/{id}
+    public function view($id = null)
     {
-        $flashcardId = $id ?? $this->request->getParam('id');
-        
-        if (!$flashcardId) {
-            return $this->jsonResponse([
+        if (!$id) {
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'ID do flashcard não informado'
-            ], 400);
+            ]));
+            return $this->response;
         }
         
         try {
-            $flashcard = $this->FlashcardsTable->get($flashcardId);
+            $flashcard = $this->flashcardService->getFlashcardById((int)$id);
             
-            return $this->jsonResponse([
+            $this->response->getBody()->write(json_encode([
                 'success' => true,
                 'data' => $flashcard
-            ]);
-        } catch (RecordNotFoundException $e) {
-            return $this->jsonResponse([
+            ]));
+            return $this->response;
+            
+        } catch (\RuntimeException $e) {
+            $code = $e->getCode() ?: 404;
+            $this->response = $this->response->withStatus($code);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Flashcard não encontrado'
-            ], 404);
+                'message' => $e->getMessage()
+            ]));
+            return $this->response;
         } catch (\Exception $e) {
-            return $this->jsonResponse([
+            $this->response = $this->response->withStatus(500);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Erro ao buscar flashcard: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Erro interno: ' . $e->getMessage()
+            ]));
+            return $this->response;
         }
     }
-
-    /**
-     * POST /flashcards - Cria um novo flashcard
-     */
-    public function add(): Response
+    
+    // POST /flashcards
+    public function add()
     {
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true) ?: $this->request->getData();
+        
         try {
-            $input = file_get_contents('php://input');
-            $data = json_decode($input, true);
+            $flashcard = $this->flashcardService->createFlashcard($data);
             
-            if (!$data) {
-                $data = $this->request->getData();
-            }
+            $this->response = $this->response->withStatus(201);
+            $this->response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Flashcard criado com sucesso',
+                'data' => $flashcard
+            ]));
+            return $this->response;
             
-            if (empty($data['frente'])) {
-                return $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'A pergunta (frente) é obrigatória'
-                ], 400);
-            }
-            
-            if (empty($data['verso'])) {
-                return $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'A resposta (verso) é obrigatória'
-                ], 400);
-            }
-            
-            $flashcardData = [
-                'usuario_id' => $data['usuario_id'] ?? 1,
-                'frente' => trim($data['frente']),
-                'verso' => trim($data['verso']),
-                'nivel_dificuldade' => $data['nivel_dificuldade'] ?? 'iniciante'
-            ];
-            
-            $flashcard = $this->FlashcardsTable->newEntity($flashcardData);
-            
-            if ($this->FlashcardsTable->save($flashcard)) {
-                return $this->jsonResponse([
-                    'success' => true,
-                    'message' => 'Flashcard criado com sucesso',
-                    'data' => $flashcard
-                ], 201);
-            } else {
-                return $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'Erro ao criar flashcard',
-                    'errors' => $flashcard->getErrors()
-                ], 422);
-            }
-        } catch (\Exception $e) {
-            return $this->jsonResponse([
+        } catch (\InvalidArgumentException $e) {
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Erro ao criar flashcard: ' . $e->getMessage()
-            ], 500);
+                'message' => $e->getMessage()
+            ]));
+            return $this->response;
+        } catch (\RuntimeException $e) {
+            $code = $e->getCode() ?: 404;
+            $this->response = $this->response->withStatus($code);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]));
+            return $this->response;
+        } catch (\Exception $e) {
+            $this->response = $this->response->withStatus(500);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erro interno: ' . $e->getMessage()
+            ]));
+            return $this->response;
         }
     }
-
-    /**
-     * PUT /flashcards/{id} - Atualiza um flashcard
-     */
-    public function edit($id = null): Response
+    
+    // PUT /flashcards/edit/{id} ou PUT /flashcards/{id}
+    public function edit($id = null)
     {
-        $flashcardId = $id ?? $this->request->getParam('id');
+        // 🔥 Pega o ID de várias formas
+        $flashcardId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
+        
+        error_log("=== EDIT FLASHCARD ===");
+        error_log("ID recebido: " . $flashcardId);
+        error_log("ID do parâmetro: " . ($id ?? 'null'));
+        error_log("ID do request param: " . ($this->request->getParam('id') ?? 'null'));
         
         if (!$flashcardId) {
-            return $this->jsonResponse([
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'ID do flashcard não informado'
-            ], 400);
+            ]));
+            return $this->response;
         }
         
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true) ?: $this->request->getData();
+        
+        error_log("Dados recebidos: " . print_r($data, true));
+        
         try {
-            $input = file_get_contents('php://input');
-            $data = json_decode($input, true);
+            $flashcard = $this->flashcardService->updateFlashcard((int)$flashcardId, $data);
             
-            if (!$data) {
-                $data = $this->request->getData();
-            }
+            $this->response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Flashcard atualizado com sucesso',
+                'data' => $flashcard
+            ]));
+            return $this->response;
             
-            $flashcard = $this->FlashcardsTable->get($flashcardId);
-            unset($data['usuario_id']);
-            
-            $flashcard = $this->FlashcardsTable->patchEntity($flashcard, $data);
-            
-            if ($this->FlashcardsTable->save($flashcard)) {
-                return $this->jsonResponse([
-                    'success' => true,
-                    'message' => 'Flashcard atualizado com sucesso',
-                    'data' => $flashcard
-                ]);
-            } else {
-                return $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'Erro ao atualizar flashcard',
-                    'errors' => $flashcard->getErrors()
-                ], 422);
-            }
-        } catch (RecordNotFoundException $e) {
-            return $this->jsonResponse([
+        } catch (\RuntimeException $e) {
+            $code = $e->getCode() ?: 404;
+            $this->response = $this->response->withStatus($code);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Flashcard não encontrado'
-            ], 404);
+                'message' => $e->getMessage()
+            ]));
+            return $this->response;
         } catch (\Exception $e) {
-            return $this->jsonResponse([
+            error_log("ERRO: " . $e->getMessage());
+            $this->response = $this->response->withStatus(500);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Erro ao atualizar flashcard: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Erro interno: ' . $e->getMessage()
+            ]));
+            return $this->response;
         }
     }
-
-    /**
-     * DELETE /flashcards/{id} - Remove um flashcard
-     */
-    public function delete($id = null): Response
+    
+    // DELETE /flashcards/delete/{id} ou DELETE /flashcards/{id}
+    public function delete($id = null)
     {
-        $flashcardId = $id ?? $this->request->getParam('id');
+        // 🔥 Pega o ID de várias formas
+        $flashcardId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
+        
+        error_log("=== DELETE FLASHCARD ===");
+        error_log("ID recebido: " . $flashcardId);
         
         if (!$flashcardId) {
-            return $this->jsonResponse([
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
                 'message' => 'ID do flashcard não informado'
-            ], 400);
+            ]));
+            return $this->response;
         }
         
         try {
-            $flashcard = $this->FlashcardsTable->get($flashcardId);
+            $this->flashcardService->deleteFlashcard((int)$flashcardId);
             
-            if ($this->FlashcardsTable->delete($flashcard)) {
-                return $this->jsonResponse([
-                    'success' => true,
-                    'message' => 'Flashcard excluído com sucesso'
-                ]);
-            } else {
-                return $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'Erro ao excluir flashcard'
-                ], 500);
-            }
-        } catch (RecordNotFoundException $e) {
-            return $this->jsonResponse([
+            $this->response->getBody()->write(json_encode([
+                'success' => true,
+                'message' => 'Flashcard excluído com sucesso'
+            ]));
+            return $this->response;
+            
+        } catch (\RuntimeException $e) {
+            $code = $e->getCode() ?: 404;
+            $this->response = $this->response->withStatus($code);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Flashcard não encontrado'
-            ], 404);
+                'message' => $e->getMessage()
+            ]));
+            return $this->response;
         } catch (\Exception $e) {
-            return $this->jsonResponse([
+            error_log("ERRO: " . $e->getMessage());
+            $this->response = $this->response->withStatus(500);
+            $this->response->getBody()->write(json_encode([
                 'success' => false,
-                'message' => 'Erro ao excluir flashcard: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Erro interno: ' . $e->getMessage()
+            ]));
+            return $this->response;
         }
     }
 }
