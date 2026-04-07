@@ -41,7 +41,12 @@ class FlashcardsController extends AppController
     // GET /flashcards/view/{id}
     public function view($id = null)
     {
-        if (!$id) {
+        $flashcardId = $id ?? $this->request->getParam('id') ?? $this->request->getQuery('id');
+        
+        error_log("=== VIEW FLASHCARD ===");
+        error_log("ID recebido: " . $flashcardId);
+        
+        if (!$flashcardId) {
             $this->response = $this->response->withStatus(400);
             $this->response->getBody()->write(json_encode([
                 'success' => false,
@@ -51,7 +56,7 @@ class FlashcardsController extends AppController
         }
         
         try {
-            $flashcard = $this->flashcardService->getFlashcardById((int)$id);
+            $flashcard = $this->flashcardService->getFlashcardById((int)$flashcardId);
             
             $this->response->getBody()->write(json_encode([
                 'success' => true,

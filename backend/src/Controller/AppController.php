@@ -37,4 +37,28 @@ class AppController extends Controller
         $this->response->getBody()->write(json_encode($data, JSON_UNESCAPED_UNICODE));
         return $this->response;
     }
+
+    protected function jsonSuccess($data, $message = null)
+    {
+        $response = ['success' => true];
+        if ($message) {
+            $response['message'] = $message;
+        }
+        $response['data'] = $data;
+        
+        $this->response->getBody()->write(json_encode($response, JSON_UNESCAPED_UNICODE));
+        return $this->response;
+    }
+
+    protected function jsonError($message, $code = 400, $errors = null)
+    {
+        $this->response = $this->response->withStatus($code);
+        $response = ['success' => false, 'message' => $message];
+        if ($errors) {
+            $response['errors'] = $errors;
+        }
+        $this->response->getBody()->write(json_encode($response, JSON_UNESCAPED_UNICODE));
+        return $this->response;
+    }
+
 }

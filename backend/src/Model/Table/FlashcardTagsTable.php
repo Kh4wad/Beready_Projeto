@@ -6,16 +6,21 @@ namespace App\Model\Table;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
-class FrasesSemelhantesTable extends Table
+class FlashcardTagsTable extends Table
 {
     public function initialize(array $config): void
     {
         parent::initialize($config);
-        $this->setTable('frases_semelhantes');
+        $this->setTable('flashcard_tags');
         $this->setPrimaryKey('id');
         
-        $this->belongsTo('Prompts', [
-            'foreignKey' => 'prompt_id',
+        $this->belongsTo('Flashcards', [
+            'foreignKey' => 'flashcard_id',
+            'joinType' => 'INNER'
+        ]);
+        
+        $this->belongsTo('Tags', [
+            'foreignKey' => 'tag_id',
             'joinType' => 'INNER'
         ]);
     }
@@ -27,18 +32,14 @@ class FrasesSemelhantesTable extends Table
             ->allowEmptyString('id', null, 'create');
         
         $validator
-            ->integer('prompt_id')
-            ->requirePresence('prompt_id', 'create')
-            ->notEmptyString('prompt_id');
+            ->integer('flashcard_id')
+            ->requirePresence('flashcard_id', 'create')
+            ->notEmptyString('flashcard_id');
         
         $validator
-            ->scalar('frase_semelhante')
-            ->requirePresence('frase_semelhante', 'create')
-            ->notEmptyString('frase_semelhante');
-        
-        $validator
-            ->decimal('pontuacao_semelhante')
-            ->allowEmptyString('pontuacao_semelhante');
+            ->integer('tag_id')
+            ->requirePresence('tag_id', 'create')
+            ->notEmptyString('tag_id');
         
         return $validator;
     }

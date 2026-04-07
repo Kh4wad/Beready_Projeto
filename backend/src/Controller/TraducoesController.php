@@ -3,97 +3,139 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-/**
- * Traducoes Controller
- *
- */
+use Cake\ORM\TableRegistry;
+
 class TraducoesController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
-     */
-    public function index()
+    private $table;
+    
+    public function initialize(): void
     {
-        $query = $this->Traducoes->find();
-        $traducoes = $this->paginate($query);
-
-        $this->set(compact('traducoes'));
+        parent::initialize();
+        $this->table = TableRegistry::getTableLocator()->get('Traducoes');
     }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Traduco id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
+    // GET /traducoes/prompt/{promptId}
+    public function getByPrompt($promptId = null)
+    {
+        if (!$promptId) {
+            return $this->jsonError('ID do prompt não informado', 400);
+        }
+        
+        try {
+            $traducoes = $this->table->find()
+                ->where(['prompt_id' => $promptId])
+                ->orderBy(['criado_em' => 'DESC'])
+                ->all();
+            
+            return $this->jsonSuccess($traducoes->toArray());
+            
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 500);
+        }
+    }
+    
+    // GET /traducoes/view/{id}
     public function view($id = null)
     {
-        $traduco = $this->Traducoes->get($id, contain: []);
-        $this->set(compact('traduco'));
+        $traducaoId = $id ?? $this->request->getParam('id');
+        
+        if (!$traducaoId) {
+            return $this->jsonError('ID da tradução não informado', 400);
+        }
+        
+        try {
+            $traducao = $this->table->get($traducaoId);
+            return $this->jsonSuccess($traducao);
+        } catch (\Exception $e) {
+            return $this->jsonError('Tradução não encontrada', 404);
+        }
     }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
+    
+    // POST /traducoes
     public function add()
     {
-        $traduco = $this->Traducoes->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $traduco = $this->Traducoes->patchEntity($traduco, $this->request->getData());
-            if ($this->Traducoes->save($traduco)) {
-                $this->Flash->success(__('The traduco has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The traduco could not be saved. Please, try again.'));
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true) ?: $this->request->getData();
+        
+        if (empty($data['prompt_id'])) {
+            return $this->jsonError('ID do prompt é obrigatório', 400);
         }
-        $this->set(compact('traduco'));
+        
+        if (empty($data['texto_traduzido'])) {
+            return $this->jsonError('Texto traduzido é obrigatório', 400);
+        }
+        
+        try {
+            if (isset($data['traducoes_alternativas']) && is_array($data['traducoes_alternativas'])) {
+                $data['traducoes_alternativas'] = json_encode($data['traducoes_alternativas']);
+            }
+            
+            $traducao = $this->table->newEntity($data);
+            
+            if ($this->table->save($traducao)) {
+                return $this->jsonSuccess($traducao, 'Tradução criada com sucesso', 201);
+            }
+            
+            return $this->jsonError('Erro ao criar tradução', 422, $traducao->getErrors());
+            
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 500);
+        }
     }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Traduco id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
+    // PUT /traducoes/edit/{id}
     public function edit($id = null)
     {
-        $traduco = $this->Traducoes->get($id, contain: []);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $traduco = $this->Traducoes->patchEntity($traduco, $this->request->getData());
-            if ($this->Traducoes->save($traduco)) {
-                $this->Flash->success(__('The traduco has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The traduco could not be saved. Please, try again.'));
+        $traducaoId = $id ?? $this->request->getParam('id');
+        
+        if (!$traducaoId) {
+            return $this->jsonError('ID da tradução não informado', 400);
         }
-        $this->set(compact('traduco'));
+        
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true) ?: $this->request->getData();
+        
+        try {
+            $traducao = $this->table->get($traducaoId);
+            
+            if (isset($data['traducoes_alternativas']) && is_array($data['traducoes_alternativas'])) {
+                $data['traducoes_alternativas'] = json_encode($data['traducoes_alternativas']);
+            }
+            
+            $traducao = $this->table->patchEntity($traducao, $data);
+            
+            if ($this->table->save($traducao)) {
+                return $this->jsonSuccess($traducao, 'Tradução atualizada com sucesso');
+            }
+            
+            return $this->jsonError('Erro ao atualizar tradução', 422, $traducao->getErrors());
+            
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 500);
+        }
     }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Traduco id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
+    // DELETE /traducoes/delete/{id}
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $traduco = $this->Traducoes->get($id);
-        if ($this->Traducoes->delete($traduco)) {
-            $this->Flash->success(__('The traduco has been deleted.'));
-        } else {
-            $this->Flash->error(__('The traduco could not be deleted. Please, try again.'));
+        $traducaoId = $id ?? $this->request->getParam('id');
+        
+        if (!$traducaoId) {
+            return $this->jsonError('ID da tradução não informado', 400);
         }
-
-        return $this->redirect(['action' => 'index']);
+        
+        try {
+            $traducao = $this->table->get($traducaoId);
+            
+            if ($this->table->delete($traducao)) {
+                return $this->jsonSuccess(null, 'Tradução excluída com sucesso');
+            }
+            
+            return $this->jsonError('Erro ao excluir tradução', 500);
+            
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 500);
+        }
     }
 }

@@ -3,97 +3,188 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-/**
- * Prompts Controller
- *
- */
+use Cake\ORM\TableRegistry;
+
 class PromptsController extends AppController
 {
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
-     */
-    public function index()
+    private $table;
+    
+    public function initialize(): void
     {
-        $query = $this->Prompts->find();
-        $prompts = $this->paginate($query);
-
-        $this->set(compact('prompts'));
+        parent::initialize();
+        $this->table = TableRegistry::getTableLocator()->get('Prompts');
     }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Prompt id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    
+    // GET /prompts/usuario/{usuarioId}
+    public function getByUsuario($usuarioId = null)
+    {
+        if (!$usuarioId) {
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'ID do usuário não informado'
+            ]));
+            return $this->response;
+        }
+        
+        try {
+            $prompts = $this->table->find()
+                ->where(['usuario_id' => $usuarioId])
+                ->orderBy(['criado_em' => 'DESC'])
+                ->all();
+            
+            $this->response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $prompts->toArray()
+            ]));
+            return $this->response;
+            
+        } catch (\Exception $e) {
+            $this->response = $this->response->withStatus(500);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]));
+            return $this->response;
+        }
+    }
+    
+    // GET /prompts/view/{id}
     public function view($id = null)
     {
-        $prompt = $this->Prompts->get($id, contain: []);
-        $this->set(compact('prompt'));
+        $promptId = $id ?? $this->request->getParam('id') ?? $this->request->getQuery('id');
+        
+        if (!$promptId) {
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'ID do prompt não informado'
+            ]));
+            return $this->response;
+        }
+        
+        try {
+            $prompt = $this->table->get($promptId);
+            
+            $this->response->getBody()->write(json_encode([
+                'success' => true,
+                'data' => $prompt
+            ]));
+            return $this->response;
+            
+        } catch (\Exception $e) {
+            $this->response = $this->response->withStatus(404);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Prompt não encontrado'
+            ]));
+            return $this->response;
+        }
     }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
+    
+    // POST /prompts
     public function add()
     {
-        $prompt = $this->Prompts->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $prompt = $this->Prompts->patchEntity($prompt, $this->request->getData());
-            if ($this->Prompts->save($prompt)) {
-                $this->Flash->success(__('The prompt has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The prompt could not be saved. Please, try again.'));
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true) ?: $this->request->getData();
+        
+        if (empty($data['usuario_id'])) {
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'ID do usuário é obrigatório'
+            ]));
+            return $this->response;
         }
-        $this->set(compact('prompt'));
+        
+        if (empty($data['texto_original'])) {
+            $this->response = $this->response->withStatus(400);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Texto original é obrigatório'
+            ]));
+            return $this->response;
+        }
+        
+        try {
+            $prompt = $this->table->newEntity($data);
+            
+            if ($this->table->save($prompt)) {
+                $this->response = $this->response->withStatus(201);
+                $this->response->getBody()->write(json_encode([
+                    'success' => true,
+                    'message' => 'Prompt criado com sucesso',
+                    'data' => $prompt
+                ]));
+                return $this->response;
+            }
+            
+            $this->response = $this->response->withStatus(422);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => 'Erro ao criar prompt',
+                'errors' => $prompt->getErrors()
+            ]));
+            return $this->response;
+            
+        } catch (\Exception $e) {
+            $this->response = $this->response->withStatus(500);
+            $this->response->getBody()->write(json_encode([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]));
+            return $this->response;
+        }
     }
 
-    /**
-     * Edit method
-     *
-     * @param string|null $id Prompt id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    // PUT /prompts/edit/{id}
     public function edit($id = null)
     {
-        $prompt = $this->Prompts->get($id, contain: []);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $prompt = $this->Prompts->patchEntity($prompt, $this->request->getData());
-            if ($this->Prompts->save($prompt)) {
-                $this->Flash->success(__('The prompt has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The prompt could not be saved. Please, try again.'));
+        $promptId = $id ?? $this->request->getParam('id');
+        
+        if (!$promptId) {
+            return $this->jsonError('ID do prompt não informado', 400);
         }
-        $this->set(compact('prompt'));
+        
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true) ?: $this->request->getData();
+        
+        try {
+            $prompt = $this->table->get($promptId);
+            $prompt = $this->table->patchEntity($prompt, $data);
+            
+            if ($this->table->save($prompt)) {
+                return $this->jsonSuccess($prompt, 'Prompt atualizado com sucesso');
+            }
+            
+            return $this->jsonError('Erro ao atualizar prompt', 422, $prompt->getErrors());
+            
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 500);
+        }
     }
 
-    /**
-     * Delete method
-     *
-     * @param string|null $id Prompt id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    // DELETE /prompts/delete/{id}
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $prompt = $this->Prompts->get($id);
-        if ($this->Prompts->delete($prompt)) {
-            $this->Flash->success(__('The prompt has been deleted.'));
-        } else {
-            $this->Flash->error(__('The prompt could not be deleted. Please, try again.'));
+        $promptId = $id ?? $this->request->getParam('id');
+        
+        if (!$promptId) {
+            return $this->jsonError('ID do prompt não informado', 400);
         }
-
-        return $this->redirect(['action' => 'index']);
+        
+        try {
+            $prompt = $this->table->get($promptId);
+            
+            if ($this->table->delete($prompt)) {
+                return $this->jsonSuccess(null, 'Prompt excluído com sucesso');
+            }
+            
+            return $this->jsonError('Erro ao excluir prompt', 500);
+            
+        } catch (\Exception $e) {
+            return $this->jsonError($e->getMessage(), 500);
+        }
     }
+
 }
