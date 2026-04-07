@@ -41,7 +41,13 @@ class QuizesController extends AppController
     // GET /quizes/view/{id}
     public function view($id = null)
     {
-        if (!$id) {
+        // 🔥 Pega o ID de várias formas
+        $quizId = $id ?? $this->request->getParam('id') ?? $this->request->getQuery('id');
+        
+        error_log("=== VIEW QUIZ ===");
+        error_log("ID recebido: " . $quizId);
+        
+        if (!$quizId) {
             $this->response = $this->response->withStatus(400);
             $this->response->getBody()->write(json_encode([
                 'success' => false,
@@ -51,7 +57,7 @@ class QuizesController extends AppController
         }
         
         try {
-            $quiz = $this->quizService->getQuizById((int)$id);
+            $quiz = $this->quizService->getQuizById((int)$quizId);
             
             $this->response->getBody()->write(json_encode([
                 'success' => true,

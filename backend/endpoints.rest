@@ -1,23 +1,130 @@
-### Flashcards - PUT sem /edit/ (rota alternativa)
-PUT http://localhost:8765/flashcards/7
+### 1. Primeiro, crie um prompt (use este)
+POST http://localhost:8765/prompts
 Content-Type: application/json
 
 {
-  "frente": "Pergunta atualizada",
-  "verso": "Resposta atualizada"
+  "usuario_id": 9,
+  "texto_original": "Hello world test",
+  "idioma_original": "en",
+  "contexto": "teste"
 }
 
-### Quizes - PUT sem /edit/ (rota alternativa)
-PUT http://localhost:8765/quizes/9
+### O ID retornado será usado nos próximos testes (ex: 6)
+
+### 2. Depois teste cada CRUD com o ID real
+
+### TRADUCOES - Criar (use prompt_id = 6)
+POST http://localhost:8765/traducoes
 Content-Type: application/json
 
 {
-  "titulo": "Quiz Atualizado",
-  "descricao": "Nova descrição"
+  "prompt_id": 6,
+  "texto_traduzido": "Olá mundo teste",
+  "idioma_destino": "pt-BR",
+  "pontuacao_confianca": 0.95
 }
 
-### Flashcards - DELETE sem /delete/
-DELETE http://localhost:8765/flashcards/7
+### TRADUCOES - Listar por prompt
+GET http://localhost:8765/traducoes/prompt/6
+Content-Type: application/json
 
-### Quizes - DELETE sem /delete/
-DELETE http://localhost:8765/quizes/9
+### TRADUCOES - Buscar por ID (use o ID retornado)
+GET http://localhost:8765/traducoes/view/5
+Content-Type: application/json
+
+### TRADUCOES - Atualizar
+PUT http://localhost:8765/traducoes/edit/5
+Content-Type: application/json
+
+{
+  "texto_traduzido": "Olá mundo teste atualizado",
+  "pontuacao_confianca": 0.99
+}
+
+### TRADUCOES - Deletar
+DELETE http://localhost:8765/traducoes/delete/5
+Content-Type: application/json
+
+### ============================================
+### IMAGENS (use prompt_id = 6)
+### ============================================
+
+### Criar imagem
+POST http://localhost:8765/imagens
+Content-Type: application/json
+
+{
+  "prompt_id": 6,
+  "url_imagem": "https://exemplo.com/imagem_teste.jpg",
+  "servico_geracao": "dalle"
+}
+
+### Listar imagens por prompt
+GET http://localhost:8765/imagens/prompt/6
+Content-Type: application/json
+
+### Buscar imagem por ID
+GET http://localhost:8765/imagens/view/5
+Content-Type: application/json
+
+### Atualizar imagem
+PUT http://localhost:8765/imagens/edit/5
+Content-Type: application/json
+
+{
+  "url_imagem": "https://exemplo.com/imagem_atualizada.jpg"
+}
+
+### Deletar imagem
+DELETE http://localhost:8765/imagens/delete/5
+Content-Type: application/json
+
+### ============================================
+### FRASES (use prompt_id = 6)
+### ============================================
+
+### Criar frase
+POST http://localhost:8765/frases
+Content-Type: application/json
+
+{
+  "prompt_id": 6,
+  "frase_semelhante": "Hello world test phrase",
+  "pontuacao_semelhante": 0.9
+}
+
+### Listar frases por prompt
+GET http://localhost:8765/frases/prompt/6
+Content-Type: application/json
+
+### Buscar frase por ID
+GET http://localhost:8765/frases/view/5
+Content-Type: application/json
+
+### Atualizar frase
+PUT http://localhost:8765/frases/edit/5
+Content-Type: application/json
+
+{
+  "frase_semelhante": "Hello world updated phrase",
+  "pontuacao_semelhante": 0.95
+}
+
+### Deletar frase
+DELETE http://localhost:8765/frases/delete/5
+Content-Type: application/json
+
+#### Testar se a tabela existe e o controller responde
+curl http://localhost:8765/tags
+
+### Testar tags por usuário
+curl http://localhost:8765/tags/usuario/19
+
+### Testar criar tag
+curl -X POST http://localhost:8765/tags -H "Content-Type: application/json" -d "{\"nome\":\"TesteTag\",\"criado_por\":19,\"cor\":\"#FF0000\"}"
+
+### Testar GET
+curl http://localhost:8765/preferencias/usuario/19
+
+### Testar POST
+curl -X POST http://localhost:8765/preferencias -H "Content-Type: application/json" -d "{\"usuario_id\":19,\"tema\":\"escuro\"}"

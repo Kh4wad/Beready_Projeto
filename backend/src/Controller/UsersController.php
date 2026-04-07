@@ -134,9 +134,17 @@ class UsersController extends AppController
         return $this->response;
     }
     
+    // GET /users/view/{id} e GET /users/{id}
     public function view($id = null)
     {
-        if (!$id) {
+        $userId = $id ?? $this->request->getParam('id') ?? $this->request->getQuery('id');
+        
+        error_log("=== VIEW USER ===");
+        error_log("ID recebido: " . $userId);
+        error_log("ID do parâmetro: " . ($id ?? 'null'));
+        error_log("ID do request param: " . ($this->request->getParam('id') ?? 'null'));
+        
+        if (!$userId) {
             $this->response = $this->response->withStatus(400);
             $this->response->getBody()->write(json_encode([
                 'success' => false,
@@ -146,7 +154,7 @@ class UsersController extends AppController
         }
         
         try {
-            $user = $this->userService->getUserById((int)$id);
+            $user = $this->userService->getUserById((int)$userId);
             
             $this->response->getBody()->write(json_encode([
                 'success' => true,

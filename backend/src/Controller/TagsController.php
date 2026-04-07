@@ -1,115 +1,124 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Controller;
+    namespace App\Controller;
 
-use Cake\Event\EventInterface;
+    use App\Services\TagService;
+    use App\Repositories\TagRepository;
 
-/**
- * Tags Controller
- *
- */
-class TagsController extends AppController
-{
-    public function beforeFilter(EventInterface $event)
+    class TagsController extends AppController
     {
-        parent::beforeFilter($event);
+        private TagService $service;
         
-        // 🔥 ADICIONAR: Permitir acesso às ações do TagsController
-        $this->Auth->allow([
-            'index', 
-            'view', 
-            'add', 
-            'edit', 
-            'delete'
-        ]);
-    }
-
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|null|void Renders view
-     */
-    public function index()
-    {
-        $query = $this->Tags->find();
-        $tags = $this->paginate($query);
-
-        $this->set(compact('tags'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Tag id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $tag = $this->Tags->get($id, contain: ['flashcard_tags']); // 🔥 AGORA VAI FUNCIONAR
-        $this->set(compact('tag'));
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $tag = $this->Tags->newEmptyEntity();
-        if ($this->request->is('post')) {
-            $tag = $this->Tags->patchEntity($tag, $this->request->getData());
-            if ($this->Tags->save($tag)) {
-                $this->Flash->success(__('Tag criada com sucesso.'));
-
-                return $this->redirect(['action' => 'index']);
+        public function initialize(): void
+        {
+            parent::initialize();
+            $this->service = new TagService(new TagRepository());
+        }
+        
+        // GET /tags
+        public function index()
+        {
+            try {
+                $tags = $this->service->getAllTags();
+                return $this->jsonResponse(['success' => true, 'data' => $tags]);
+            } catch (\Exception $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
             }
-            $this->Flash->error(__('Não foi possível criar a tag. Por favor, tente novamente.'));
         }
-        $this->set(compact('tag'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Tag id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $tag = $this->Tags->get($id, contain: []);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $tag = $this->Tags->patchEntity($tag, $this->request->getData());
-            if ($this->Tags->save($tag)) {
-                $this->Flash->success(__('Tag atualizada com sucesso.'));
-
-                return $this->redirect(['action' => 'index']);
+        
+        // GET /tags/usuario/{usuarioId}
+        public function getByUsuario($usuarioId = null)
+        {
+            $userId = $usuarioId ?? $this->request->getParam('usuarioId');
+            
+            if (!$userId) {
+                return $this->jsonResponse(['success' => false, 'message' => 'ID do usuário não informado'], 400);
             }
-            $this->Flash->error(__('Não foi possível atualizar a tag. Por favor, tente novamente.'));
+            
+            try {
+                $tags = $this->service->getTagsByUsuario((int)$userId);
+                return $this->jsonResponse(['success' => true, 'data' => $tags]);
+            } catch (\Exception $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
+            }
         }
-        $this->set(compact('tag'));
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Tag id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $tag = $this->Tags->get($id);
-        if ($this->Tags->delete($tag)) {
-            $this->Flash->success(__('Tag excluída com sucesso.'));
-        } else {
-            $this->Flash->error(__('Não foi possível excluir a tag. Por favor, tente novamente.'));
+        
+        // GET /tags/view/{id}
+        public function view($id = null)
+        {
+            $tagId = $id ?? $this->request->getParam('id');
+            
+            if (!$tagId) {
+                return $this->jsonResponse(['success' => false, 'message' => 'ID da tag não informado'], 400);
+            }
+            
+            try {
+                $tag = $this->service->getTagById((int)$tagId);
+                return $this->jsonResponse(['success' => true, 'data' => $tag]);
+            } catch (\RuntimeException $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], $e->getCode());
+            } catch (\Exception $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
+            }
         }
-
-        return $this->redirect(['action' => 'index']);
+        
+        // POST /tags
+        public function add()
+        {
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true) ?: $this->request->getData();
+            
+            try {
+                $tag = $this->service->createTag($data);
+                return $this->jsonResponse(['success' => true, 'message' => 'Tag criada com sucesso', 'data' => $tag], 201);
+            } catch (\InvalidArgumentException $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 400);
+            } catch (\RuntimeException $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], $e->getCode());
+            } catch (\Exception $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+        }
+        
+        // PUT /tags/edit/{id}
+        public function edit($id = null)
+        {
+            $tagId = $id ?? $this->request->getParam('id');
+            
+            if (!$tagId) {
+                return $this->jsonResponse(['success' => false, 'message' => 'ID da tag não informado'], 400);
+            }
+            
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true) ?: $this->request->getData();
+            
+            try {
+                $tag = $this->service->updateTag((int)$tagId, $data);
+                return $this->jsonResponse(['success' => true, 'message' => 'Tag atualizada com sucesso', 'data' => $tag]);
+            } catch (\RuntimeException $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], $e->getCode());
+            } catch (\Exception $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+        }
+        
+        // DELETE /tags/delete/{id}
+        public function delete($id = null)
+        {
+            $tagId = $id ?? $this->request->getParam('id');
+            
+            if (!$tagId) {
+                return $this->jsonResponse(['success' => false, 'message' => 'ID da tag não informado'], 400);
+            }
+            
+            try {
+                $this->service->deleteTag((int)$tagId);
+                return $this->jsonResponse(['success' => true, 'message' => 'Tag excluída com sucesso']);
+            } catch (\RuntimeException $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], $e->getCode());
+            } catch (\Exception $e) {
+                return $this->jsonResponse(['success' => false, 'message' => $e->getMessage()], 500);
+            }
+        }
     }
-}
