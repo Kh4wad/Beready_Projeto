@@ -95,8 +95,6 @@ export function useFlashcards() {
   }
 
   const saveFlashcard = async () => {
-    console.log('=== SAVING FLASHCARD ===')
-    console.log('form.value:', form.value)
 
     if (!form.value.frente) {
       error('A pergunta é obrigatória')
@@ -116,7 +114,6 @@ export function useFlashcards() {
     }
 
     const user = JSON.parse(userData)
-    console.log('user.id:', user.id)
 
     saving.value = true
     try {
@@ -133,10 +130,6 @@ export function useFlashcards() {
         usuario_id: user.id,
       }
 
-      console.log('URL:', url)
-      console.log('Method:', method)
-      console.log('Body:', requestBody)
-
       const response = await fetch(url, {
         method,
         headers: {
@@ -147,7 +140,6 @@ export function useFlashcards() {
       })
 
       const data = await response.json()
-      console.log('Response:', data)
 
       if (data.success) {
         success(

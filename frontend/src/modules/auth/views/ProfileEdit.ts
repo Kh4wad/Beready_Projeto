@@ -58,8 +58,6 @@ export function useProfileEdit() {
       const user = JSON.parse(userData)
       userId.value = user.id
 
-      console.log('User ID carregado:', userId.value)
-
       const response = await fetch(`http://localhost:8765/users/view/${user.id}`, {
         method: 'GET',
         headers: {
@@ -104,7 +102,6 @@ export function useProfileEdit() {
   }
 
   const handleSubmit = async () => {
-    console.log('Submit - userId.value:', userId.value)
 
     let currentUserId = userId.value
 
@@ -114,7 +111,6 @@ export function useProfileEdit() {
         const user = JSON.parse(userData)
         currentUserId = user.id
         userId.value = currentUserId
-        console.log('ID recuperado do localStorage:', currentUserId)
       }
     }
 
@@ -161,8 +157,6 @@ export function useProfileEdit() {
       if (form.nova_senha) submitData.senha = form.nova_senha
 
       const url = `http://localhost:8765/users/update/${currentUserId}`
-      console.log('Enviando PUT para:', url)
-      console.log('Dados:', submitData)
 
       const response = await fetch(url, {
         method: 'PUT',
@@ -173,9 +167,7 @@ export function useProfileEdit() {
         body: JSON.stringify(submitData),
       })
 
-      console.log('Response status:', response.status)
       const data = await response.json()
-      console.log('Response data:', data)
 
       if (response.ok && data.success) {
         const updatedUser = data.user || {

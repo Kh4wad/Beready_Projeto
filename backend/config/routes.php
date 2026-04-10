@@ -12,6 +12,8 @@ $routes->connect('/health', ['controller' => 'Users', 'action' => 'health']);
 $routes->connect('/auth/register', ['controller' => 'Users', 'action' => 'register']);
 $routes->connect('/auth/login', ['controller' => 'Users', 'action' => 'login']);
 $routes->connect('/auth/logout', ['controller' => 'Users', 'action' => 'logout']);
+$routes->connect('/auth/forgot-password', ['controller' => 'Users', 'action' => 'forgotPassword']);
+$routes->connect('/auth/reset-password/{token}', ['controller' => 'Users', 'action' => 'resetPassword']) ->setPatterns(['token' => '[a-f0-9]+']);
 
 // ============================================
 // USERS ROUTES

@@ -3,6 +3,9 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 
+// Importar CSS de temas
+import './styles/themes.css'
+
 const app = createApp(App)
 
 app.use(createPinia())

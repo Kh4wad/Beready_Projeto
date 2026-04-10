@@ -128,3 +128,8 @@ curl http://localhost:8765/preferencias/usuario/19
 
 ### Testar POST
 curl -X POST http://localhost:8765/preferencias -H "Content-Type: application/json" -d "{\"usuario_id\":19,\"tema\":\"escuro\"}"
+
+###
+curl -X POST http://localhost:8765/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email": "teste@gmail.com"}'

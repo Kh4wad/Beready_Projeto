@@ -283,6 +283,58 @@ class UsersController extends AppController
             return $this->response;
         }
     }
+
+    public function forgotPassword()
+    {
+        $this->request->allowMethod(['post']);
+        
+        $email = $this->request->getData('email');
+        $user = $this->Users->find()->where(['email' => $email])->first();
+        
+        if (!$user) {
+            return $this->jsonError('E-mail não encontrado', 404);
+        }
+        
+        $token = bin2hex(random_bytes(32));
+        $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+        
+        $user->reset_token = $token;
+        $user->reset_token_expires = $expires;
+        
+        if ($this->Users->save($user)) {
+            $this->getMailer('User')->resetPassword($user, $token);
+            return $this->jsonSuccess(null, 'Link de recuperação enviado para seu e-mail');
+        }
+        
+        return $this->jsonError('Erro ao gerar link de recuperação', 500);
+    }
+    
+    public function resetPassword($token = null)
+    {
+        $this->request->allowMethod(['post']);
+        
+        $user = $this->Users->find()
+            ->where([
+                'reset_token' => $token,
+                'reset_token_expires >' => date('Y-m-d H:i:s')
+            ])
+            ->first();
+        
+        if (!$user) {
+            return $this->jsonError('Token inválido ou expirado', 400);
+        }
+        
+        $newPassword = $this->request->getData('senha');
+        $user->senha_hash = password_hash($newPassword, PASSWORD_DEFAULT);
+        $user->reset_token = null;
+        $user->reset_token_expires = null;
+        
+        if ($this->Users->save($user)) {
+            return $this->jsonSuccess(null, 'Senha redefinida com sucesso');
+        }
+        
+        return $this->jsonError('Erro ao redefinir senha', 500);
+    }
     
     public function notFound()
     {

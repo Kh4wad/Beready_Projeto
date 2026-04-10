@@ -1,11 +1,16 @@
-/* styles/components/navbar.css */
-
 .dashboard-nav {
   background: white;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: all 0.3s ease;
+}
+
+/* Dark mode */
+.dark-mode .dashboard-nav {
+  background: #1e1e2f;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .nav-container {
@@ -47,12 +52,23 @@
   background-clip: text;
 }
 
+.dark-mode .nav-title {
+  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .nav-menu {
   display: flex;
   gap: 8px;
   background: #f3f4f6;
   padding: 4px;
   border-radius: 12px;
+}
+
+.dark-mode .nav-menu {
+  background: #2d2d44;
 }
 
 .nav-link {
@@ -67,15 +83,30 @@
   transition: all 0.3s ease;
 }
 
+.dark-mode .nav-link {
+  color: #a0a0c0;
+}
+
 .nav-link:hover {
   background: white;
   color: #7c3aed;
+}
+
+.dark-mode .nav-link:hover {
+  background: #1e1e2f;
+  color: #a78bfa;
 }
 
 .nav-link.active {
   background: white;
   color: #7c3aed;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .nav-link.active {
+  background: #1e1e2f;
+  color: #a78bfa;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .nav-user {
@@ -114,9 +145,17 @@
   font-size: 0.9rem;
 }
 
+.dark-mode .user-name {
+  color: #e0e0e0;
+}
+
 .user-email {
   font-size: 0.75rem;
   color: #6b7280;
+}
+
+.dark-mode .user-email {
+  color: #a0a0c0;
 }
 
 .logout-btn {
@@ -133,9 +172,18 @@
   transition: all 0.3s ease;
 }
 
+.dark-mode .logout-btn {
+  background: #3d2a2a;
+  color: #f87171;
+}
+
 .logout-btn:hover {
   background: #fecaca;
   transform: translateY(-1px);
+}
+
+.dark-mode .logout-btn:hover {
+  background: #4a2a2a;
 }
 
 .logout-btn:disabled {
