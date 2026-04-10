@@ -1,11 +1,11 @@
 .profile-container {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: var(--bg-primary, #f8fafc);
 }
 
 .profile-header {
   position: relative;
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
@@ -69,6 +69,7 @@
   font-size: 1.1rem;
   opacity: 0.9;
   margin: 0;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .profile-actions {
@@ -77,7 +78,6 @@
   flex-shrink: 0;
 }
 
-/* Botões do perfil */
 .btn-profile {
   display: inline-flex;
   align-items: center;
@@ -131,9 +131,9 @@
 }
 
 .profile-card {
-  background: white;
+  background: var(--bg-card, white);
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow, 0 4px 20px rgba(0, 0, 0, 0.1));
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
@@ -142,19 +142,19 @@
 
 .profile-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--card-shadow-hover, 0 8px 30px rgba(0, 0, 0, 0.15));
 }
 
 .card-header {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--bg-secondary, white);
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
   padding: 1.25rem 1.5rem;
 }
 
 .card-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-primary, #374151);
   margin: 0;
   display: flex;
   align-items: center;
@@ -162,7 +162,7 @@
 }
 
 .card-title svg {
-  color: #7c3aed;
+  color: #3b82f6;
   width: 1.25rem;
   height: 1.25rem;
 }
@@ -183,7 +183,7 @@
   display: block;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 0.5rem;
@@ -191,7 +191,7 @@
 
 .profile-info-value {
   font-size: 1rem;
-  color: #374151;
+  color: var(--text-primary, #374151);
   margin: 0;
 }
 

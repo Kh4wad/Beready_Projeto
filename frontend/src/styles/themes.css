@@ -46,7 +46,7 @@
   box-shadow: var(--card-shadow) !important;
 }
 
-/* Textos no tema claro */
+/* Textos no tema claro (exceto nome e email do perfil que ficam brancos) */
 .welcome-title,
 .stat-value,
 .feature-title,
@@ -55,7 +55,6 @@
 .tag-name,
 .question-text,
 .answer-text,
-.profile-name,
 .register-title,
 .login-title,
 .card-title {
@@ -70,12 +69,37 @@
 .tag-description,
 .answer-label,
 .question-label,
-.profile-email,
 .register-subtitle,
 .login-subtitle,
 .form-label,
 .form-hint {
   color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   PERFIL - NOME E EMAIL SEMPRE BRANCOS
+   ============================================ */
+.profile-name,
+.profile-email {
+  color: white !important;
+}
+
+.dark-mode .profile-name,
+.dark-mode .profile-email {
+  color: white !important;
+}
+
+/* Demais textos do perfil seguem o tema */
+.profile-info-value,
+.profile-info-label,
+.card-title {
+  color: var(--text-primary, #1e293b) !important;
+}
+
+.dark-mode .profile-info-value,
+.dark-mode .profile-info-label,
+.dark-mode .card-title {
+  color: var(--text-primary, #f1f5f9) !important;
 }
 
 /* ============================================
@@ -135,7 +159,6 @@
 .dark-mode .tag-name,
 .dark-mode .question-text,
 .dark-mode .answer-text,
-.dark-mode .profile-name,
 .dark-mode .register-title,
 .dark-mode .login-title,
 .dark-mode .card-title {
@@ -150,7 +173,6 @@
 .dark-mode .tag-description,
 .dark-mode .answer-label,
 .dark-mode .question-label,
-.dark-mode .profile-email,
 .dark-mode .register-subtitle,
 .dark-mode .login-subtitle,
 .dark-mode .form-label,
@@ -223,6 +245,87 @@
 .dark-mode .form-card {
   background: #0f172a !important;
   border-color: var(--border-color) !important;
+}
+
+/* ============================================
+   CORREÇÃO DO PERFIL - TEMA ESCURO (INFO)
+   ============================================ */
+
+.dark-mode .profile-info-value,
+.dark-mode .profile-info-label,
+.dark-mode .card-title {
+  color: var(--text-primary, #f1f5f9) !important;
+}
+
+.dark-mode .profile-info-label {
+  color: var(--text-secondary, #94a3b8) !important;
+}
+
+.dark-mode .profile-card {
+  background: var(--bg-card, #1e293b) !important;
+  border: 1px solid var(--border-color, #334155) !important;
+}
+
+.dark-mode .profile-header {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+}
+
+.dark-mode .profile-header-background {
+  opacity: 0.3;
+}
+
+.dark-mode .profile-status-active {
+  background: #065f46 !important;
+  color: #d1fae5 !important;
+}
+
+.dark-mode .profile-status-inactive {
+  background: #991b1b !important;
+  color: #fee2e2 !important;
+}
+
+/* Modal de exclusão no tema escuro */
+.dark-mode .modal-container {
+  background: var(--bg-card, #1e293b) !important;
+}
+
+.dark-mode .modal-header {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+}
+
+.dark-mode .modal-body p {
+  color: var(--text-primary, #f1f5f9) !important;
+}
+
+.dark-mode .modal-warning {
+  color: #f87171 !important;
+}
+
+.dark-mode .confirm-input {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: var(--text-primary, #f1f5f9) !important;
+}
+
+.dark-mode .confirm-input:focus {
+  border-color: #3b82f6 !important;
+}
+
+.dark-mode .modal-btn-cancel {
+  background: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+.dark-mode .modal-btn-cancel:hover {
+  background: #475569 !important;
+}
+
+.dark-mode .modal-btn-delete {
+  background: #dc2626 !important;
+}
+
+.dark-mode .modal-btn-delete:hover:not(:disabled) {
+  background: #b91c1c !important;
 }
 
 /* ============================================
