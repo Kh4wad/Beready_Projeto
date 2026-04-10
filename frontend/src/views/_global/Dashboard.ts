@@ -11,7 +11,7 @@ export function useDashboard() {
     acertoRate: 0,
     sequenciaAtual: 0,
     tempoEstudo: '0h',
-    progressoGeral: 0
+    progressoGeral: 0,
   })
 
   const userName = computed(() => {
@@ -23,19 +23,19 @@ export function useDashboard() {
 
   const motivationalMessage = computed(() => {
     if (stats.value.sequenciaAtual >= 7) {
-      return `Ì¥• Incr√≠vel! ${stats.value.sequenciaAtual} dias de sequ√™ncia! Continue assim!`
+      return `üî• Incrivel! ${stats.value.sequenciaAtual} dias de sequencia! Continue assim!`
     }
     if (stats.value.sequenciaAtual >= 3) {
-      return `Ì≥à ${stats.value.sequenciaAtual} dias seguidos! Voc√™ est√° evoluindo!`
+      return `üìà ${stats.value.sequenciaAtual} dias seguidos! Voce esta evoluindo!`
     }
-    return 'Continue sua jornada de aprendizado. Hoje √© um √≥timo dia para aprender algo novo!'
+    return 'Continue sua jornada de aprendizado. Hoje √© um otimo dia para aprender algo novo!'
   })
 
   const loadUserData = async () => {
     const userData = localStorage.getItem('user')
     if (userData) {
       user.value = JSON.parse(userData)
-      
+
       try {
         const response = await fetch(`http://localhost:8765/progresso/usuario/${user.value.id}`)
         if (response.ok) {
@@ -49,7 +49,7 @@ export function useDashboard() {
           }
         }
       } catch (err) {
-        console.error('Erro ao carregar estat√≠sticas:', err)
+        console.error('Erro ao carregar estatisticas:', err)
         stats.value.flashcardsCount = 25
         stats.value.acertoRate = 93
         stats.value.sequenciaAtual = 3
@@ -75,6 +75,6 @@ export function useDashboard() {
     userName,
     stats,
     motivationalMessage,
-    handleLogout
+    handleLogout,
   }
 }

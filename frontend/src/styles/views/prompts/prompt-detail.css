@@ -139,6 +139,7 @@
   color: #1a202c;
 }
 
+/* Grids */
 .traducoes-grid,
 .frases-grid {
   display: grid;
@@ -152,12 +153,16 @@
   gap: 1rem;
 }
 
+/* Cards - com correção do bug do transform */
 .traducao-card,
 .frase-card {
   background: #f7fafc;
   border-radius: 0.75rem;
   padding: 1rem;
   transition: all 0.3s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .traducao-card:hover,
@@ -166,11 +171,21 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Card de imagem */
 .imagem-card {
   position: relative;
   border-radius: 0.75rem;
   overflow: hidden;
   aspect-ratio: 1;
+  will-change: transform;
+  transition: all 0.3s ease;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.imagem-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .imagem-img {
@@ -193,6 +208,7 @@
   opacity: 1;
 }
 
+/* Headers dos cards */
 .traducao-header,
 .frase-header {
   display: flex;
@@ -218,6 +234,7 @@
   line-height: 1.5;
 }
 
+/* Footers */
 .traducao-footer,
 .frase-footer,
 .imagem-footer {
@@ -225,6 +242,7 @@
   justify-content: space-between;
   font-size: 0.7rem;
   color: #718096;
+  margin-top: 0.5rem;
 }
 
 .confidence,
@@ -244,6 +262,7 @@
   border-radius: 9999px;
 }
 
+/* Botão de deletar */
 .btn-icon {
   background: white;
   border: none;
@@ -263,6 +282,7 @@
   color: white;
 }
 
+/* Estados vazios */
 .loading-state,
 .empty-state {
   text-align: center;
@@ -270,6 +290,7 @@
   color: #718096;
 }
 
+/* Responsividade */
 @media (max-width: 768px) {
   .hero-title {
     font-size: 2rem;

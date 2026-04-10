@@ -51,62 +51,126 @@
       <p>Carregando preferências...</p>
     </div>
 
-    <form v-else @submit.prevent="save" class="preferencias-form">
+    <form v-else @submit.prevent="handleSave" class="preferencias-form">
       <div class="form-group">
         <label class="form-label">Tema</label>
-        <select v-model="form.tema" class="form-select">
-          <option value="claro">Claro</option>
-          <option value="escuro">Escuro</option>
-        </select>
+        <div class="theme-buttons">
+          <button
+            type="button"
+            class="theme-btn"
+            :class="{ active: form.tema === 'claro' }"
+            @click="form.tema = 'claro'"
+          >
+            🌞 Claro
+          </button>
+          <button
+            type="button"
+            class="theme-btn"
+            :class="{ active: form.tema === 'escuro' }"
+            @click="form.tema = 'escuro'"
+          >
+            🌙 Escuro
+          </button>
+        </div>
       </div>
 
-      <div class="form-checkbox">
-        <label class="checkbox-label">
+      <div class="form-group">
+        <label class="form-label">Modo Daltônico</label>
+        <label class="toggle-switch">
           <input type="checkbox" v-model="form.modo_daltonico" />
-          <span>Modo Daltônico</span>
+          <span class="toggle-slider"></span>
         </label>
+        <span class="helper-text">Adapta as cores para melhor visualização</span>
       </div>
 
-      <div class="form-checkbox">
-        <label class="checkbox-label">
+      <div class="form-group">
+        <label class="form-label">Notificações Ativas</label>
+        <label class="toggle-switch">
           <input type="checkbox" v-model="form.notificacoes_ativas" />
-          <span>Notificações Ativas</span>
+          <span class="toggle-slider"></span>
         </label>
+        <span class="helper-text">Receba lembretes e atualizações</span>
       </div>
 
-      <div class="form-checkbox">
-        <label class="checkbox-label">
+      <div class="form-group">
+        <label class="form-label">Som Ativo</label>
+        <label class="toggle-switch">
           <input type="checkbox" v-model="form.som_ativo" />
-          <span>Som Ativo</span>
+          <span class="toggle-slider"></span>
         </label>
+        <span class="helper-text">Efeitos sonoros durante os estudos</span>
       </div>
 
-      <div class="form-checkbox">
-        <label class="checkbox-label">
+      <div class="form-group">
+        <label class="form-label">Tradução Automática</label>
+        <label class="toggle-switch">
           <input type="checkbox" v-model="form.traducao_automatica" />
-          <span>Tradução Automática</span>
+          <span class="toggle-slider"></span>
         </label>
+        <span class="helper-text">Traduza textos automaticamente</span>
       </div>
 
       <div class="form-group">
         <label class="form-label">Preferência de Dificuldade</label>
-        <select v-model="form.preferencia_dificuldade" class="form-select">
-          <option value="iniciante">Iniciante</option>
-          <option value="intermediario">Intermediário</option>
-          <option value="avancado">Avançado</option>
-          <option value="adaptativo">Adaptativo</option>
-        </select>
+        <div class="difficulty-buttons">
+          <button
+            type="button"
+            class="difficulty-btn"
+            :class="{ active: form.preferencia_dificuldade === 'iniciante' }"
+            @click="form.preferencia_dificuldade = 'iniciante'"
+          >
+            🌱 Iniciante
+          </button>
+          <button
+            type="button"
+            class="difficulty-btn"
+            :class="{ active: form.preferencia_dificuldade === 'intermediario' }"
+            @click="form.preferencia_dificuldade = 'intermediario'"
+          >
+            📚 Intermediário
+          </button>
+          <button
+            type="button"
+            class="difficulty-btn"
+            :class="{ active: form.preferencia_dificuldade === 'avancado' }"
+            @click="form.preferencia_dificuldade = 'avancado'"
+          >
+            🎓 Avançado
+          </button>
+          <button
+            type="button"
+            class="difficulty-btn"
+            :class="{ active: form.preferencia_dificuldade === 'adaptativo' }"
+            @click="form.preferencia_dificuldade = 'adaptativo'"
+          >
+            🤖 Adaptativo
+          </button>
+        </div>
       </div>
 
       <div class="form-group">
         <label class="form-label">Meta Diária (minutos)</label>
-        <input
-          type="number"
-          v-model.number="form.meta_diaria_minutos"
-          min="0"
-          max="240"
-          class="form-input"
-        />
+        <div class="meta-input">
+          <input
+            type="range"
+            v-model.number="form.meta_diaria_minutos"
+            min="5"
+            max="120"
+            step="5"
+            class="meta-range"
+          />
+          <div class="meta-value">
+            <span class="meta-number">{{ form.meta_diaria_minutos }}</span>
+            <span class="meta-unit">minutos</span>
+          </div>
+        </div>
+        <div class="meta-labels">
+          <span>5 min</span>
+          <span>30 min</span>
+          <span>60 min</span>
+          <span>90 min</span>
+          <span>120 min</span>
+        </div>
       </div>
 
       <button type="submit" :disabled="saving" class="btn-save">
@@ -117,8 +181,26 @@
 </template>
 
 <script setup lang="ts">
-import { usePreferencias } from './Preferencias'
-const { form, loading, saving, save } = usePreferencias()
+import { onMounted } from 'vue'
+import { usePreferencias } from '../composables/usePreferencias'
+
+const { form, loading, saving, fetchPreferencias, savePreferencias } = usePreferencias()
+
+const handleSave = async () => {
+  const userData = localStorage.getItem('user')
+  if (userData) {
+    const user = JSON.parse(userData)
+    await savePreferencias(user.id)
+  }
+}
+
+onMounted(async () => {
+  const userData = localStorage.getItem('user')
+  if (userData) {
+    const user = JSON.parse(userData)
+    await fetchPreferencias(user.id)
+  }
+})
 </script>
 
 <style scoped>
