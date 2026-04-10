@@ -13,7 +13,6 @@ export interface Prompt {
 export const promptService = {
   // Listar prompts por usuário
   getByUsuario: (usuarioId: number) => {
-    console.log('getByUsuario chamado com ID:', usuarioId)
     return api.get(`/prompts/usuario/${usuarioId}`)
   },
 
@@ -23,7 +22,6 @@ export const promptService = {
 
   // Criar prompt
   create: (data: Prompt) => {
-    console.log('create prompt com dados:', data)
     return api.post('/prompts', data)
   },
 

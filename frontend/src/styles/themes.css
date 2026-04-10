@@ -1,30 +1,102 @@
 /* ============================================
-   TEMA CLARO (PADRÃO)
+   TEMA CLARO (PADRÃO) - CORES SUAVES
    ============================================ */
 :root {
-  --bg-primary: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-  --bg-card: white;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --border-color: #e5e7eb;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  --hero-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border-color: #e2e8f0;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --hero-bg: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
+}
+
+/* Aplicar tema claro */
+.dashboard-container,
+.flashcards-page,
+.quizes-page,
+.prompts-page,
+.tags-page,
+.progresso-page,
+.preferencias-page,
+.profile-container,
+.profile-edit-page,
+.login-page,
+.register-page {
+  background: var(--bg-primary) !important;
+}
+
+/* Cards no tema claro */
+.stat-card,
+.progress-card,
+.dashboard-feature-card,
+.flashcard-card,
+.quiz-card,
+.prompt-card,
+.tag-card,
+.preferencias-form,
+.profile-card,
+.register-card,
+.login-card,
+.profile-edit-form {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--card-shadow) !important;
+}
+
+/* Textos no tema claro */
+.welcome-title,
+.stat-value,
+.feature-title,
+.quiz-card-title,
+.prompt-text,
+.tag-name,
+.question-text,
+.answer-text,
+.profile-name,
+.register-title,
+.login-title,
+.card-title {
+  color: var(--text-primary) !important;
+}
+
+.welcome-subtitle,
+.stat-label,
+.feature-description,
+.quiz-card-description,
+.prompt-meta,
+.tag-description,
+.answer-label,
+.question-label,
+.profile-email,
+.register-subtitle,
+.login-subtitle,
+.form-label,
+.form-hint {
+  color: var(--text-secondary) !important;
 }
 
 /* ============================================
-   TEMA ESCURO
+   TEMA ESCURO - MODERNO
    ============================================ */
 .dark-mode {
-  --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  --bg-card: #1e1e2f;
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0c0;
-  --border-color: #2d2d44;
-  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --hero-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  --bg-primary: #0f172a;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-color: #334155;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --hero-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  --accent-color: #3b82f6;
+  --accent-hover: #2563eb;
 }
 
-/* Aplicar temas nos containers principais */
+.dark-mode {
+  background: var(--bg-primary) !important;
+}
+
 .dark-mode .dashboard-container,
 .dark-mode .flashcards-page,
 .dark-mode .quizes-page,
@@ -33,13 +105,12 @@
 .dark-mode .progresso-page,
 .dark-mode .preferencias-page,
 .dark-mode .profile-container,
-.dark-mode .profile-edit-container,
+.dark-mode .profile-edit-page,
 .dark-mode .login-page,
 .dark-mode .register-page {
   background: var(--bg-primary) !important;
 }
 
-/* Cards */
 .dark-mode .stat-card,
 .dark-mode .progress-card,
 .dark-mode .dashboard-feature-card,
@@ -50,12 +121,12 @@
 .dark-mode .preferencias-form,
 .dark-mode .profile-card,
 .dark-mode .register-card,
-.dark-mode .login-card {
+.dark-mode .login-card,
+.dark-mode .profile-edit-form {
   background: var(--bg-card) !important;
   border: 1px solid var(--border-color) !important;
 }
 
-/* Textos */
 .dark-mode .welcome-title,
 .dark-mode .stat-value,
 .dark-mode .feature-title,
@@ -66,7 +137,8 @@
 .dark-mode .answer-text,
 .dark-mode .profile-name,
 .dark-mode .register-title,
-.dark-mode .login-title {
+.dark-mode .login-title,
+.dark-mode .card-title {
   color: var(--text-primary) !important;
 }
 
@@ -80,11 +152,13 @@
 .dark-mode .question-label,
 .dark-mode .profile-email,
 .dark-mode .register-subtitle,
-.dark-mode .login-subtitle {
+.dark-mode .login-subtitle,
+.dark-mode .form-label,
+.dark-mode .form-hint {
   color: var(--text-secondary) !important;
 }
 
-/* Headers e Footers dos cards */
+/* Headers dos cards no escuro */
 .dark-mode .prompt-header,
 .dark-mode .quiz-card-footer,
 .dark-mode .flashcard-footer,
@@ -92,20 +166,15 @@
 .dark-mode .card-header,
 .dark-mode .register-header,
 .dark-mode .login-header {
-  background: #16162a !important;
+  background: #0f172a !important;
   border-color: var(--border-color) !important;
 }
 
-.dark-mode .register-header,
-.dark-mode .login-header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
-}
-
-/* Formulários */
+/* Formulários no escuro */
 .dark-mode .form-input,
 .dark-mode .form-textarea,
 .dark-mode .form-select {
-  background: #2d2d44 !important;
+  background: #0f172a !important;
   border-color: var(--border-color) !important;
   color: var(--text-primary) !important;
 }
@@ -113,31 +182,18 @@
 .dark-mode .form-input:focus,
 .dark-mode .form-textarea:focus,
 .dark-mode .form-select:focus {
-  border-color: #667eea !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
 }
 
-.dark-mode .form-label {
-  color: var(--text-secondary) !important;
-}
-
-/* Botões */
+/* Botões no escuro */
 .dark-mode .btn-cancel {
-  background: #2d2d44 !important;
+  background: #334155 !important;
   color: var(--text-secondary) !important;
 }
 
 .dark-mode .btn-cancel:hover {
-  background: #3d3d5c !important;
-}
-
-/* Botão voltar */
-.dark-mode .hero-back-btn {
-  background: rgba(0, 0, 0, 0.6) !important;
-  color: white !important;
-}
-
-.dark-mode .hero-back-btn:hover {
-  background: rgba(0, 0, 0, 0.8) !important;
+  background: #475569 !important;
 }
 
 /* Hero sections */
@@ -147,27 +203,81 @@
 .dark-mode .tags-hero,
 .dark-mode .progresso-hero,
 .dark-mode .preferencias-hero,
-.dark-mode .profile-edit-header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+.dark-mode .profile-edit-hero {
+  background: var(--hero-bg) !important;
+}
+
+/* Botão voltar */
+.dark-mode .hero-back-btn {
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: white !important;
+}
+
+.dark-mode .hero-back-btn:hover {
+  background: rgba(0, 0, 0, 0.7) !important;
 }
 
 /* Seções internas */
 .dark-mode .register-section,
-.dark-mode .login-section {
-  background: #16162a !important;
+.dark-mode .login-section,
+.dark-mode .form-card {
+  background: #0f172a !important;
   border-color: var(--border-color) !important;
 }
 
-.dark-mode .register-section-title,
-.dark-mode .login-section-title {
-  color: var(--text-primary) !important;
-  border-color: var(--border-color) !important;
+/* ============================================
+   MODO DALTÔNICO
+   ============================================ */
+.daltonico-mode .stat-icon.bg-blue-100,
+.daltonico-mode .stat-icon.bg-green-100,
+.daltonico-mode .stat-icon.bg-purple-100,
+.daltonico-mode .stat-icon.bg-yellow-100 {
+  background: #4a5568 !important;
+}
+
+.daltonico-mode .bg-blue-500,
+.daltonico-mode .bg-green-500,
+.daltonico-mode .bg-purple-500,
+.daltonico-mode .bg-orange-500,
+.daltonico-mode .bg-indigo-500,
+.daltonico-mode .bg-gray-500 {
+  background: #4a5568 !important;
+}
+
+.daltonico-mode .trend-up {
+  background: #4a5568 !important;
+  color: #a0aec0 !important;
+}
+
+.daltonico-mode .trend-down {
+  background: #5a4a4a !important;
+  color: #c0a0a0 !important;
+}
+
+.daltonico-mode .progress-bar {
+  background: linear-gradient(90deg, #4a5568 0%, #718096 100%) !important;
+}
+
+.daltonico-mode .btn-primary,
+.daltonico-mode .hero-btn,
+.daltonico-mode .btn-study,
+.daltonico-mode .btn-save {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+}
+
+.daltonico-mode .badge {
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+}
+
+.daltonico-mode .feature-link,
+.daltonico-mode .progress-cta {
+  color: #a0aec0 !important;
 }
 
 /* Dark mode para alerts */
 .dark-mode .alert {
-  background: #1e1e2f !important;
-  border: 1px solid #2d2d44 !important;
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
 }
 
 .dark-mode .alert.success {
@@ -187,133 +297,5 @@
 }
 
 .dark-mode .alert-message {
-  color: white !important;
-}
-
-.dark-mode .alert-close {
-  background: rgba(255, 255, 255, 0.2) !important;
-}
-
-.dark-mode .alert-close:hover {
-  background: rgba(255, 255, 255, 0.3) !important;
-}
-
-/* ============================================
-   MODO DALTÔNICO - PROTANOPIA/DEUTERANOPIA
-   ============================================ */
-/* 
-   O modo daltônico ajusta as cores para tornar o site acessível 
-   para pessoas com dificuldade de distinguir vermelho e verde.
-   Ele substitui cores como azul, verde, roxo por tons de cinza/azul
-   e ajusta contrastes para melhor visibilidade.
-*/
-
-/* Fundos e cards no modo daltônico */
-.daltonico-mode .dashboard-container,
-.daltonico-mode .flashcards-page,
-.daltonico-mode .quizes-page,
-.daltonico-mode .prompts-page,
-.daltonico-mode .tags-page,
-.daltonico-mode .progresso-page,
-.daltonico-mode .preferencias-page {
-  background: var(--bg-primary) !important;
-}
-
-.daltonico-mode .stat-card,
-.daltonico-mode .progress-card,
-.daltonico-mode .dashboard-feature-card,
-.daltonico-mode .flashcard-card,
-.daltonico-mode .quiz-card,
-.daltonico-mode .prompt-card,
-.daltonico-mode .tag-card {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-}
-
-/* Cores dos ícones de estatísticas - substituídas por tons neutros */
-.daltonico-mode .stat-icon.bg-blue-100,
-.daltonico-mode .stat-icon.bg-green-100,
-.daltonico-mode .stat-icon.bg-purple-100,
-.daltonico-mode .stat-icon.bg-yellow-100 {
-  background: #4a5568 !important;
-}
-
-/* Cores dos botões principais - substituídas por tons neutros */
-.daltonico-mode .bg-blue-500,
-.daltonico-mode .bg-green-500,
-.daltonico-mode .bg-purple-500,
-.daltonico-mode .bg-orange-500,
-.daltonico-mode .bg-indigo-500,
-.daltonico-mode .bg-gray-500 {
-  background: #4a5568 !important;
-}
-
-/* Indicadores de tendência - contraste melhorado */
-.daltonico-mode .trend-up {
-  background: #4a5568 !important;
-  color: #ffffff !important;
-}
-
-.daltonico-mode .trend-down {
-  background: #5a4a4a !important;
-  color: #ffc0c0 !important;
-}
-
-/* Barra de progresso */
-.daltonico-mode .progress-bar {
-  background: linear-gradient(90deg, #4a5568 0%, #718096 100%) !important;
-}
-
-/* Botões primários */
-.daltonico-mode .btn-primary,
-.daltonico-mode .hero-btn,
-.daltonico-mode .btn-study,
-.daltonico-mode .btn-save,
-.daltonico-mode .btn-create,
-.daltonico-mode .btn-submit {
-  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
-}
-
-/* Badges e tags */
-.daltonico-mode .badge,
-.daltonico-mode .prompt-badge .badge {
-  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
-}
-
-/* Links e CTAs */
-.daltonico-mode .feature-link,
-.daltonico-mode .progress-cta,
-.daltonico-mode .view-all-btn,
-.daltonico-mode .config-btn {
-  color: #a0aec0 !important;
-}
-
-/* Botões de ação (editar/excluir) */
-.daltonico-mode .btn-icon.edit:hover {
-  background: #4a5568 !important;
-  color: white !important;
-}
-
-.daltonico-mode .btn-icon.delete:hover {
-  background: #7a4a4a !important;
-  color: white !important;
-}
-
-/* Níveis de dificuldade */
-.daltonico-mode .level-beginner,
-.daltonico-mode .difficulty.iniciante {
-  background: #4a5568 !important;
-  color: white !important;
-}
-
-.daltonico-mode .level-intermediate,
-.daltonico-mode .difficulty.intermediario {
-  background: #6b5a3e !important;
-  color: white !important;
-}
-
-.daltonico-mode .level-advanced,
-.daltonico-mode .difficulty.avancado {
-  background: #5a4a4a !important;
   color: white !important;
 }
