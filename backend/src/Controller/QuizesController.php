@@ -41,7 +41,6 @@ class QuizesController extends AppController
     // GET /quizes/view/{id}
     public function view($id = null)
     {
-        // 🔥 Pega o ID de várias formas
         $quizId = $id ?? $this->request->getParam('id') ?? $this->request->getQuery('id');
         
         error_log("=== VIEW QUIZ ===");
@@ -128,7 +127,6 @@ class QuizesController extends AppController
     // PUT /quizes/edit/{id}
     public function edit($id = null)
     {
-        // 🔥 Pega o ID de várias formas
         $quizId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
         
         error_log("=== EDIT QUIZ ===");
@@ -177,7 +175,6 @@ class QuizesController extends AppController
     // DELETE /quizes/delete/{id}
     public function delete($id = null)
     {
-        // 🔥 Pega o ID de várias formas
         $quizId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
         
         error_log("=== DELETE QUIZ ===");

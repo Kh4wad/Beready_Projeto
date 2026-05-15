@@ -77,13 +77,12 @@ class AuthComponent extends Component
             ->where(['email' => $email])
             ->first();
 
-        // 🔥 VERIFICAÇÃO DE SENHA - Use password_verify para senha hasheada
         if ($user && password_verify($password, $user->senha_hash)) {
             // Salva o usuário na sessão
             $this->session->write('Auth.User', [
                 'id' => $user->id,
                 'email' => $user->email,
-                'nome' => $user->nome, // 🔥 Adicione outros campos se necessário
+                'nome' => $user->nome,
             ]);
             return $user;
         }

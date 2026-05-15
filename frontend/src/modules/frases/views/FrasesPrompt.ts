@@ -1,7 +1,9 @@
+// src/modules/frases/views/FrasesPrompt.ts
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFrases } from '@/modules/frases/composables/useFrases'
-import { promptService } from '@//modules/prompts/services/promptService'
+import { promptService } from '@/modules/prompts/services/promptService'
+import { fraseService } from '@/modules/frases/services/fraseService'
 import { useAlert } from '@/shared/composables/useAlert'
 import type { Frase } from '@/core/types'
 
@@ -15,9 +17,9 @@ interface FraseForm {
 export function useFrasesPrompt() {
   const route = useRoute()
   const { success, error } = useAlert()
-  const { frases, loading, fetchFrases, createFrase, deleteFrase } = useFrases()
-
   const promptId = ref<number>(0)
+  const { frases, loading, fetchFrases, createFrase, deleteFrase } = useFrases(promptId.value)
+
   const promptTexto = ref<string>('')
   const modalOpen = ref(false)
   const saving = ref(false)
@@ -33,7 +35,7 @@ export function useFrasesPrompt() {
     nivel_dificuldade: 'intermediario',
   })
 
-  const loadPrompt = async (): Promise<void> => {
+  const loadPrompt = async () => {
     const idParam = route.params.promptId
     if (idParam) {
       promptId.value = Number(idParam)
@@ -42,20 +44,19 @@ export function useFrasesPrompt() {
         if (response.data.data) {
           promptTexto.value = response.data.data.texto_original
         }
-      } catch (err: unknown) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error(axiosError.response?.data?.message || 'Erro ao carregar prompt')
+      } catch (err: any) {
+        error(err.response?.data?.message || 'Erro ao carregar prompt')
       }
     }
   }
 
-  const loadData = async (): Promise<void> => {
+  const loadData = async () => {
     if (promptId.value) {
-      await fetchFrases(promptId.value)
+      await fetchFrases()
     }
   }
 
-  const openModal = (): void => {
+  const openModal = () => {
     editingId.value = null
     form.value = {
       frase_semelhante: '',
@@ -66,7 +67,7 @@ export function useFrasesPrompt() {
     modalOpen.value = true
   }
 
-  const editFrase = (frase: Frase): void => {
+  const editFrase = (frase: Frase) => {
     editingId.value = frase.id
     form.value = {
       frase_semelhante: frase.frase_semelhante,
@@ -77,16 +78,15 @@ export function useFrasesPrompt() {
     modalOpen.value = true
   }
 
-  const closeModal = (): void => {
+  const closeModal = () => {
     modalOpen.value = false
   }
 
-  const save = async (): Promise<void> => {
+  const save = async () => {
     if (!form.value.frase_semelhante) {
       error('Frase semelhante é obrigatória')
       return
     }
-
     saving.value = true
     try {
       if (editingId.value) {
@@ -108,22 +108,20 @@ export function useFrasesPrompt() {
       }
       await loadData()
       closeModal()
-    } catch (err: unknown) {
-      const axiosError = err as { response?: { data?: { message?: string } } }
-      error(axiosError.response?.data?.message || 'Erro ao salvar frase')
+    } catch (err: any) {
+      error(err.response?.data?.message || 'Erro ao salvar frase')
     } finally {
       saving.value = false
     }
   }
 
-  const confirmDelete = (frase: Frase): void => {
+  const confirmDelete = (frase: Frase) => {
     itemToDelete.value = frase.id
     confirmModalVisible.value = true
   }
 
-  const handleConfirmDelete = async (): Promise<void> => {
+  const handleConfirmDelete = async () => {
     if (!itemToDelete.value) return
-
     deleting.value = true
     try {
       await deleteFrase(itemToDelete.value)

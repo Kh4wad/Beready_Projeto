@@ -10,7 +10,6 @@ export function useTags() {
   const modalOpen = ref(false)
   const editingTag = ref<Tag | null>(null)
 
-  // 🔥 ConfirmModal
   const confirmModalVisible = ref(false)
   const tagToDelete = ref<Tag | null>(null)
   const deleting = ref(false)
@@ -100,13 +99,11 @@ export function useTags() {
     }
   }
 
-  // 🔥 Abre o modal de confirmação
   const confirmDelete = (tag: Tag) => {
     tagToDelete.value = tag
     confirmModalVisible.value = true
   }
 
-  // 🔥 Confirma e exclui
   const handleConfirmDelete = async () => {
     if (!tagToDelete.value) return
 

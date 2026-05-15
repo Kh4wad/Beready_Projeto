@@ -38,26 +38,26 @@ class AppController extends Controller
         return $this->response;
     }
 
-    protected function jsonSuccess($data, $message = null)
+    protected function jsonSuccess($data = null, string $message = 'success', int $status = 200)
     {
-        $response = ['success' => true];
-        if ($message) {
-            $response['message'] = $message;
-        }
-        $response['data'] = $data;
-        
-        $this->response->getBody()->write(json_encode($response, JSON_UNESCAPED_UNICODE));
+        $this->response = $this->response->withStatus($status);
+        $this->response = $this->response->withType('application/json');
+        $this->response->getBody()->write(json_encode([
+            'success' => true,
+            'message' => $message,
+            'data' => $data
+        ]));
         return $this->response;
     }
 
-    protected function jsonError($message, $code = 400, $errors = null)
+    protected function jsonError(string $message, int $status = 400)
     {
-        $this->response = $this->response->withStatus($code);
-        $response = ['success' => false, 'message' => $message];
-        if ($errors) {
-            $response['errors'] = $errors;
-        }
-        $this->response->getBody()->write(json_encode($response, JSON_UNESCAPED_UNICODE));
+        $this->response = $this->response->withStatus($status);
+        $this->response = $this->response->withType('application/json');
+        $this->response->getBody()->write(json_encode([
+            'success' => false,
+            'message' => $message
+        ]));
         return $this->response;
     }
 

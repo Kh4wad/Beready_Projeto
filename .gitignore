@@ -54,3 +54,6 @@ yarn-debug.log
 yarn-error.log
 frontend/package-lock.json
 frontend/package-lock.json
+backend/config/.env
+frontend/.env
+.env

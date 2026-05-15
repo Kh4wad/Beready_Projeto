@@ -1,3 +1,4 @@
+// src/modules/auth/views/useProfile.ts
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
@@ -14,10 +15,10 @@ export function useProfile() {
     if (!phone) return ''
     const digits = phone.replace(/\D/g, '')
     if (digits.length === 11) {
-      return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1)$2-$3')
+      return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
     }
     if (digits.length === 10) {
-      return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1)$2-$3')
+      return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
     }
     return phone
   }
@@ -50,27 +51,18 @@ export function useProfile() {
       error('E-mail não confere')
       return
     }
-
     deleteLoading.value = true
-
     try {
       const response = await fetch(`http://localhost:8765/users/delete/${user.value.id}`, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       })
-
       const data = await response.json()
-
       if (response.ok && data.success) {
         localStorage.removeItem('user')
         localStorage.removeItem('auth_token')
         success('Conta excluída com sucesso!')
-        setTimeout(() => {
-          router.push('/register')
-        }, 2000)
+        setTimeout(() => router.push('/register'), 2000)
       } else {
         error(data.message || 'Erro ao excluir conta')
         setTimeout(() => {
@@ -87,10 +79,8 @@ export function useProfile() {
       }, 1500)
     } finally {
       deleteLoading.value = false
-      if (!response?.ok) {
-        showDeleteModal.value = false
-        confirmEmail.value = ''
-      }
+      showDeleteModal.value = false
+      confirmEmail.value = ''
     }
   }
 
@@ -100,17 +90,12 @@ export function useProfile() {
       router.push('/login')
       return
     }
-
     try {
       const localUser = JSON.parse(userData)
       const response = await fetch(`http://localhost:8765/users/view/${localUser.id}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       })
-
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
@@ -126,7 +111,6 @@ export function useProfile() {
       console.error('Erro ao carregar usuário:', e)
       user.value = JSON.parse(userData)
     }
-
     if (!user.value) router.push('/login')
   }
 

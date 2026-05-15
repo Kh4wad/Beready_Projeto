@@ -5,17 +5,16 @@ namespace App\Model\Table;
 
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Ramsey\Uuid\Uuid;
 
 class UsersTable extends Table
 {
     public function initialize(array $config): void
     {
         parent::initialize($config);
-
         $this->setTable('users');
         $this->setDisplayField('nome');
         $this->setPrimaryKey('id');
-
         $this->addBehavior('Timestamp', [
             'events' => [
                 'Model.beforeSave' => [
@@ -24,6 +23,14 @@ class UsersTable extends Table
                 ]
             ]
         ]);
+    }
+    
+    public function beforeSave($event, $entity, $options)
+    {
+        if ($entity->isNew() && !$entity->uuid) {
+            $entity->uuid = Uuid::uuid4()->toString();
+        }
+        return true;
     }
 
     public function validationDefault(Validator $validator): Validator

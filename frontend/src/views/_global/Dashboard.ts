@@ -23,7 +23,7 @@ export function useDashboard() {
 
   const motivationalMessage = computed(() => {
     if (stats.value.sequenciaAtual >= 7) {
-      return `🔥 Incrivel! ${stats.value.sequenciaAtual} dias de sequencia! Continue assim!`
+      return ` Incrivel! ${stats.value.sequenciaAtual} dias de sequencia! Continue assim!`
     }
     if (stats.value.sequenciaAtual >= 3) {
       return `📈 ${stats.value.sequenciaAtual} dias seguidos! Voce esta evoluindo!`

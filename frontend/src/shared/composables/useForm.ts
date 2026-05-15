@@ -1,3 +1,4 @@
+// src/shared/composables/useForm.ts
 import { reactive, ref } from 'vue'
 
 export function useForm<T extends Record<string, any>>(initialData: T) {
@@ -8,12 +9,15 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
   const validate = (rules: Partial<Record<keyof T, (value: any) => string | null>>) => {
     let isValid = true
     errors.value = {}
-
-    for (const [field, rule] of Object.entries(rules)) {
-      const error = rule(form[field as keyof T])
-      if (error) {
-        errors.value[field as keyof T] = error
-        isValid = false
+    for (const field in rules) {
+      const rule = rules[field]
+      if (rule) {
+        const value = (form as any)[field]
+        const errorMsg = rule(value)
+        if (errorMsg) {
+          errors.value[field as keyof T] = errorMsg
+          isValid = false
+        }
       }
     }
     return isValid
@@ -25,10 +29,8 @@ export function useForm<T extends Record<string, any>>(initialData: T) {
   }
 
   const setField = (field: keyof T, value: any) => {
-    form[field] = value
-    if (errors.value[field]) {
-      delete errors.value[field]
-    }
+    ;(form as any)[field] = value
+    if (errors.value[field]) delete errors.value[field]
   }
 
   return { form, errors, loading, validate, reset, setField }

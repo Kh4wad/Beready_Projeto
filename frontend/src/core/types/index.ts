@@ -107,7 +107,7 @@ export interface Progresso {
 }
 
 export interface Preferencia {
-  id: number
+  id?: number
   usuario_id: number
   tema: 'claro' | 'escuro'
   modo_daltonico: boolean
@@ -116,8 +116,8 @@ export interface Preferencia {
   traducao_automatica: boolean
   preferencia_dificuldade: 'iniciante' | 'intermediario' | 'avancado' | 'adaptativo'
   meta_diaria_minutos: number
-  criado_em: string
-  atualizado_em: string
+  criado_em?: string
+  atualizado_em?: string
 }
 
 export interface ApiResponse<T = unknown> {

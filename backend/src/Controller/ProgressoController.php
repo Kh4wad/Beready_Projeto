@@ -82,7 +82,6 @@ class ProgressoController extends AppController
         }
     }
     
-    // 🔥 Métodos auxiliares com visibilidade protected (para não conflitar com AppController)
     protected function jsonSuccess($data, $message = null)
     {
         $response = ['success' => true];

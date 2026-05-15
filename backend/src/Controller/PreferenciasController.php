@@ -18,7 +18,6 @@ class PreferenciasController extends AppController
     // GET /preferencias/usuario/{usuarioId}
     public function getByUsuario($usuarioId = null)
     {
-        // 🔥 Pega o ID de várias formas
         $userId = $usuarioId ?? $this->request->getParam('usuarioId') ?? $this->request->getQuery('usuarioId');
         
         error_log("=== GET PREFERENCIAS ===");

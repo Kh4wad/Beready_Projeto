@@ -15,7 +15,7 @@ class FlashcardTagsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('flashcard_tags'); // 🔥 NOME CORRETO
+        $this->setTable('flashcard_tags');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
