@@ -11,4 +11,7 @@ interface UserRepositoryInterface
     public function update(int $id, array $data): array;
     public function delete(int $id): bool;
     public function emailExists(string $email, ?int $excludeId = null): bool;
+    public function findByUuid(string $uuid): ?array;
+    public function findByResetToken(string $token): ?array;
+    public function updateResetToken(int $id, ?string $token, ?string $expires): bool;
 }

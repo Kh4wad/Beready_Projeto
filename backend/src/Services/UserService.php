@@ -4,10 +4,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Contracts\UserRepositoryInterface;
+use App\Exceptions\EmailAlreadyExistsException;
+use App\Exceptions\WeakPasswordException;
+use App\Exceptions\InvalidTokenException;
+use App\Exceptions\UserNotFoundException;
 
-class UserService
+class UserService implements UserUseCaseInterface
 {
-    private UserRepositoryInterface $userRepository;
+     private UserRepositoryInterface $userRepository;
     
     public function __construct(UserRepositoryInterface $userRepository)
     {
@@ -19,17 +23,17 @@ class UserService
         if (empty($data['nome']) || empty($data['email']) || empty($data['senha'])) {
             throw new \InvalidArgumentException('Nome, e-mail e senha são obrigatórios');
         }
-        
-        if ($this->userRepository->emailExists($data['email'])) {
-            throw new \RuntimeException('Este e-mail já está cadastrado', 409);
+        if (strlen($data['senha']) < 6) {
+            throw new WeakPasswordException('A senha deve ter pelo menos 6 caracteres');
         }
-        
+        if ($this->userRepository->emailExists($data['email'])) {
+            throw new EmailAlreadyExistsException();
+        }
+        $data['uuid'] = Uuid::uuid4()->toString();
         $data['senha_hash'] = password_hash($data['senha'], PASSWORD_DEFAULT);
         unset($data['senha']);
-        
         $user = $this->userRepository->create($data);
         unset($user['senha_hash']);
-        
         return $user;
     }
     
@@ -50,7 +54,6 @@ class UserService
           throw new \RuntimeException('E-mail ou senha inválidos', 401);
       }
       
-      // 🔥 Verifica se o campo senha_hash existe
       error_log("senha_hash exists: " . (isset($user['senha_hash']) ? 'YES' : 'NO'));
       error_log("senha_hash value: " . ($user['senha_hash'] ?? 'NULL'));
       
@@ -61,10 +64,8 @@ class UserService
           throw new \RuntimeException('E-mail ou senha inválidos', 401);
       }
       
-      // 🔥 Atualiza último login
       $this->userRepository->update($user['id'], ['ultimo_login' => date('Y-m-d H:i:s')]);
       
-      // 🔥 Só remove a senha DEPOIS de verificar
       unset($user['senha_hash']);
       
       return $user;
@@ -110,5 +111,15 @@ class UserService
         }
         
         return $this->userRepository->delete($id);
+    }
+
+    public function getUserByUuid(string $uuid): array
+    {
+        $user = $this->userRepository->findByUuid($uuid);
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
+        unset($user['senha_hash']);
+        return $user;
     }
 }

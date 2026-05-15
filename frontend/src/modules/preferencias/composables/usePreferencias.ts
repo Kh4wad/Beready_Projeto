@@ -1,5 +1,6 @@
 import { ref, reactive } from 'vue'
-import { preferenciaService, type Preferencia } from '../services/preferenciaService'
+import { preferenciaService } from '../services/preferenciaService'
+import type { Preferencia } from '@/core/types'
 import { useAlert } from '@/shared/composables/useAlert'
 
 export function usePreferencias() {
@@ -62,7 +63,6 @@ export function usePreferencias() {
           data.traducao_automatica !== undefined ? data.traducao_automatica : true
         form.preferencia_dificuldade = data.preferencia_dificuldade || 'intermediario'
         form.meta_diaria_minutos = data.meta_diaria_minutos || 45
-
         aplicarPreferenciasGlobais()
       }
       return form
@@ -89,9 +89,7 @@ export function usePreferencias() {
         preferencia_dificuldade: form.preferencia_dificuldade,
         meta_diaria_minutos: form.meta_diaria_minutos,
       }
-
       const response = await preferenciaService.save(data)
-
       if (response.data.success) {
         aplicarPreferenciasGlobais()
         success('Preferências salvas com sucesso!')

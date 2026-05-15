@@ -20,7 +20,6 @@ class UserDTO
     public ?DateTime $atualizado_em = null;
     public ?DateTime $ultimo_login = null;
     
-    // 🔥 Campos virtuais
     public ?string $senha = null;
     public ?string $confirmar_senha = null;
     

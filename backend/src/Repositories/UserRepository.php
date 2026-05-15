@@ -17,14 +17,12 @@ class UserRepository implements UserRepositoryInterface
     
     public function findById(int $id): ?array
     {
-        // 🔥 Busca TODOS os campos, sem select específico
         $user = $this->usersTable->get($id);
         return $user ? $user->toArray() : null;
     }
     
     public function findByEmail(string $email): ?array
     {
-        // 🔥 Busca TODOS os campos, sem select específico
         $user = $this->usersTable->find()
             ->where(['email' => $email])
             ->first();
@@ -35,7 +33,6 @@ class UserRepository implements UserRepositoryInterface
         
         $data = $user->toArray();
         
-        // 🔥 Garante que senha_hash está presente
         if (isset($user->senha_hash)) {
             $data['senha_hash'] = $user->senha_hash;
         }
@@ -72,4 +69,27 @@ class UserRepository implements UserRepositoryInterface
         }
         return $query->count() > 0;
     }
+
+    public function findByUuid(string $uuid): ?array
+    {
+        $user = $this->usersTable->find()->where(['uuid' => $uuid])->first();
+        return $user ? $user->toArray() : null;
+    }
+
+    public function findByResetToken(string $token): ?array
+    {
+        $user = $this->usersTable->find()
+            ->where(['reset_token' => $token, 'reset_token_expires >' => date('Y-m-d H:i:s')])
+            ->first();
+        return $user ? $user->toArray() : null;
+    }
+
+    public function updateResetToken(int $id, ?string $token, ?string $expires): bool
+    {
+        $user = $this->usersTable->get($id);
+        $user->reset_token = $token;
+        $user->reset_token_expires = $expires;
+        return (bool) $this->usersTable->save($user);
+    }
+    
 }

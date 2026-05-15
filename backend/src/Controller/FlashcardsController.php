@@ -127,7 +127,6 @@ class FlashcardsController extends AppController
     // PUT /flashcards/edit/{id} ou PUT /flashcards/{id}
     public function edit($id = null)
     {
-        // 🔥 Pega o ID de várias formas
         $flashcardId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
         
         error_log("=== EDIT FLASHCARD ===");
@@ -181,7 +180,6 @@ class FlashcardsController extends AppController
     // DELETE /flashcards/delete/{id} ou DELETE /flashcards/{id}
     public function delete($id = null)
     {
-        // 🔥 Pega o ID de várias formas
         $flashcardId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
         
         error_log("=== DELETE FLASHCARD ===");

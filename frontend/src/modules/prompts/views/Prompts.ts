@@ -1,7 +1,8 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
-import { promptService } from '@//modules/prompts/services/promptService'
+import { promptService } from '@/modules/prompts/services/promptService'
+import type { Prompt } from '@/core/types'
 
 export function usePrompts() {
   const router = useRouter()
@@ -44,7 +45,12 @@ export function usePrompts() {
     loading.value = true
     try {
       const response = await promptService.getByUsuario(userId)
-      prompts.value = response.data.data || []
+      if (response.data.success) {
+        prompts.value = response.data.data || []
+      } else {
+        prompts.value = []
+        error(response.data.message || 'Erro ao carregar prompts')
+      }
     } catch (err: unknown) {
       const axiosError = err as { response?: { data?: { message?: string } } }
       if (axiosError.response?.status !== 400) {
@@ -88,11 +94,13 @@ export function usePrompts() {
 
     try {
       if (editingPrompt.value) {
-        await promptService.update(editingPrompt.value.id!, form.value)
-        success('Prompt atualizado com sucesso!')
+        const response = await promptService.update(editingPrompt.value.id!, form.value)
+        if (response.data.success) success('Prompt atualizado com sucesso!')
+        else throw new Error(response.data.message)
       } else {
-        await promptService.create({ ...form.value, usuario_id: userId })
-        success('Prompt criado com sucesso!')
+        const response = await promptService.create({ ...form.value, usuario_id: userId })
+        if (response.data.success) success('Prompt criado com sucesso!')
+        else throw new Error(response.data.message)
       }
       await fetchPrompts()
       closeModal()
@@ -114,9 +122,13 @@ export function usePrompts() {
 
     deleting.value = true
     try {
-      await promptService.delete(promptToDelete.value.id!)
-      success('Prompt excluído com sucesso!')
-      await fetchPrompts()
+      const response = await promptService.delete(promptToDelete.value.id!)
+      if (response.data.success) {
+        success('Prompt excluído com sucesso!')
+        await fetchPrompts()
+      } else {
+        throw new Error(response.data.message)
+      }
     } catch (err: unknown) {
       const axiosError = err as { response?: { data?: { message?: string } } }
       error(axiosError.response?.data?.message || 'Erro ao excluir prompt')
@@ -132,7 +144,6 @@ export function usePrompts() {
     return new Date(date).toLocaleDateString('pt-BR')
   }
 
-  // viewTranslations recebe number e navega para a rota correta
   const viewTranslations = (promptId: number): void => {
     router.push(`/prompts/${promptId}`)
   }
