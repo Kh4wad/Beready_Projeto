@@ -12,10 +12,6 @@ class AppController extends Controller
     {
         parent::initialize();
         
-        $this->response = $this->response->withHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-        $this->response = $this->response->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-        $this->response = $this->response->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
-        $this->response = $this->response->withHeader('Access-Control-Allow-Credentials', 'true');
         $this->response = $this->response->withType('application/json');
         $this->autoRender = false;
     }

@@ -19,6 +19,11 @@
   max-width: 450px;
   width: 90%;
   text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .confirm-container {
+  background: #1e1e2e;
 }
 
 .modal-enter-active,
@@ -33,7 +38,9 @@
 
 .modal-enter-active .confirm-container,
 .modal-leave-active .confirm-container {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .modal-enter-from .confirm-container,
@@ -67,6 +74,21 @@
   color: #3182ce;
 }
 
+.dark-mode .confirm-icon.danger {
+  background: #7f1a1a;
+  color: #f87171;
+}
+
+.dark-mode .confirm-icon.warning {
+  background: #7c2d12;
+  color: #fbbf24;
+}
+
+.dark-mode .confirm-icon.info {
+  background: #1e3a5f;
+  color: #60a5fa;
+}
+
 .confirm-title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -74,11 +96,19 @@
   margin-bottom: 0.5rem;
 }
 
+.dark-mode .confirm-title {
+  color: #f0f0f0;
+}
+
 .confirm-message {
   color: #4a5568;
   font-size: 0.875rem;
   line-height: 1.5;
   margin-bottom: 0.5rem;
+}
+
+.dark-mode .confirm-message {
+  color: #a0a0a0;
 }
 
 .confirm-item-name {
@@ -90,6 +120,11 @@
   margin: 1rem 0;
   font-size: 0.875rem;
   word-break: break-all;
+}
+
+.dark-mode .confirm-item-name {
+  background: #7f1a1a;
+  color: #fca5a5;
 }
 
 .confirm-actions {
@@ -116,6 +151,15 @@
 
 .confirm-btn-cancel:hover {
   background: #cbd5e0;
+}
+
+.dark-mode .confirm-btn-cancel {
+  background: #2a2a3a;
+  color: #c0c0c0;
+}
+
+.dark-mode .confirm-btn-cancel:hover {
+  background: #3a3a4a;
 }
 
 .confirm-btn-confirm {
@@ -156,20 +200,28 @@
   cursor: not-allowed;
 }
 
+.dark-mode .confirm-btn-confirm.danger {
+  background: #dc2626;
+}
+
+.dark-mode .confirm-btn-confirm.danger:hover:not(:disabled) {
+  background: #b91c1c;
+}
+
 @media (max-width: 768px) {
   .confirm-container {
     padding: 1.5rem;
     max-width: 90%;
   }
-  
+
   .confirm-title {
     font-size: 1.125rem;
   }
-  
+
   .confirm-message {
     font-size: 0.75rem;
   }
-  
+
   .confirm-btn-cancel,
   .confirm-btn-confirm {
     padding: 0.5rem 1rem;

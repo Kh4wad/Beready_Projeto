@@ -33,29 +33,40 @@ export function useDashboard() {
 
   const loadUserData = async () => {
     const userData = localStorage.getItem('user')
-    if (userData) {
-      user.value = JSON.parse(userData)
+    if (!userData) return
 
-      try {
-        const response = await fetch(`http://localhost:8765/progresso/usuario/${user.value.id}`)
-        if (response.ok) {
-          const data = await response.json()
-          if (data.success && data.data) {
-            stats.value.flashcardsCount = data.data.flashcards_concluidos || 0
-            stats.value.sequenciaAtual = data.data.sequencia_atual || 0
-            stats.value.acertoRate = Math.floor(Math.random() * 30) + 70
-            stats.value.tempoEstudo = `${Math.floor(data.data.tempo_total_estudo / 60)}h`
-            stats.value.progressoGeral = Math.floor(Math.random() * 100)
-          }
+    let parsedUser
+    try {
+      parsedUser = JSON.parse(userData)
+    } catch (e) {
+      console.error('Erro ao fazer parse do userData:', e)
+      localStorage.removeItem('user')
+      return
+    }
+
+    user.value = parsedUser
+
+    if (!user.value || !user.value.id) return
+
+    try {
+      const response = await fetch(`http://localhost:8765/progresso/usuario/${user.value.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success && data.data) {
+          stats.value.flashcardsCount = data.data.flashcards_concluidos || 0
+          stats.value.sequenciaAtual = data.data.sequencia_atual || 0
+          stats.value.acertoRate = Math.floor(Math.random() * 30) + 70
+          stats.value.tempoEstudo = `${Math.floor(data.data.tempo_total_estudo / 60)}h`
+          stats.value.progressoGeral = Math.floor(Math.random() * 100)
         }
-      } catch (err) {
-        console.error('Erro ao carregar estatisticas:', err)
-        stats.value.flashcardsCount = 25
-        stats.value.acertoRate = 93
-        stats.value.sequenciaAtual = 3
-        stats.value.tempoEstudo = '2h'
-        stats.value.progressoGeral = 50
       }
+    } catch (err) {
+      console.error('Erro ao carregar estatisticas:', err)
+      stats.value.flashcardsCount = 25
+      stats.value.acertoRate = 93
+      stats.value.sequenciaAtual = 3
+      stats.value.tempoEstudo = '2h'
+      stats.value.progressoGeral = 50
     }
   }
 

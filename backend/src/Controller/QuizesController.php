@@ -21,20 +21,9 @@ class QuizesController extends AppController
     {
         try {
             $quizzes = $this->quizService->getAllQuizzes();
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'data' => $quizzes
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($quizzes);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro ao carregar quizzes: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro ao carregar quizzes: ' . $e->getMessage(), 500);
         }
     }
     
@@ -43,42 +32,17 @@ class QuizesController extends AppController
     {
         $quizId = $id ?? $this->request->getParam('id') ?? $this->request->getQuery('id');
         
-        error_log("=== VIEW QUIZ ===");
-        error_log("ID recebido: " . $quizId);
-        
         if (!$quizId) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do quiz não informado'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do quiz não informado', 400);
         }
         
         try {
             $quiz = $this->quizService->getQuizById((int)$quizId);
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'data' => $quiz
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($quiz);
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
     
@@ -88,131 +52,77 @@ class QuizesController extends AppController
         $input = file_get_contents('php://input');
         $data = json_decode($input, true) ?: $this->request->getData();
         
+        // Log para debug
+        error_log("=== QUIZ ADD ===");
+        error_log("Dados recebidos: " . print_r($data, true));
+        
+        // Validar campos obrigatórios
+        if (empty($data['usuario_id'])) {
+            return $this->jsonError('ID do usuário é obrigatório', 400);
+        }
+        
+        if (empty($data['titulo'])) {
+            return $this->jsonError('Título é obrigatório', 400);
+        }
+        
         try {
             $quiz = $this->quizService->createQuiz($data);
-            
-            $this->response = $this->response->withStatus(201);
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'message' => 'Quiz criado com sucesso',
-                'data' => $quiz
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($quiz, 'Quiz criado com sucesso', 201);
         } catch (\InvalidArgumentException $e) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), 400);
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            error_log("ERRO ao criar quiz: " . $e->getMessage());
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
     
-    // PUT /quizes/edit/{id}
+    // PUT /quizes/{id}
     public function edit($id = null)
     {
         $quizId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
         
-        error_log("=== EDIT QUIZ ===");
-        error_log("ID recebido: " . $quizId);
-        
         if (!$quizId) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do quiz não informado'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do quiz não informado', 400);
         }
         
         $input = file_get_contents('php://input');
         $data = json_decode($input, true) ?: $this->request->getData();
         
+        error_log("=== QUIZ EDIT ===");
+        error_log("ID: " . $quizId);
+        error_log("Dados: " . print_r($data, true));
+        
         try {
             $quiz = $this->quizService->updateQuiz((int)$quizId, $data);
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'message' => 'Quiz atualizado com sucesso',
-                'data' => $quiz
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($quiz, 'Quiz atualizado com sucesso');
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
     
-    // DELETE /quizes/delete/{id}
+    // DELETE /quizes/{id}
     public function delete($id = null)
     {
         $quizId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
         
-        error_log("=== DELETE QUIZ ===");
-        error_log("ID recebido: " . $quizId);
-        
         if (!$quizId) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do quiz não informado'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do quiz não informado', 400);
         }
+        
+        error_log("=== QUIZ DELETE ===");
+        error_log("ID: " . $quizId);
         
         try {
             $this->quizService->deleteQuiz((int)$quizId);
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'message' => 'Quiz excluído com sucesso'
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess(null, 'Quiz excluído com sucesso');
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
 }

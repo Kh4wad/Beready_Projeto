@@ -36,7 +36,6 @@ class PromptsController extends AppController
                 ->all();
             
             return $this->jsonSuccess($prompts->toArray());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -48,30 +47,14 @@ class PromptsController extends AppController
         $promptId = $id ?? $this->request->getParam('id') ?? $this->request->getQuery('id');
         
         if (!$promptId) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do prompt não informado'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do prompt não informado', 400);
         }
         
         try {
             $prompt = $this->table->get($promptId);
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'data' => $prompt
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($prompt);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(404);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Prompt não encontrado'
-            ]));
-            return $this->response;
+            return $this->jsonError('Prompt não encontrado', 404);
         }
     }
     
@@ -82,51 +65,23 @@ class PromptsController extends AppController
         $data = json_decode($input, true) ?: $this->request->getData();
         
         if (empty($data['usuario_id'])) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do usuário é obrigatório'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do usuário é obrigatório', 400);
         }
         
         if (empty($data['texto_original'])) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Texto original é obrigatório'
-            ]));
-            return $this->response;
+            return $this->jsonError('Texto original é obrigatório', 400);
         }
         
         try {
             $prompt = $this->table->newEntity($data);
             
             if ($this->table->save($prompt)) {
-                $this->response = $this->response->withStatus(201);
-                $this->response->getBody()->write(json_encode([
-                    'success' => true,
-                    'message' => 'Prompt criado com sucesso',
-                    'data' => $prompt
-                ]));
-                return $this->response;
+                return $this->jsonSuccess($prompt, 'Prompt criado com sucesso', 201);
             }
             
-            $this->response = $this->response->withStatus(422);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro ao criar prompt',
-                'errors' => $prompt->getErrors()
-            ]));
-            return $this->response;
-            
+            return $this->jsonError('Erro ao criar prompt', 422, $prompt->getErrors());
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), 500);
         }
     }
 
@@ -151,7 +106,6 @@ class PromptsController extends AppController
             }
             
             return $this->jsonError('Erro ao atualizar prompt', 422, $prompt->getErrors());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -174,10 +128,8 @@ class PromptsController extends AppController
             }
             
             return $this->jsonError('Erro ao excluir prompt', 500);
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
     }
-
 }

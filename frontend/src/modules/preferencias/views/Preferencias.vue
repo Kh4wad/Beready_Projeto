@@ -197,8 +197,16 @@ const handleSave = async () => {
 onMounted(async () => {
   const userData = localStorage.getItem('user')
   if (userData) {
-    const user = JSON.parse(userData)
-    await fetchPreferencias(user.id)
+    try {
+      const user = JSON.parse(userData)
+      if (user && user.id) {
+        await fetchPreferencias(user.id)
+      } else {
+        console.error('Usuário inválido')
+      }
+    } catch (e) {
+      console.error('Erro ao fazer parse do user:', e)
+    }
   }
 })
 </script>

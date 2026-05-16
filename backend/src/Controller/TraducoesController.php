@@ -29,7 +29,6 @@ class TraducoesController extends AppController
                 ->all();
             
             return $this->jsonSuccess($traducoes->toArray());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -78,7 +77,6 @@ class TraducoesController extends AppController
             }
             
             return $this->jsonError('Erro ao criar tradução', 422, $traducao->getErrors());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -110,7 +108,6 @@ class TraducoesController extends AppController
             }
             
             return $this->jsonError('Erro ao atualizar tradução', 422, $traducao->getErrors());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -133,7 +130,6 @@ class TraducoesController extends AppController
             }
             
             return $this->jsonError('Erro ao excluir tradução', 500);
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }

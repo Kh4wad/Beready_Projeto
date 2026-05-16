@@ -1,7 +1,7 @@
-// src/modules/frases/composables/useFrases.ts
+// frontend/src/modules/frases/composables/useFrases.ts
 import { ref } from 'vue'
 import { fraseService } from '../services/fraseService'
-import type { Frase } from '@/core/types'
+import type { Frase, ApiResponse } from '@/core/types'
 
 export function useFrases(promptId: number) {
   const frases = ref<Frase[]>([])
@@ -12,37 +12,46 @@ export function useFrases(promptId: number) {
     loading.value = true
     error.value = null
     try {
-      const response = await fraseService.getByPrompt(promptId)
-      // response.data é ApiResponse<Frase[]>
-      if (response.data.success) {
-        frases.value = response.data.data || []
+      const response = (await fraseService.getByPrompt(promptId)) as ApiResponse<Frase[]>
+      if (response.success) {
+        frases.value = response.data || []
       } else {
-        error.value = response.data.message || 'Erro ao carregar frases'
+        error.value = response.message || 'Erro ao carregar frases'
       }
-    } catch (err: any) {
-      error.value = err.message || 'Erro na requisição'
+    } catch (err) {
+      const axiosError = err as { response?: { data?: { message?: string } }; message?: string }
+      error.value = axiosError.response?.data?.message || axiosError.message || 'Erro na requisição'
     } finally {
       loading.value = false
     }
   }
 
   const createFrase = async (data: Omit<Frase, 'id' | 'criado_em'>) => {
-    const response = await fraseService.create(data)
-    if (response.data.success) {
+    const response = (await fraseService.create(data)) as ApiResponse<Frase>
+    if (response.success) {
       await fetchFrases()
-      return response.data.data
+      return response.data
     }
-    throw new Error(response.data.message)
+    throw new Error(response.message)
+  }
+
+  const updateFrase = async (id: number, data: Partial<Omit<Frase, 'id' | 'criado_em'>>) => {
+    const response = (await fraseService.update(id, data)) as ApiResponse<Frase>
+    if (response.success) {
+      await fetchFrases()
+      return response.data
+    }
+    throw new Error(response.message)
   }
 
   const deleteFrase = async (id: number) => {
-    const response = await fraseService.delete(id)
-    if (response.data.success) {
+    const response = (await fraseService.delete(id)) as ApiResponse<null>
+    if (response.success) {
       await fetchFrases()
     } else {
-      throw new Error(response.data.message)
+      throw new Error(response.message)
     }
   }
 
-  return { frases, loading, error, fetchFrases, createFrase, deleteFrase }
+  return { frases, loading, error, fetchFrases, createFrase, updateFrase, deleteFrase }
 }

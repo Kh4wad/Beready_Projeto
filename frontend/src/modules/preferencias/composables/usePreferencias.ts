@@ -67,6 +67,7 @@ export function usePreferencias() {
       }
       return form
     } catch (err: any) {
+      console.error('Erro ao carregar preferências:', err)
       if (err.response?.status !== 404) {
         error(err.response?.data?.message || 'Erro ao carregar preferências')
       }
@@ -89,6 +90,7 @@ export function usePreferencias() {
         preferencia_dificuldade: form.preferencia_dificuldade,
         meta_diaria_minutos: form.meta_diaria_minutos,
       }
+
       const response = await preferenciaService.save(data)
       if (response.data.success) {
         aplicarPreferenciasGlobais()
@@ -97,6 +99,7 @@ export function usePreferencias() {
         error(response.data.message || 'Erro ao salvar preferências')
       }
     } catch (err: any) {
+      console.error('Erro ao salvar preferências:', err)
       error(err.response?.data?.message || 'Erro de conexão com o servidor')
     } finally {
       saving.value = false

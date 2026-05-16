@@ -9,7 +9,7 @@ function useForm(initialData: any) {
   const validate = (rules: any) => {
     let isValid = true
     const newErrors: any = {}
-    
+
     for (const field in rules) {
       const rule = rules[field]
       const error = rule(form.value[field])
@@ -18,7 +18,7 @@ function useForm(initialData: any) {
         isValid = false
       }
     }
-    
+
     errors.value = newErrors
     return isValid
   }
@@ -38,21 +38,21 @@ function usePasswordStrength() {
 
   const checkPasswordStrength = (password: string) => {
     let score = 0
-    
+
     if (!password) {
       strengthClass.value = ''
       strengthText.value = ''
       strengthWidth.value = '0%'
       return
     }
-    
+
     if (password.length >= 6) score += 1
     if (password.length >= 8) score += 1
     if (/[A-Z]/.test(password)) score += 1
     if (/[a-z]/.test(password)) score += 1
     if (/[0-9]/.test(password)) score += 1
     if (/[^A-Za-z0-9]/.test(password)) score += 1
-    
+
     if (score <= 2) {
       strengthText.value = 'Fraca'
       strengthClass.value = 'weak'
@@ -81,31 +81,41 @@ function usePhoneMask() {
   const handlePhoneInput = (event: Event) => {
     const input = event.target as HTMLInputElement
     let value = input.value.replace(/\D/g, '')
-    
+
     if (value.length > 11) {
       value = value.slice(0, 11)
     }
-    
+
     let formatted = value
     if (value.length === 11) {
       formatted = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1)$2-$3')
     } else if (value.length === 10) {
       formatted = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1)$2-$3')
     }
-    
+
     input.value = formatted
-    
+
     if (value.length > 0 && value.length < 11) {
       phoneError.value = 'Telefone deve ter 10 ou 11 dígitos'
     } else {
       phoneError.value = ''
     }
-    
+
     return formatted
   }
 
   const handlePhoneKeydown = (event: KeyboardEvent) => {
-    const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Escape', 'Enter', 'Home', 'End']
+    const allowedKeys = [
+      'Backspace',
+      'Delete',
+      'ArrowLeft',
+      'ArrowRight',
+      'Tab',
+      'Escape',
+      'Enter',
+      'Home',
+      'End',
+    ]
     if (allowedKeys.includes(event.key)) return
     if (!/^[0-9]$/.test(event.key)) {
       event.preventDefault()
@@ -124,28 +134,36 @@ function useAlert() {
     alertMessage.value = message
     alertType.value = 'success'
     showAlert.value = true
-    setTimeout(() => { showAlert.value = false }, 3000)
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
   }
 
   const error = (message: string) => {
     alertMessage.value = message
     alertType.value = 'error'
     showAlert.value = true
-    setTimeout(() => { showAlert.value = false }, 3000)
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
   }
 
   const warning = (message: string) => {
     alertMessage.value = message
     alertType.value = 'warning'
     showAlert.value = true
-    setTimeout(() => { showAlert.value = false }, 3000)
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
   }
 
   const info = (message: string) => {
     alertMessage.value = message
     alertType.value = 'info'
     showAlert.value = true
-    setTimeout(() => { showAlert.value = false }, 3000)
+    setTimeout(() => {
+      showAlert.value = false
+    }, 3000)
   }
 
   return { showAlert, alertMessage, alertType, success, error, warning, info }

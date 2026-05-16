@@ -45,18 +45,28 @@ export function useLogin() {
       const data = await response.json()
 
       if (data.success) {
-        localStorage.setItem('user', JSON.stringify(data.user))
-        success('Login realizado com sucesso!')
+        // A resposta é: { success: true, data: { user: { id, nome, ... } } }
+        const user = data.data?.user || data.data || data.user
 
-        setTimeout(() => {
-          clearAllAlerts()
-          router.push('/dashboard')
-        }, 500)
+
+        if (user && user.id) {
+          // Salva APENAS o usuário, não o wrapper
+          localStorage.setItem('user', JSON.stringify(user))
+          success('Login realizado com sucesso!')
+
+          setTimeout(() => {
+            clearAllAlerts()
+            router.push('/dashboard')
+          }, 500)
+        } else {
+          console.error('❌ Usuário inválido:', user)
+          error('Resposta da API inválida')
+        }
       } else {
         error(data.message || 'E-mail ou senha inválidos')
       }
     } catch (err) {
-      console.error('Erro:', err)
+      console.error('❌ Erro:', err)
       error('Erro de conexão com o servidor. Verifique se o backend está rodando.')
     } finally {
       loading.value = false

@@ -20,6 +20,11 @@ class ProgressoController extends AppController
     {
         $userId = $usuarioId ?? $this->request->getParam('usuarioId') ?? $this->request->getQuery('usuarioId');
         
+        error_log("=== GET BY USUARIO ===");
+        error_log("usuarioId param: " . ($usuarioId ?? 'null'));
+        error_log("usuarioId from request: " . ($this->request->getParam('usuarioId') ?? 'null'));
+        error_log("Final userId: " . $userId);
+        
         if (!$userId) {
             return $this->jsonError('ID do usuário não informado', 400);
         }
@@ -43,7 +48,7 @@ class ProgressoController extends AppController
                 ]);
             }
             
-            return $this->jsonSuccess($progresso);
+            return $this->jsonSuccess($progresso->toArray());
             
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
@@ -80,28 +85,5 @@ class ProgressoController extends AppController
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
-    }
-    
-    protected function jsonSuccess($data, $message = null)
-    {
-        $response = ['success' => true];
-        if ($message) {
-            $response['message'] = $message;
-        }
-        $response['data'] = $data;
-        
-        $this->response->getBody()->write(json_encode($response, JSON_UNESCAPED_UNICODE));
-        return $this->response;
-    }
-    
-    protected function jsonError($message, $code = 400, $errors = null)
-    {
-        $this->response = $this->response->withStatus($code);
-        $response = ['success' => false, 'message' => $message];
-        if ($errors) {
-            $response['errors'] = $errors;
-        }
-        $this->response->getBody()->write(json_encode($response, JSON_UNESCAPED_UNICODE));
-        return $this->response;
     }
 }

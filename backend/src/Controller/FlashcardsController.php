@@ -21,20 +21,9 @@ class FlashcardsController extends AppController
     {
         try {
             $flashcards = $this->flashcardService->getAllFlashcards();
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'data' => $flashcards
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($flashcards);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro ao carregar flashcards: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro ao carregar flashcards: ' . $e->getMessage(), 500);
         }
     }
     
@@ -47,38 +36,16 @@ class FlashcardsController extends AppController
         error_log("ID recebido: " . $flashcardId);
         
         if (!$flashcardId) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do flashcard não informado'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do flashcard não informado', 400);
         }
         
         try {
             $flashcard = $this->flashcardService->getFlashcardById((int)$flashcardId);
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'data' => $flashcard
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($flashcard);
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
     
@@ -90,57 +57,26 @@ class FlashcardsController extends AppController
         
         try {
             $flashcard = $this->flashcardService->createFlashcard($data);
-            
-            $this->response = $this->response->withStatus(201);
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'message' => 'Flashcard criado com sucesso',
-                'data' => $flashcard
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($flashcard, 'Flashcard criado com sucesso', 201);
         } catch (\InvalidArgumentException $e) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), 400);
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
     
-    // PUT /flashcards/edit/{id} ou PUT /flashcards/{id}
+    // PUT /flashcards/edit/{id}
     public function edit($id = null)
     {
         $flashcardId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
         
         error_log("=== EDIT FLASHCARD ===");
         error_log("ID recebido: " . $flashcardId);
-        error_log("ID do parâmetro: " . ($id ?? 'null'));
-        error_log("ID do request param: " . ($this->request->getParam('id') ?? 'null'));
         
         if (!$flashcardId) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do flashcard não informado'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do flashcard não informado', 400);
         }
         
         $input = file_get_contents('php://input');
@@ -150,34 +86,16 @@ class FlashcardsController extends AppController
         
         try {
             $flashcard = $this->flashcardService->updateFlashcard((int)$flashcardId, $data);
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'message' => 'Flashcard atualizado com sucesso',
-                'data' => $flashcard
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess($flashcard, 'Flashcard atualizado com sucesso');
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
             error_log("ERRO: " . $e->getMessage());
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
     
-    // DELETE /flashcards/delete/{id} ou DELETE /flashcards/{id}
+    // DELETE /flashcards/delete/{id}
     public function delete($id = null)
     {
         $flashcardId = $id ?? $this->request->getParam('id') ?? $this->request->getData('id');
@@ -186,39 +104,17 @@ class FlashcardsController extends AppController
         error_log("ID recebido: " . $flashcardId);
         
         if (!$flashcardId) {
-            $this->response = $this->response->withStatus(400);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'ID do flashcard não informado'
-            ]));
-            return $this->response;
+            return $this->jsonError('ID do flashcard não informado', 400);
         }
         
         try {
             $this->flashcardService->deleteFlashcard((int)$flashcardId);
-            
-            $this->response->getBody()->write(json_encode([
-                'success' => true,
-                'message' => 'Flashcard excluído com sucesso'
-            ]));
-            return $this->response;
-            
+            return $this->jsonSuccess(null, 'Flashcard excluído com sucesso');
         } catch (\RuntimeException $e) {
-            $code = $e->getCode() ?: 404;
-            $this->response = $this->response->withStatus($code);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError($e->getMessage(), $e->getCode() ?: 404);
         } catch (\Exception $e) {
             error_log("ERRO: " . $e->getMessage());
-            $this->response = $this->response->withStatus(500);
-            $this->response->getBody()->write(json_encode([
-                'success' => false,
-                'message' => 'Erro interno: ' . $e->getMessage()
-            ]));
-            return $this->response;
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
 }

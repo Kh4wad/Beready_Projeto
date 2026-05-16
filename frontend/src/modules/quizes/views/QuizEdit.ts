@@ -1,101 +1,94 @@
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useQuizes } from '../composables/useQuizes'
 import { useAlert } from '@/shared/composables/useAlert'
 
 export function useQuizEdit() {
   const router = useRouter()
   const route = useRoute()
   const { success, error } = useAlert()
+  const { updateQuiz, deleteQuiz, loadQuizes } = useQuizes()
+
   const loading = ref(false)
   const deleteLoading = ref(false)
   const showDeleteModal = ref(false)
-  const quizId = ref<number | null>(null)
 
-  const form = ref({
+  const form = reactive({
+    id: null as number | null,
     titulo: '',
     descricao: '',
-    tipo_criacao: 'manual',
-    nivel_dificuldade: 'iniciante',
+    nivel_dificuldade: 'intermediario',
+    tempo_limite: null as number | null,
     total_questoes: 0,
-    tempo_limite: null,
     publico: false,
+    tipo_criacao: 'manual',
   })
 
-  const errors = ref({
+  const errors = reactive({
     titulo: '',
+    descricao: '',
   })
+
+  const validateForm = (): boolean => {
+    let isValid = true
+    if (!form.titulo.trim()) {
+      errors.titulo = 'Título é obrigatório'
+      isValid = false
+    } else {
+      errors.titulo = ''
+    }
+    return isValid
+  }
 
   const loadQuiz = async () => {
     const id = route.params.id
-    if (!id) {
-      error('ID do quiz não informado')
-      router.push('/quizes')
-      return
-    }
+    if (!id) return
 
-    quizId.value = Number(id)
-
+    loading.value = true
     try {
-      const response = await fetch(`http://localhost:8765/quizes/${quizId.value}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        form.value = {
-          titulo: data.data.titulo || '',
-          descricao: data.data.descricao || '',
-          tipo_criacao: data.data.tipo_criacao || 'manual',
-          nivel_dificuldade: data.data.nivel_dificuldade || 'iniciante',
-          total_questoes: data.data.total_questoes || 0,
-          tempo_limite: data.data.tempo_limite || null,
-          publico: data.data.publico || false,
-        }
-      } else {
-        error(data.message || 'Erro ao carregar quiz')
-        router.push('/quizes')
+      // Buscar quiz por ID (implementar no service se necessário)
+      const userData = localStorage.getItem('user')
+      if (userData) {
+        const user = JSON.parse(userData)
+        await loadQuizes(user.id)
+        // Atualizar form com os dados do quiz
       }
-    } catch (err) {
-      console.error('Erro:', err)
-      error('Erro de conexão com o servidor')
-      router.push('/quizes')
+    } finally {
+      loading.value = false
     }
   }
 
   const handleSubmit = async () => {
-    if (!form.value.titulo) {
-      errors.value.titulo = 'Título é obrigatório'
+    if (!validateForm()) return
+
+    const userData = localStorage.getItem('user')
+    if (!userData) {
+      error('Usuário não autenticado')
       return
     }
 
+    const user = JSON.parse(userData)
     loading.value = true
 
     try {
-      const response = await fetch(`http://localhost:8765/quizes/${quizId.value}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify(form.value),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        success('Quiz atualizado com sucesso!')
-        setTimeout(() => router.push('/quizes'), 1500)
-      } else {
-        error(data.message || 'Erro ao atualizar quiz')
+      const data = {
+        usuario_id: user.id,
+        titulo: form.titulo,
+        descricao: form.descricao,
+        nivel_dificuldade: form.nivel_dificuldade,
+        tempo_limite: form.tempo_limite ?? undefined,
+        total_questoes: 0,
+        publico: form.publico,
+        tipo_criacao: 'manual',
       }
-    } catch (err) {
-      console.error('Erro:', err)
-      error('Erro de conexão com o servidor')
+
+      if (form.id) {
+        await updateQuiz(form.id, data)
+        success('Quiz atualizado com sucesso!')
+      }
+      router.push('/quizes')
+    } catch (err: any) {
+      error(err.message || 'Erro ao salvar quiz')
     } finally {
       loading.value = false
     }
@@ -106,28 +99,16 @@ export function useQuizEdit() {
   }
 
   const confirmDelete = async () => {
+    if (!form.id) return
+
     deleteLoading.value = true
-
     try {
-      const response = await fetch(`http://localhost:8765/quizes/${quizId.value}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        success('Quiz excluído com sucesso!')
-        setTimeout(() => router.push('/quizes'), 1500)
-      } else {
-        error(data.message || 'Erro ao excluir quiz')
-      }
-    } catch (err) {
-      console.error('Erro:', err)
-      error('Erro de conexão com o servidor')
+      await deleteQuiz(form.id)
+      success('Quiz excluído com sucesso!')
+      router.push('/quizes')
+    } catch (err: any) {
+      error(err.message || 'Erro ao excluir quiz')
+      showDeleteModal.value = false
     } finally {
       deleteLoading.value = false
       showDeleteModal.value = false

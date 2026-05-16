@@ -1,6 +1,7 @@
+// src/modules/quizes/composables/useQuizes.ts
 import { ref } from 'vue'
 import { quizService } from '../services/quizService'
-import type { Quiz, ApiResponse } from '@/core/types'
+import type { Quiz } from '@/core/types'
 import { useAlert } from '@/shared/composables/useAlert'
 
 export function useQuizes() {
@@ -11,15 +12,18 @@ export function useQuizes() {
   const loadQuizes = async (usuarioId: number) => {
     loading.value = true
     try {
+      console.log('📡 Carregando quizes para usuário:', usuarioId)
       const response = await quizService.getByUsuario(usuarioId)
+      console.log('📦 Resposta:', response)
+
       if (response.data.success) {
         quizes.value = response.data.data || []
       } else {
         error(response.data.message || 'Erro ao carregar quizes')
       }
     } catch (err: any) {
-      console.error('Erro ao carregar quizes:', err)
-      error('Erro ao carregar quizes')
+      console.error('❌ Erro ao carregar quizes:', err)
+      error(err.response?.data?.message || err.message || 'Erro ao carregar quizes')
       quizes.value = []
     } finally {
       loading.value = false
@@ -29,16 +33,21 @@ export function useQuizes() {
   const createQuiz = async (data: Omit<Quiz, 'id' | 'criado_em' | 'atualizado_em'>) => {
     loading.value = true
     try {
+      console.log('📡 Criando quiz com dados:', data)
       const response = await quizService.create(data)
+      console.log('📦 Resposta:', response)
+
       if (response.data.success) {
         success('Quiz criado com sucesso!')
         return response.data.data
       } else {
-        throw new Error(response.data.message)
+        throw new Error(response.data.message || 'Erro ao criar quiz')
       }
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao criar quiz')
-      throw err
+      console.error('❌ Erro ao criar quiz:', err)
+      const errorMsg = err.response?.data?.message || err.message || 'Erro ao criar quiz'
+      error(errorMsg)
+      throw new Error(errorMsg)
     } finally {
       loading.value = false
     }
@@ -50,16 +59,21 @@ export function useQuizes() {
   ) => {
     loading.value = true
     try {
+      console.log('📡 Atualizando quiz:', id, data)
       const response = await quizService.update(id, data)
+      console.log('📦 Resposta:', response)
+
       if (response.data.success) {
         success('Quiz atualizado com sucesso!')
         return response.data.data
       } else {
-        throw new Error(response.data.message)
+        throw new Error(response.data.message || 'Erro ao atualizar quiz')
       }
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao atualizar quiz')
-      throw err
+      console.error('❌ Erro ao atualizar quiz:', err)
+      const errorMsg = err.response?.data?.message || err.message || 'Erro ao atualizar quiz'
+      error(errorMsg)
+      throw new Error(errorMsg)
     } finally {
       loading.value = false
     }
@@ -68,16 +82,21 @@ export function useQuizes() {
   const deleteQuiz = async (id: number) => {
     loading.value = true
     try {
+      console.log('📡 Deletando quiz:', id)
       const response = await quizService.delete(id)
+      console.log('📦 Resposta:', response)
+
       if (response.data.success) {
         success('Quiz excluído com sucesso!')
         return true
       } else {
-        throw new Error(response.data.message)
+        throw new Error(response.data.message || 'Erro ao excluir quiz')
       }
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao excluir quiz')
-      throw err
+      console.error('❌ Erro ao excluir quiz:', err)
+      const errorMsg = err.response?.data?.message || err.message || 'Erro ao excluir quiz'
+      error(errorMsg)
+      throw new Error(errorMsg)
     } finally {
       loading.value = false
     }
