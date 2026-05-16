@@ -90,17 +90,34 @@ export function useProfile() {
       router.push('/login')
       return
     }
+
+    let localUser
     try {
-      const localUser = JSON.parse(userData)
+      localUser = JSON.parse(userData)
+    } catch (e) {
+      console.error('Erro ao fazer parse do userData:', e)
+      localStorage.removeItem('user')
+      router.push('/login')
+      return
+    }
+
+    if (!localUser || !localUser.id) {
+      console.error('Usuário inválido ou sem ID')
+      router.push('/login')
+      return
+    }
+
+    try {
       const response = await fetch(`http://localhost:8765/users/view/${localUser.id}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       })
       if (response.ok) {
         const data = await response.json()
-        if (data.success) {
-          user.value = data.user
-          localStorage.setItem('user', JSON.stringify(data.user))
+        const freshUser = data.data?.user || data.data || data.user
+        if (freshUser && freshUser.id) {
+          user.value = freshUser
+          localStorage.setItem('user', JSON.stringify(freshUser))
         } else {
           user.value = localUser
         }
@@ -109,7 +126,7 @@ export function useProfile() {
       }
     } catch (e) {
       console.error('Erro ao carregar usuário:', e)
-      user.value = JSON.parse(userData)
+      user.value = localUser
     }
     if (!user.value) router.push('/login')
   }

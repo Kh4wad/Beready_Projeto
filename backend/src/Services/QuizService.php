@@ -30,19 +30,25 @@ class QuizService
     
     public function createQuiz(array $data): array
     {
-        if (empty($data['titulo'])) {
-            throw new \InvalidArgumentException('Título é obrigatório');
-        }
+        error_log("=== QUIZ SERVICE CREATE ===");
+        error_log("Dados recebidos: " . print_r($data, true));
         
+        // Validações
         if (empty($data['usuario_id'])) {
             throw new \InvalidArgumentException('ID do usuário é obrigatório');
         }
         
-        // Valores padrão
+        if (empty($data['titulo'])) {
+            throw new \InvalidArgumentException('Título é obrigatório');
+        }
+        
+        // Garantir valores padrão
         $data['tipo_criacao'] = $data['tipo_criacao'] ?? 'manual';
         $data['nivel_dificuldade'] = $data['nivel_dificuldade'] ?? 'iniciante';
         $data['total_questoes'] = (int)($data['total_questoes'] ?? 0);
         $data['publico'] = !empty($data['publico']);
+        
+        error_log("Dados após validação: " . print_r($data, true));
         
         $quiz = $this->quizRepository->create($data);
         return $quiz;
@@ -55,6 +61,7 @@ class QuizService
             throw new \RuntimeException('Quiz não encontrado', 404);
         }
         
+        // Não permitir alterar usuario_id
         unset($data['usuario_id']);
         
         return $this->quizRepository->update($id, $data);

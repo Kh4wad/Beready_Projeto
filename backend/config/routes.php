@@ -8,19 +8,15 @@ use Cake\Routing\RouteBuilder;
 $routes->setRouteClass(DashedRoute::class);
 
 /**
- * ============================================================
  * HEALTHCHECK
- * ============================================================
  */
-$routes->connect('/health', [
+$routes->connect('/', [
     'controller' => 'Users',
     'action' => 'health'
 ])->setMethods(['GET']);
 
 /**
- * ============================================================
  * AUTH ROUTES
- * ============================================================
  */
 $routes->connect('/auth/register', [
     'controller' => 'Users',
@@ -50,9 +46,7 @@ $routes->connect('/auth/reset-password/{token}', [
 ])->setMethods(['POST']);
 
 /**
- * ============================================================
  * USERS (UUID FIRST + ID FALLBACK)
- * ============================================================
  */
 $routes->connect('/users/{uuid}', [
     'controller' => 'Users',
@@ -78,9 +72,7 @@ $routes->connect('/users/delete/{id}', [
 ])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
 
 /**
- * ============================================================
- * FLASHCARDS (REST CLEAN)
- * ============================================================
+ * FLASHCARDS (REST CLEAN) - COMPLETO
  */
 $routes->connect('/flashcards', [
     'controller' => 'Flashcards',
@@ -101,25 +93,40 @@ $routes->connect('/flashcards/{uuid}', [
 ])->setMethods(['GET']);
 
 // fallback ID view
-$routes->connect('/flashcards/{id}', [
+$routes->connect('/flashcards/view/{id}', [
     'controller' => 'Flashcards',
     'action' => 'view'
 ])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
 
 $routes->connect('/flashcards/{id}', [
     'controller' => 'Flashcards',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
+// PUT edit - suporta /flashcards/{id} e /flashcards/edit/{id}
+$routes->connect('/flashcards/{id}', [
+    'controller' => 'Flashcards',
     'action' => 'edit'
 ])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
 
+$routes->connect('/flashcards/edit/{id}', [
+    'controller' => 'Flashcards',
+    'action' => 'edit'
+])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
+// DELETE - suporta /flashcards/{id} e /flashcards/delete/{id}
 $routes->connect('/flashcards/{id}', [
     'controller' => 'Flashcards',
     'action' => 'delete'
 ])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
 
+$routes->connect('/flashcards/delete/{id}', [
+    'controller' => 'Flashcards',
+    'action' => 'delete'
+])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
+
 /**
- * ============================================================
- * QUIZES (REST)
- * ============================================================
+ * QUIZES (REST) - COMPLETO
  */
 $routes->connect('/quizes', [
     'controller' => 'Quizes',
@@ -131,25 +138,40 @@ $routes->connect('/quizes', [
     'action' => 'add'
 ])->setMethods(['POST']);
 
-$routes->connect('/quizes/{id}', [
+$routes->connect('/quizes/view/{id}', [
     'controller' => 'Quizes',
     'action' => 'view'
 ])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
 
 $routes->connect('/quizes/{id}', [
     'controller' => 'Quizes',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
+// PUT edit
+$routes->connect('/quizes/{id}', [
+    'controller' => 'Quizes',
     'action' => 'edit'
 ])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
 
+$routes->connect('/quizes/edit/{id}', [
+    'controller' => 'Quizes',
+    'action' => 'edit'
+])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
+// DELETE
 $routes->connect('/quizes/{id}', [
     'controller' => 'Quizes',
     'action' => 'delete'
 ])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
 
+$routes->connect('/quizes/delete/{id}', [
+    'controller' => 'Quizes',
+    'action' => 'delete'
+])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
+
 /**
- * ============================================================
- * TAGS
- * ============================================================
+ * TAGS (REST) - COMPLETO
  */
 $routes->connect('/tags', [
     'controller' => 'Tags',
@@ -161,17 +183,34 @@ $routes->connect('/tags', [
     'action' => 'add'
 ])->setMethods(['POST']);
 
-$routes->connect('/tags/{id}', [
+$routes->connect('/tags/view/{id}', [
     'controller' => 'Tags',
     'action' => 'view'
 ])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
 
 $routes->connect('/tags/{id}', [
     'controller' => 'Tags',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
+// PUT edit
+$routes->connect('/tags/{id}', [
+    'controller' => 'Tags',
     'action' => 'edit'
 ])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
 
+$routes->connect('/tags/edit/{id}', [
+    'controller' => 'Tags',
+    'action' => 'edit'
+])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
+// DELETE
 $routes->connect('/tags/{id}', [
+    'controller' => 'Tags',
+    'action' => 'delete'
+])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
+
+$routes->connect('/tags/delete/{id}', [
     'controller' => 'Tags',
     'action' => 'delete'
 ])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
@@ -182,9 +221,7 @@ $routes->connect('/tags/usuario/{usuarioId}', [
 ])->setPatterns(['usuarioId' => '\d+'])->setMethods(['GET']);
 
 /**
- * ============================================================
  * PREFERÊNCIAS
- * ============================================================
  */
 $routes->connect('/preferencias/usuario/{usuarioId}', [
     'controller' => 'Preferencias',
@@ -197,9 +234,7 @@ $routes->connect('/preferencias', [
 ])->setMethods(['POST']);
 
 /**
- * ============================================================
  * PROGRESSO
- * ============================================================
  */
 $routes->connect('/progresso/usuario/{usuarioId}', [
     'controller' => 'Progresso',
@@ -212,9 +247,7 @@ $routes->connect('/progresso', [
 ])->setMethods(['POST']);
 
 /**
- * ============================================================
- * PROMPTS
- * ============================================================
+ * PROMPTS - COMPLETO
  */
 $routes->connect('/prompts', [
     'controller' => 'Prompts',
@@ -226,17 +259,34 @@ $routes->connect('/prompts', [
     'action' => 'add'
 ])->setMethods(['POST']);
 
-$routes->connect('/prompts/{id}', [
+$routes->connect('/prompts/view/{id}', [
     'controller' => 'Prompts',
     'action' => 'view'
 ])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
 
 $routes->connect('/prompts/{id}', [
     'controller' => 'Prompts',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
+// PUT edit
+$routes->connect('/prompts/{id}', [
+    'controller' => 'Prompts',
     'action' => 'edit'
 ])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
 
+$routes->connect('/prompts/edit/{id}', [
+    'controller' => 'Prompts',
+    'action' => 'edit'
+])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
+// DELETE
 $routes->connect('/prompts/{id}', [
+    'controller' => 'Prompts',
+    'action' => 'delete'
+])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
+
+$routes->connect('/prompts/delete/{id}', [
     'controller' => 'Prompts',
     'action' => 'delete'
 ])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
@@ -247,10 +297,13 @@ $routes->connect('/prompts/usuario/{usuarioId}', [
 ])->setPatterns(['usuarioId' => '\d+'])->setMethods(['GET']);
 
 /**
- * ============================================================
  * TRADUÇÕES
- * ============================================================
  */
+$routes->connect('/traducoes/view/{id}', [
+    'controller' => 'Traducoes',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
 $routes->connect('/traducoes/{id}', [
     'controller' => 'Traducoes',
     'action' => 'view'
@@ -261,10 +314,20 @@ $routes->connect('/traducoes', [
     'action' => 'add'
 ])->setMethods(['POST']);
 
+$routes->connect('/traducoes/edit/{id}', [
+    'controller' => 'Traducoes',
+    'action' => 'edit'
+])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
 $routes->connect('/traducoes/{id}', [
     'controller' => 'Traducoes',
     'action' => 'edit'
 ])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
+$routes->connect('/traducoes/delete/{id}', [
+    'controller' => 'Traducoes',
+    'action' => 'delete'
+])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
 
 $routes->connect('/traducoes/{id}', [
     'controller' => 'Traducoes',
@@ -277,10 +340,13 @@ $routes->connect('/traducoes/prompt/{promptId}', [
 ])->setPatterns(['promptId' => '\d+'])->setMethods(['GET']);
 
 /**
- * ============================================================
  * IMAGENS GERADAS
- * ============================================================
  */
+$routes->connect('/imagens/view/{id}', [
+    'controller' => 'ImagensGeradas',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
 $routes->connect('/imagens/{id}', [
     'controller' => 'ImagensGeradas',
     'action' => 'view'
@@ -291,10 +357,20 @@ $routes->connect('/imagens', [
     'action' => 'add'
 ])->setMethods(['POST']);
 
+$routes->connect('/imagens/edit/{id}', [
+    'controller' => 'ImagensGeradas',
+    'action' => 'edit'
+])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
 $routes->connect('/imagens/{id}', [
     'controller' => 'ImagensGeradas',
     'action' => 'edit'
 ])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
+$routes->connect('/imagens/delete/{id}', [
+    'controller' => 'ImagensGeradas',
+    'action' => 'delete'
+])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
 
 $routes->connect('/imagens/{id}', [
     'controller' => 'ImagensGeradas',
@@ -307,10 +383,13 @@ $routes->connect('/imagens/prompt/{promptId}', [
 ])->setPatterns(['promptId' => '\d+'])->setMethods(['GET']);
 
 /**
- * ============================================================
  * FRASES SEMELHANTES
- * ============================================================
  */
+$routes->connect('/frases/view/{id}', [
+    'controller' => 'FrasesSemelhantes',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
 $routes->connect('/frases/{id}', [
     'controller' => 'FrasesSemelhantes',
     'action' => 'view'
@@ -321,10 +400,20 @@ $routes->connect('/frases', [
     'action' => 'add'
 ])->setMethods(['POST']);
 
+$routes->connect('/frases/edit/{id}', [
+    'controller' => 'FrasesSemelhantes',
+    'action' => 'edit'
+])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
 $routes->connect('/frases/{id}', [
     'controller' => 'FrasesSemelhantes',
     'action' => 'edit'
 ])->setPatterns(['id' => '\d+'])->setMethods(['PUT']);
+
+$routes->connect('/frases/delete/{id}', [
+    'controller' => 'FrasesSemelhantes',
+    'action' => 'delete'
+])->setPatterns(['id' => '\d+'])->setMethods(['DELETE']);
 
 $routes->connect('/frases/{id}', [
     'controller' => 'FrasesSemelhantes',
@@ -337,9 +426,7 @@ $routes->connect('/frases/prompt/{promptId}', [
 ])->setPatterns(['promptId' => '\d+'])->setMethods(['GET']);
 
 /**
- * ============================================================
  * FLASHCARD TAGS
- * ============================================================
  */
 $routes->connect('/flashcard-tags/flashcard/{flashcardId}', [
     'controller' => 'FlashcardTags',
@@ -357,9 +444,7 @@ $routes->connect('/flashcard-tags', [
 ])->setMethods(['DELETE']);
 
 /**
- * ============================================================
  * FALLBACK
- * ============================================================
  */
 $routes->connect('/*', [
     'controller' => 'Users',

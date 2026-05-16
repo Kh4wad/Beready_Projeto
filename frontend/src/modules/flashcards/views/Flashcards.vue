@@ -144,8 +144,8 @@
               <circle cx="12" cy="12" r="10" />
               <path d="M12 8v4l3 3" />
             </svg>
-            Estudar
-          </button>c
+            Estudar</button
+          >c
         </div>
       </div>
     </div>
@@ -354,8 +354,15 @@ const closeModal = () => {
 onMounted(async () => {
   const userData = localStorage.getItem('user')
   if (userData) {
-    const user = JSON.parse(userData)
-    await loadFlashcards(user.id)
+    try {
+      const user = JSON.parse(userData)
+      if (user && user.id) {
+        await loadFlashcards(user.id)
+      }
+    } catch (e) {
+      console.error('Erro ao fazer parse do userData:', e)
+      localStorage.removeItem('user')
+    }
   }
 })
 </script>

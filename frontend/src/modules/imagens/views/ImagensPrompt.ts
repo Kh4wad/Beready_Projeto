@@ -1,7 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useImagens } from '@/modules/imagens/composables/useImagens'
-import { promptService } from '@//modules/prompts/services/promptService'
+import { promptService } from '@/modules/prompts/services/promptService'
 import { useAlert } from '@/shared/composables/useAlert'
 import type { Imagem } from '@/core/types'
 
@@ -16,7 +16,7 @@ interface ImagemForm {
 export function useImagensPrompt() {
   const route = useRoute()
   const { success, error } = useAlert()
-  const { imagens, loading, fetchImagens, createImagem, deleteImagem } = useImagens()
+  const { imagens, loading, fetchImagens, createImagem, updateImagem, deleteImagem } = useImagens()
 
   const promptId = ref<number>(0)
   const promptTexto = ref<string>('')
@@ -69,6 +69,18 @@ export function useImagensPrompt() {
     modalOpen.value = true
   }
 
+  const editImagem = (imagem: Imagem): void => {
+    editingId.value = imagem.id
+    form.value = {
+      url_imagem: imagem.url_imagem,
+      prompt_imagem: imagem.prompt_imagem || '',
+      servico_geracao: imagem.servico_geracao || 'dalle',
+      qualidade_imagem: imagem.qualidade_imagem || 'media',
+      dimensoes: imagem.dimensoes || '1024x1024',
+    }
+    modalOpen.value = true
+  }
+
   const closeModal = (): void => {
     modalOpen.value = false
   }
@@ -82,7 +94,7 @@ export function useImagensPrompt() {
     saving.value = true
     try {
       if (editingId.value) {
-        await imagemService.update(editingId.value, {
+        await updateImagem(editingId.value, {
           url_imagem: form.value.url_imagem,
           prompt_imagem: form.value.prompt_imagem,
           servico_geracao: form.value.servico_geracao,
@@ -99,6 +111,7 @@ export function useImagensPrompt() {
           qualidade_imagem: form.value.qualidade_imagem,
           dimensoes: form.value.dimensoes,
         })
+        success('Imagem criada com sucesso!')
       }
       await loadData()
       closeModal()
@@ -121,6 +134,7 @@ export function useImagensPrompt() {
     deleting.value = true
     try {
       await deleteImagem(itemToDelete.value)
+      success('Imagem excluída com sucesso!')
       await loadData()
     } finally {
       deleting.value = false
@@ -153,6 +167,7 @@ export function useImagensPrompt() {
     formatDate,
     openModal,
     closeModal,
+    editImagem,
     save,
     confirmDelete,
     handleConfirmDelete,

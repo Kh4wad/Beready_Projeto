@@ -1,14 +1,14 @@
 import api from '@/core/services/api'
 import type { Preferencia, ApiResponse } from '@/core/types'
 
-// Não declare Preferencia localmente – use a importada do core
-
 export const preferenciaService = {
-  getByUsuario: (usuarioId: number): Promise<ApiResponse<Preferencia>> => {
+  getByUsuario: (usuarioId: number) => {
+    console.log('🔍 GET /preferencias/usuario/', usuarioId)
     return api.get(`/preferencias/usuario/${usuarioId}`)
   },
 
-  save: (data: Omit<Preferencia, 'id'>): Promise<ApiResponse<Preferencia>> => {
+  save: (data: Omit<Preferencia, 'id'>) => {
+    console.log('📤 POST /preferencias', data)
     return api.post('/preferencias', data)
   },
 }

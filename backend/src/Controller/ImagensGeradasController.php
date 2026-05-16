@@ -29,7 +29,6 @@ class ImagensGeradasController extends AppController
                 ->all();
             
             return $this->jsonSuccess($imagens->toArray());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -74,7 +73,6 @@ class ImagensGeradasController extends AppController
             }
             
             return $this->jsonError('Erro ao criar imagem', 422, $imagem->getErrors());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -101,7 +99,6 @@ class ImagensGeradasController extends AppController
             }
             
             return $this->jsonError('Erro ao atualizar imagem', 422, $imagem->getErrors());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -124,7 +121,6 @@ class ImagensGeradasController extends AppController
             }
             
             return $this->jsonError('Erro ao excluir imagem', 500);
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }

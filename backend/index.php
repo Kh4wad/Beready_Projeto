@@ -16,5 +16,5 @@
 // Redefine ROOT para apontar para a pasta raiz do projeto (fora de backend)
 define('ROOT', dirname(__DIR__));
 
-// Incluir o webroot
+// Incluir o webroot (único ponto de entrada)
 require 'webroot' . DIRECTORY_SEPARATOR . 'index.php';

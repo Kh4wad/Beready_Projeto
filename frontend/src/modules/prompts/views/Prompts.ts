@@ -41,7 +41,6 @@ export function usePrompts() {
       prompts.value = []
       return
     }
-
     loading.value = true
     try {
       const response = await promptService.getByUsuario(userId)
@@ -52,9 +51,17 @@ export function usePrompts() {
         error(response.data.message || 'Erro ao carregar prompts')
       }
     } catch (err: unknown) {
-      const axiosError = err as { response?: { data?: { message?: string } } }
+      const axiosError = err as {
+        response?: {
+          status?: number
+          data?: { message?: string }
+        }
+        message?: string
+      }
       if (axiosError.response?.status !== 400) {
-        error(axiosError.response?.data?.message || 'Erro ao carregar prompts')
+        error(
+          axiosError.response?.data?.message || axiosError.message || 'Erro ao carregar prompts',
+        )
       }
       prompts.value = []
     } finally {

@@ -14,15 +14,12 @@ import AlertContainer from '@/shared/components/common/AlertContainer.vue'
 const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/reset-password']
 
 const loadUserPreferences = async () => {
-  const userData = localStorage.getItem('user')
   const currentRoute = window.location.pathname
 
-  // Verificar se é página pública
   const isPublicRoute = publicRoutes.some(
     (route) => currentRoute === route || currentRoute.startsWith('/reset-password'),
   )
 
-  // Se for página pública, remove todos os temas
   if (isPublicRoute) {
     document.documentElement.classList.remove('dark-mode')
     document.body.classList.remove('dark-mode')
@@ -31,16 +28,29 @@ const loadUserPreferences = async () => {
     return
   }
 
-  if (!userData) return
+  const userData = localStorage.getItem('user')
+  if (!userData) {
+    return
+  }
 
-  const user = JSON.parse(userData)
+  let user
+  try {
+    user = JSON.parse(userData)
+  } catch (e) {
+    console.error('Erro ao fazer parse:', e)
+    return
+  }
+
+  if (!user || !user.id) {
+    console.log('Usuário inválido ou sem ID')
+    return
+  }
 
   try {
     const response = await fetch(`http://localhost:8765/preferencias/usuario/${user.id}`)
     if (response.ok) {
       const data = await response.json()
       if (data.success && data.data) {
-        // Aplicar tema escuro
         if (data.data.tema === 'escuro') {
           document.documentElement.classList.add('dark-mode')
           document.body.classList.add('dark-mode')
@@ -49,7 +59,6 @@ const loadUserPreferences = async () => {
           document.body.classList.remove('dark-mode')
         }
 
-        // Aplicar modo daltônico
         if (data.data.modo_daltonico) {
           document.documentElement.classList.add('daltonico-mode')
           document.body.classList.add('daltonico-mode')
@@ -60,11 +69,7 @@ const loadUserPreferences = async () => {
       }
     }
   } catch (err) {
-    // Se não encontrar preferências, usa valores padrão (claro)
-    document.documentElement.classList.remove('dark-mode')
-    document.body.classList.remove('dark-mode')
-    document.documentElement.classList.remove('daltonico-mode')
-    document.body.classList.remove('daltonico-mode')
+    console.error('Erro ao carregar preferências:', err)
   }
 }
 

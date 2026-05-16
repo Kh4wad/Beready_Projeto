@@ -29,7 +29,6 @@ class FrasesSemelhantesController extends AppController
                 ->all();
             
             return $this->jsonSuccess($frases->toArray());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -74,7 +73,6 @@ class FrasesSemelhantesController extends AppController
             }
             
             return $this->jsonError('Erro ao criar frase', 422, $frase->getErrors());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -101,7 +99,6 @@ class FrasesSemelhantesController extends AppController
             }
             
             return $this->jsonError('Erro ao atualizar frase', 422, $frase->getErrors());
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }
@@ -124,7 +121,6 @@ class FrasesSemelhantesController extends AppController
             }
             
             return $this->jsonError('Erro ao excluir frase', 500);
-            
         } catch (\Exception $e) {
             return $this->jsonError($e->getMessage(), 500);
         }

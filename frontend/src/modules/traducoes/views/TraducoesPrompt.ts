@@ -1,7 +1,7 @@
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useTraducoes } from '@/modules/traducoes/composables/useTraducoes.ts'
-import { promptService } from '@//modules/prompts/services/promptService'
+import { useRoute } from 'vue-router'
+import { useTraducoes } from '@/modules/traducoes/composables/useTraducoes'
+import { promptService } from '@/modules/prompts/services/promptService'
 import { useAlert } from '@/shared/composables/useAlert'
 import type { Traducao } from '@/core/types'
 
@@ -14,9 +14,9 @@ interface TraducaoForm {
 
 export function useTraducoesPrompt() {
   const route = useRoute()
-  const router = useRouter()
   const { success, error } = useAlert()
-  const { traducoes, loading, fetchTraducoes, createTraducao, deleteTraducao } = useTraducoes()
+  const { traducoes, loading, fetchTraducoes, createTraducao, updateTraducao, deleteTraducao } =
+    useTraducoes()
 
   const promptId = ref<number>(0)
   const promptTexto = ref<string>('')
@@ -91,7 +91,7 @@ export function useTraducoesPrompt() {
     saving.value = true
     try {
       if (editingId.value) {
-        await traducaoService.update(editingId.value, {
+        await updateTraducao(editingId.value, {
           texto_traduzido: form.value.texto_traduzido,
           idioma_destino: form.value.idioma_destino,
           pontuacao_confianca: form.value.pontuacao_confianca,
@@ -106,6 +106,7 @@ export function useTraducoesPrompt() {
           pontuacao_confianca: form.value.pontuacao_confianca,
           servico_traducao: form.value.servico_traducao,
         })
+        success('Tradução criada com sucesso!')
       }
       await loadData()
       closeModal()
@@ -128,6 +129,7 @@ export function useTraducoesPrompt() {
     deleting.value = true
     try {
       await deleteTraducao(itemToDelete.value)
+      success('Tradução excluída com sucesso!')
       await loadData()
     } finally {
       deleting.value = false

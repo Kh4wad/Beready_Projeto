@@ -22,7 +22,6 @@ export function usePromptDetail() {
 
   const { traducoes, fetchTraducoes, deleteTraducao } = useTraducoes()
   const { imagens, fetchImagens, deleteImagem } = useImagens()
-  const { frases, fetchFrases, deleteFrase } = useFrases()
 
   const loadingTraducoes = ref(false)
   const loadingImagens = ref(false)
@@ -34,6 +33,7 @@ export function usePromptDetail() {
   const deleting = ref(false)
 
   const promptId = ref<number>(0)
+  const { frases, fetchFrases, deleteFrase } = useFrases(promptId.value)
 
   const fetchPrompt = async (): Promise<void> => {
     const idParam = route.params.id
@@ -89,7 +89,7 @@ export function usePromptDetail() {
   const loadFrases = async (): Promise<void> => {
     loadingFrases.value = true
     try {
-      await fetchFrases(promptId.value)
+      await fetchFrases()
     } catch (err: unknown) {
       const axiosError = err as { response?: { status?: number; data?: { message?: string } } }
       if (axiosError.response?.status === 400) {

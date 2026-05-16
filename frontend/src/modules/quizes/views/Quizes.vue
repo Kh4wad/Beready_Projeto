@@ -238,6 +238,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuizes } from '../composables/useQuizes'
+import type { Quiz } from '@/core/types'
 
 const router = useRouter()
 const { quizes, loading, loadQuizes, createQuiz, updateQuiz, deleteQuiz } = useQuizes()
@@ -246,7 +247,7 @@ const showModal = ref(false)
 const showDeleteModal = ref(false)
 const isEditing = ref(false)
 const editingId = ref<number | null>(null)
-const deletingQuiz = ref<any>(null)
+const deletingQuiz = ref<Quiz | null>(null)
 const submitting = ref(false)
 const deleting = ref(false)
 
@@ -254,7 +255,7 @@ const form = reactive({
   titulo: '',
   descricao: '',
   nivel_dificuldade: 'intermediario',
-  tempo_limite: null as number | null,
+  tempo_limite: undefined as number | undefined,
   total_questoes: 0,
   publico: false,
   tipo_criacao: 'manual',
@@ -282,7 +283,7 @@ const resetForm = () => {
   form.titulo = ''
   form.descricao = ''
   form.nivel_dificuldade = 'intermediario'
-  form.tempo_limite = null
+  form.tempo_limite = undefined
   form.publico = false
   editingId.value = null
   isEditing.value = false
@@ -294,11 +295,11 @@ const openCreateModal = () => {
   showModal.value = true
 }
 
-const openEditModal = (quiz: any) => {
+const openEditModal = (quiz: Quiz) => {
   form.titulo = quiz.titulo
   form.descricao = quiz.descricao || ''
   form.nivel_dificuldade = quiz.nivel_dificuldade
-  form.tempo_limite = quiz.tempo_limite
+  form.tempo_limite = quiz.tempo_limite ?? undefined
   form.publico = quiz.publico || false
   editingId.value = quiz.id
   isEditing.value = true
@@ -313,7 +314,7 @@ const playQuiz = (id: number) => {
   router.push(`/quizes/${id}/play`)
 }
 
-const confirmDelete = (quiz: any) => {
+const confirmDelete = (quiz: Quiz) => {
   deletingQuiz.value = quiz
   showDeleteModal.value = true
 }
@@ -375,8 +376,15 @@ const closeModal = () => {
 onMounted(async () => {
   const userData = localStorage.getItem('user')
   if (userData) {
-    const user = JSON.parse(userData)
-    await loadQuizes(user.id)
+    try {
+      const user = JSON.parse(userData)
+      if (user && user.id) {
+        await loadQuizes(user.id)
+      }
+    } catch (e) {
+      console.error('Erro ao fazer parse do userData:', e)
+      localStorage.removeItem('user')
+    }
   }
 })
 </script>

@@ -120,8 +120,16 @@
 <script setup lang="ts">
 import { useQuizEdit } from './QuizEdit'
 
-const { form, errors, loading, deleteLoading, showDeleteModal, handleSubmit, handleDelete } =
-  useQuizEdit()
+const {
+  form,
+  errors,
+  loading,
+  deleteLoading,
+  showDeleteModal,
+  handleSubmit,
+  handleDelete,
+  confirmDelete,
+} = useQuizEdit()
 </script>
 
 <style scoped>

@@ -1,17 +1,5 @@
 import api from '@/core/services/api'
-import type { Preferencia } from '@/core/types'
-
-export interface Preferencia {
-  id?: number
-  usuario_id: number
-  tema: 'claro' | 'escuro'
-  modo_daltonico: boolean
-  notificacoes_ativas: boolean
-  som_ativo: boolean
-  traducao_automatica: boolean
-  preferencia_dificuldade: 'iniciante' | 'intermediario' | 'avancado' | 'adaptativo'
-  meta_diaria_minutos: number
-}
+import type { Preferencia, ApiResponse } from '@/core/types'
 
 export const preferenciaService = {
   getByUsuario: (usuarioId: number): Promise<ApiResponse<Preferencia>> => {
