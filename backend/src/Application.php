@@ -7,6 +7,7 @@ use Cake\Http\BaseApplication;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\RouteBuilder;
 // use App\Middleware\CorsMiddleware;
+use App\Middleware\RateLimitMiddleware;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\Response;
 
@@ -30,6 +31,8 @@ class Application extends BaseApplication
         $middlewareQueue
             // 1. CORS
             // ->add(new CorsMiddleware())
+
+            ->add(new RateLimitMiddleware(100, 60))
             
             // 2. ERROR HANDLER (tem que vir cedo)
             ->add(new ErrorHandlerMiddleware([
