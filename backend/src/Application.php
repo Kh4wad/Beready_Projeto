@@ -6,8 +6,9 @@ namespace App;
 use Cake\Http\BaseApplication;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\RouteBuilder;
-// use App\Middleware\CorsMiddleware;
+use App\Middleware\CorsMiddleware;
 use App\Middleware\RateLimitMiddleware;
+use App\Middleware\JwtAuthMiddleware;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\Response;
 
@@ -30,11 +31,15 @@ class Application extends BaseApplication
     {
         $middlewareQueue
             // 1. CORS
-            // ->add(new CorsMiddleware())
+            ->add(new CorsMiddleware())
 
+            // 2. Rate Limit
             ->add(new RateLimitMiddleware(100, 60))
+
+            // 3. Jwt
+            ->add(new JwtAuthMiddleware())
             
-            // 2. ERROR HANDLER (tem que vir cedo)
+            // 4. ERROR HANDLER (tem que vir cedo)
             ->add(new ErrorHandlerMiddleware([
                 'exceptionRenderer' => function ($exception, $request) {
 
@@ -61,13 +66,13 @@ class Application extends BaseApplication
                 }
             ]))
             
-            // Body parser
+            // 5. Body parser
             ->add(new \Cake\Http\Middleware\BodyParserMiddleware())
             
-            // Router
+            // 6. Router
             ->add(new \Cake\Routing\Middleware\RoutingMiddleware($this))
             
-            // Asset
+            // 7.Asset
             ->add(new \Cake\Routing\Middleware\AssetMiddleware());
 
         return $middlewareQueue;

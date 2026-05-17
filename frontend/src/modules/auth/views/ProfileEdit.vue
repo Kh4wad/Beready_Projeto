@@ -296,6 +296,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import api from '@/core/services/api'
 
 const router = useRouter()
 const { success, error } = useAlert()
@@ -321,20 +322,31 @@ const loadUserData = async () => {
     return
   }
 
-  const user = JSON.parse(userData)
-  form.nome = user.nome || ''
-  form.email = user.email || ''
-  form.telefone = user.telefone || ''
-  form.nivel_ingles = user.nivel_ingles || ''
-  form.idioma_preferido = user.idioma_preferido || ''
-  form.objetivos_aprendizado = user.objetivos_aprendizado || ''
+  try {
+    const user = JSON.parse(userData)
+    form.nome = user.nome || ''
+    form.email = user.email || ''
+    form.telefone = user.telefone || ''
+    form.nivel_ingles = user.nivel_ingles || ''
+    form.idioma_preferido = user.idioma_preferido || ''
+    form.objetivos_aprendizado = user.objetivos_aprendizado || ''
+  } catch (e) {
+    console.error('Erro ao carregar usuário:', e)
+    router.push('/login')
+  }
 }
 
 const handleSubmit = async () => {
   const userData = localStorage.getItem('user')
   if (!userData) return
 
-  const user = JSON.parse(userData)
+  let user
+  try {
+    user = JSON.parse(userData)
+  } catch (e) {
+    error('Erro ao carregar dados do usuário')
+    return
+  }
 
   if (form.nova_senha && form.nova_senha !== form.confirmar_senha) {
     error('As senhas não coincidem')
@@ -362,24 +374,18 @@ const handleSubmit = async () => {
       submitData.senha = form.nova_senha
     }
 
-    const response = await fetch(`http://localhost:8765/users/update/${user.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(submitData),
-    })
+    const response = await api.put(`/users/update/${user.id}`, submitData)
 
-    const data = await response.json()
-
-    if (response.ok && data.success) {
+    if (response.data.success) {
       const updatedUser = { ...user, ...submitData }
       localStorage.setItem('user', JSON.stringify(updatedUser))
       success('Perfil atualizado com sucesso!')
       setTimeout(() => router.push('/profile'), 1500)
     } else {
-      error(data.message || 'Erro ao atualizar perfil')
+      error(response.data.message || 'Erro ao atualizar perfil')
     }
-  } catch (err) {
-    error('Erro de conexão com o servidor')
+  } catch (err: any) {
+    error(err.response?.data?.message || 'Erro de conexão com o servidor')
   } finally {
     loading.value = false
   }

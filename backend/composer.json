@@ -6,10 +6,11 @@
     "homepage": "https://cakephp.org",
     "require": {
         "php": ">=8.1",
-        "cakephp/authentication": "^3.3",
+        "cakephp/authentication": "^4.1",
         "cakephp/cakephp": "5.2.*",
         "cakephp/migrations": "^4.0.0",
         "cakephp/plugin-installer": "^2.0",
+        "firebase/php-jwt": "^7.0",
         "ramsey/uuid": "^4.7",
         "symfony/mailer": "^6.4",
         "symfony/mime": "^6.4"

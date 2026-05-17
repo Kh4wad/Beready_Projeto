@@ -45,6 +45,17 @@ $routes->connect('/auth/reset-password/{token}', [
     'token' => '[a-f0-9]{64}'
 ])->setMethods(['POST']);
 
+$routes->connect('/auth/refresh', [
+    'controller' => 'Users',
+    'action' => 'refresh'
+])->setMethods(['POST']);
+
+// Nova rota para obter usuário do token
+$routes->connect('/users/me', [
+    'controller' => 'Users',
+    'action' => 'me'
+])->setMethods(['GET']);
+
 /**
  * USERS (UUID FIRST + ID FALLBACK)
  */

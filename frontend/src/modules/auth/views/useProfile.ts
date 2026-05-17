@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import api from '@/core/services/api'
 
 export function useProfile() {
   const router = useRouter()
@@ -53,26 +54,23 @@ export function useProfile() {
     }
     deleteLoading.value = true
     try {
-      const response = await fetch(`http://localhost:8765/users/delete/${user.value.id}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      })
-      const data = await response.json()
-      if (response.ok && data.success) {
+      const response = await api.delete(`/users/delete/${user.value.id}`)
+      if (response.data.success) {
         localStorage.removeItem('user')
-        localStorage.removeItem('auth_token')
+        localStorage.removeItem('access_token')
+        localStorage.removeItem('refresh_token')
         success('Conta excluída com sucesso!')
         setTimeout(() => router.push('/register'), 2000)
       } else {
-        error(data.message || 'Erro ao excluir conta')
+        error(response.data.message || 'Erro ao excluir conta')
         setTimeout(() => {
           showDeleteModal.value = false
           confirmEmail.value = ''
         }, 1500)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao excluir:', err)
-      error('Erro de conexão com o servidor')
+      error(err.response?.data?.message || 'Erro de conexão com o servidor')
       setTimeout(() => {
         showDeleteModal.value = false
         confirmEmail.value = ''
@@ -108,13 +106,9 @@ export function useProfile() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8765/users/view/${localUser.id}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      })
-      if (response.ok) {
-        const data = await response.json()
-        const freshUser = data.data?.user || data.data || data.user
+      const response = await api.get(`/users/${localUser.id}`)
+      if (response.data.success) {
+        const freshUser = response.data.user || response.data.data
         if (freshUser && freshUser.id) {
           user.value = freshUser
           localStorage.setItem('user', JSON.stringify(freshUser))

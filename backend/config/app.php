@@ -14,7 +14,6 @@ return [
      * Production Mode: false
      * Development Mode: true
      */
-    // Mude para false em produção ou para suprimir warnings
     'debug' => filter_var(env('DEBUG', false), FILTER_VALIDATE_BOOLEAN),
 
     /*
@@ -48,6 +47,16 @@ return [
     ],
 
     /*
+     * JWT CONFIGURATION
+     */
+    'Jwt' => [
+        'secret' => env('JWT_SECRET', 'd7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592'),
+        'algorithm' => 'HS256',
+        'expires' => 3600, // 1 hora em segundos
+        'refresh_expires' => 604800, // 7 dias
+    ],
+
+    /*
      * Asset timestamps
      */
     'Asset' => [
@@ -63,21 +72,20 @@ return [
             'path' => CACHE,
             'url' => env('CACHE_DEFAULT_URL', null),
         ],
-        // Usa cache em memória para evitar problemas de permissão
         '_cake_core_' => [
-            'className' => 'Array',  // Mudado de FileEngine para Array
+            'className' => 'Array',
             'prefix' => 'myapp_cake_core_',
             'serialize' => true,
             'duration' => '+1 years',
         ],
         '_cake_model_' => [
-            'className' => 'Array',  // Mudado de FileEngine para Array
+            'className' => 'Array',
             'prefix' => 'myapp_cake_model_',
             'serialize' => true,
             'duration' => '+1 years',
         ],
         '_cake_translations_' => [
-            'className' => 'Array',  // Mudado de FileEngine para Array
+            'className' => 'Array',
             'prefix' => 'myapp_cake_translations_',
             'serialize' => true,
             'duration' => '+1 years',
@@ -90,8 +98,8 @@ return [
     'Error' => [
         'errorLevel' => E_ALL & ~E_WARNING & ~E_USER_WARNING & ~E_NOTICE & ~E_DEPRECATED,
         'skipLog' => [],
-        'log' => false,  // Desabilita log de erros para desenvolvimento
-        'trace' => false,  // Desabilita trace para não poluir a saída
+        'log' => true,
+        'trace' => true,
         'ignoredDeprecationPaths' => [],
     ],
 
