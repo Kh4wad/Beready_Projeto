@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Services\UserService;
+use App\Services\JwtService;
 use App\Repositories\UserRepository;
 use App\Exceptions\EmailAlreadyExistsException;
 use App\Exceptions\WeakPasswordException;
@@ -13,11 +14,13 @@ use App\Exceptions\UserNotFoundException;
 class UsersController extends AppController
 {
     private UserService $userService;
+    private JwtService $jwtService;
     
     public function initialize(): void
     {
         parent::initialize();
         $this->userService = new UserService(new UserRepository());
+        $this->jwtService = new JwtService();
     }
     
     public function health()
@@ -44,9 +47,17 @@ class UsersController extends AppController
         if (empty($data['email']) || empty($data['password'])) {
             return $this->jsonError('E-mail e senha são obrigatórios', 400);
         }
+        
         try {
             $user = $this->userService->login($data['email'], $data['password']);
-            return $this->jsonSuccess(['user' => $user], 'Login realizado com sucesso');
+            
+            $tokens = $this->jwtService->generateTokens($user);
+            
+            return $this->jsonSuccess([
+                'user' => $user,
+                'tokens' => $tokens
+            ], 'Login realizado com sucesso');
+            
         } catch (\RuntimeException $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 401);
         } catch (\Exception $e) {
@@ -54,8 +65,49 @@ class UsersController extends AppController
         }
     }
     
+    public function refresh()
+    {
+        $data = $this->getRequestData();
+        $refreshToken = $data['refresh_token'] ?? null;
+        
+        if (!$refreshToken) {
+            return $this->jsonError('Refresh token não informado', 400);
+        }
+        
+        $newTokens = $this->jwtService->refreshAccessToken($refreshToken);
+        
+        if (!$newTokens) {
+            return $this->jsonError('Refresh token inválido ou expirado', 401);
+        }
+        
+        return $this->jsonSuccess($newTokens, 'Token renovado com sucesso');
+    }
+    
+    public function me()
+    {
+        $token = $this->jwtService->getTokenFromRequest($this->request);
+        
+        if (!$token) {
+            return $this->jsonError('Token não informado', 401);
+        }
+        
+        $payload = $this->jwtService->validateToken($token);
+        
+        if (!$payload) {
+            return $this->jsonError('Token inválido ou expirado', 401);
+        }
+        
+        try {
+            $user = $this->userService->getUserById($payload['sub']);
+            return $this->jsonSuccess($user);
+        } catch (UserNotFoundException $e) {
+            return $this->jsonError('Usuário não encontrado', 404);
+        }
+    }
+    
     public function logout()
     {
+        // JWT é stateless, o logout é feito no frontend removendo os tokens
         return $this->jsonSuccess(null, 'Logout realizado com sucesso');
     }
     

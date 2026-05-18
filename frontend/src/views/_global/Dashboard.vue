@@ -5,11 +5,40 @@
     <main class="dashboard-main">
       <div class="welcome-section">
         <h1 class="welcome-title">Bem-vindo de volta, {{ userName }}!</h1>
-        <p class="welcome-subtitle">
-          {{ motivationalMessage }}
-        </p>
+        <p class="welcome-subtitle">{{ motivationalMessage }}</p>
       </div>
 
+      <!-- PAINEL ADMIN -->
+      <div v-if="isAdmin" class="admin-banner">
+        <div class="admin-banner-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+            />
+          </svg>
+        </div>
+        <div class="admin-banner-content">
+          <span class="admin-badge">Administrador</span>
+          <div class="admin-links">
+            <button @click="$router.push('/admin')" class="admin-link-btn">
+              Gerenciar Usuários
+            </button>
+            <button @click="$router.push('/admin?tab=stats')" class="admin-link-btn">
+              Estatísticas
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Grid -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon bg-blue-100">
@@ -97,6 +126,7 @@
         </div>
       </div>
 
+      <!-- Progress Section -->
       <div class="progress-section">
         <div class="progress-card">
           <h3 class="progress-title">Progresso Geral</h3>
@@ -107,6 +137,7 @@
         </div>
       </div>
 
+      <!-- Features Grid -->
       <div class="dashboard-features-grid">
         <div class="dashboard-feature-card" @click="$router.push('/flashcards')">
           <div class="feature-icon-large bg-blue-500">
@@ -231,10 +262,109 @@
 <script setup lang="ts">
 import { useDashboard } from './Dashboard'
 import Navbar from '@/components/layout/Navbar.vue'
+import { useAuth } from '@/shared/composables/useAuth'
 
 const { user, loading, userName, stats, motivationalMessage, handleLogout } = useDashboard()
+const { isAdmin } = useAuth()
 </script>
 
 <style scoped>
 @import '@/styles/views/dashboard.css';
+
+/* PAINEL ADMIN */
+
+.admin-banner {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.admin-banner-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-banner-icon svg {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.admin-banner-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.admin-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: white;
+}
+
+.admin-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.admin-link-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-link-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Responsividade do banner admin */
+@media (max-width: 640px) {
+  .admin-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .admin-banner-content {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .admin-links {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   DARK MODE - ADMIN BANNER
+   ============================================ */
+.dark-mode .admin-banner {
+  background: linear-gradient(135deg, #4c51bf 0%, #5b3a7a 100%);
+}
 </style>

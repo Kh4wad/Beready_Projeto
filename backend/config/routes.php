@@ -15,6 +15,23 @@ $routes->connect('/', [
     'action' => 'health'
 ])->setMethods(['GET']);
 
+// ADMIN ROUTES
+$routes->connect('/admin/users', [
+    'controller' => 'Admin',
+    'action' => 'users'
+])->setMethods(['GET']);
+
+// ✅ Rota simples - ID vai no body
+$routes->connect('/admin/users/role', [
+    'controller' => 'Admin',
+    'action' => 'updateRole'
+])->setMethods(['POST']);
+
+$routes->connect('/admin/stats', [
+    'controller' => 'Admin',
+    'action' => 'stats'
+])->setMethods(['GET']);
+
 /**
  * AUTH ROUTES
  */
@@ -44,6 +61,17 @@ $routes->connect('/auth/reset-password/{token}', [
 ])->setPatterns([
     'token' => '[a-f0-9]{64}'
 ])->setMethods(['POST']);
+
+$routes->connect('/auth/refresh', [
+    'controller' => 'Users',
+    'action' => 'refresh'
+])->setMethods(['POST']);
+
+// Nova rota para obter usuário do token
+$routes->connect('/users/me', [
+    'controller' => 'Users',
+    'action' => 'me'
+])->setMethods(['GET']);
 
 /**
  * USERS (UUID FIRST + ID FALLBACK)

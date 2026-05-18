@@ -322,7 +322,14 @@ const submitForm = async () => {
   const userData = localStorage.getItem('user')
   if (!userData) return
 
-  const user = JSON.parse(userData)
+  let user
+  try {
+    user = JSON.parse(userData)
+  } catch (e) {
+    console.error('Erro ao fazer parse do userData:', e)
+    return
+  }
+
   submitting.value = true
 
   try {

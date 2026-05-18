@@ -22,7 +22,7 @@ export function useQuizes() {
         error(response.data.message || 'Erro ao carregar quizes')
       }
     } catch (err: any) {
-      console.error('❌ Erro ao carregar quizes:', err)
+      console.error(' Erro ao carregar quizes:', err)
       error(err.response?.data?.message || err.message || 'Erro ao carregar quizes')
       quizes.value = []
     } finally {
@@ -44,7 +44,7 @@ export function useQuizes() {
         throw new Error(response.data.message || 'Erro ao criar quiz')
       }
     } catch (err: any) {
-      console.error('❌ Erro ao criar quiz:', err)
+      console.error(' Erro ao criar quiz:', err)
       const errorMsg = err.response?.data?.message || err.message || 'Erro ao criar quiz'
       error(errorMsg)
       throw new Error(errorMsg)
@@ -70,7 +70,7 @@ export function useQuizes() {
         throw new Error(response.data.message || 'Erro ao atualizar quiz')
       }
     } catch (err: any) {
-      console.error('❌ Erro ao atualizar quiz:', err)
+      console.error(' Erro ao atualizar quiz:', err)
       const errorMsg = err.response?.data?.message || err.message || 'Erro ao atualizar quiz'
       error(errorMsg)
       throw new Error(errorMsg)
@@ -93,7 +93,7 @@ export function useQuizes() {
         throw new Error(response.data.message || 'Erro ao excluir quiz')
       }
     } catch (err: any) {
-      console.error('❌ Erro ao excluir quiz:', err)
+      console.error(' Erro ao excluir quiz:', err)
       const errorMsg = err.response?.data?.message || err.message || 'Erro ao excluir quiz'
       error(errorMsg)
       throw new Error(errorMsg)
