@@ -41,7 +41,7 @@ export function useLogin() {
         error(response.message || 'E-mail ou senha inválidos')
       }
     } catch (err) {
-      console.error('❌ Erro:', err)
+      console.error(' Erro:', err)
       error('Erro de conexão com o servidor. Verifique se o backend está rodando.')
     } finally {
       loading.value = false

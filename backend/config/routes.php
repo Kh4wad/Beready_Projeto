@@ -15,6 +15,23 @@ $routes->connect('/', [
     'action' => 'health'
 ])->setMethods(['GET']);
 
+// ADMIN ROUTES
+$routes->connect('/admin/users', [
+    'controller' => 'Admin',
+    'action' => 'users'
+])->setMethods(['GET']);
+
+// ✅ Rota simples - ID vai no body
+$routes->connect('/admin/users/role', [
+    'controller' => 'Admin',
+    'action' => 'updateRole'
+])->setMethods(['POST']);
+
+$routes->connect('/admin/stats', [
+    'controller' => 'Admin',
+    'action' => 'stats'
+])->setMethods(['GET']);
+
 /**
  * AUTH ROUTES
  */

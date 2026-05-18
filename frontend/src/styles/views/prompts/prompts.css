@@ -272,7 +272,7 @@
 .empty-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: white;
+  color: rgb(0, 0, 0);
   margin-bottom: 0.5rem;
 }
 

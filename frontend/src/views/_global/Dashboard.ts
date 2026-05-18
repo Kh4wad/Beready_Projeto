@@ -39,7 +39,7 @@ export function useDashboard() {
     try {
       user.value = JSON.parse(userData)
 
-      // ✅ Usa o token automaticamente via api (interceptor)
+      // Usa o token automaticamente via api (interceptor)
       const response = await api.get(`/progresso/usuario/${user.value.id}`)
       if (response.data.success && response.data.data) {
         stats.value.flashcardsCount = response.data.data.flashcards_concluidos || 0

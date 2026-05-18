@@ -27,7 +27,7 @@ class JwtService
         $issuedAt = time();
         
         $accessToken = JWT::encode(
-            [
+             [
                 'sub' => $user['id'],
                 'email' => $user['email'],
                 'nome' => $user['nome'],
@@ -109,18 +109,22 @@ class JwtService
     }
     
     public function getTokenFromRequest($request): ?string
-    {
-        $authHeader = $request->getHeaderLine('Authorization');
-        
-        if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
-            return $matches[1];
-        }
-        
-        $token = $request->getQuery('token');
-        if ($token) {
-            return $token;
-        }
-        
-        return null;
-    }
+  {
+      $authHeader = $request->getHeaderLine('Authorization');
+      error_log("JWT Service: Authorization header: " . ($authHeader ?: 'VAZIO'));
+      
+      if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
+          error_log("JWT Service: Token encontrado via Bearer");
+          return $matches[1];
+      }
+      
+      $token = $request->getQuery('token');
+      if ($token) {
+          error_log("JWT Service: Token encontrado via query param");
+          return $token;
+      }
+      
+      error_log("JWT Service: Token NÃO encontrado");
+      return null;
+  }
 }

@@ -30,6 +30,9 @@ const TraducoesPrompt = () => import('../modules/traducoes/views/TraducoesPrompt
 const ImagensPrompt = () => import('../modules/imagens/views/ImagensPrompt.vue')
 const FrasesPrompt = () => import('../modules/frases/views/FrasesPrompt.vue')
 
+// Admin Panel
+const AdminPanel = () => import('../modules/admin/views/AdminPanel.vue')
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -127,15 +130,47 @@ const router = createRouter({
       component: FrasesPrompt,
       meta: { requiresAuth: true },
     },
+    // Rota Admin
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminPanel,
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
   ],
 })
 
+// Guarda de rota atualizada com verificação de admin
 router.beforeEach((to, from) => {
-  const user = localStorage.getItem('user')
-  const isAuthenticated = user !== null
-  if (to.meta.requiresAuth && !isAuthenticated) return '/login'
-  if ((to.path === '/login' || to.path === '/register' || to.path === '/') && isAuthenticated)
+  const token = localStorage.getItem('access_token')
+  const userData = localStorage.getItem('user')
+
+  let isAuthenticated = false
+  let isAdmin = false
+
+  if (token && userData) {
+    try {
+      const user = JSON.parse(userData)
+      isAuthenticated = true
+      isAdmin = user.role === 'admin'
+    } catch (e) {
+      isAuthenticated = false
+    }
+  }
+
+  // Verifica se rota requer admin
+  if (to.meta.requiresAdmin && !isAdmin) {
     return '/dashboard'
+  }
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return '/login'
+  }
+
+  if ((to.path === '/login' || to.path === '/register' || to.path === '/') && isAuthenticated) {
+    return '/dashboard'
+  }
+
   return true
 })
 

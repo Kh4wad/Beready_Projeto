@@ -17,13 +17,33 @@ class UserRepository implements UserRepositoryInterface
     
     public function findById(int $id): ?array
     {
-        $user = $this->usersTable->get($id);
-        return $user ? $user->toArray() : null;
+        $user = $this->usersTable->find()
+            ->select(['id', 'nome', 'email', 'senha_hash', 'role', 'status', 'telefone', 'nivel_ingles', 'idioma_preferido', 'objetivos_aprendizado', 'uuid', 'criado_em', 'atualizado_em', 'ultimo_login'])
+            ->where(['id' => $id])
+            ->first();
+        
+        if (!$user) {
+            return null;
+        }
+        
+        $data = $user->toArray();
+        
+        // Garantir que senha_hash está presente
+        if (isset($user->senha_hash)) {
+            $data['senha_hash'] = $user->senha_hash;
+        }
+        
+        if (!isset($data['role']) || empty($data['role'])) {
+            $data['role'] = 'user';
+        }
+        
+        return $data;
     }
     
     public function findByEmail(string $email): ?array
     {
         $user = $this->usersTable->find()
+            ->select(['id', 'nome', 'email', 'senha_hash', 'role', 'status', 'telefone', 'nivel_ingles', 'idioma_preferido', 'objetivos_aprendizado', 'uuid', 'criado_em', 'atualizado_em', 'ultimo_login'])
             ->where(['email' => $email])
             ->first();
         
@@ -37,11 +57,19 @@ class UserRepository implements UserRepositoryInterface
             $data['senha_hash'] = $user->senha_hash;
         }
         
+        if (!isset($data['role']) || empty($data['role'])) {
+            $data['role'] = 'user';
+        }
+        
         return $data;
     }
     
     public function create(array $data): array
     {
+        if (!isset($data['role'])) {
+            $data['role'] = 'user';
+        }
+        
         $user = $this->usersTable->newEntity($data);
         $this->usersTable->saveOrFail($user);
         return $user->toArray();
@@ -72,13 +100,17 @@ class UserRepository implements UserRepositoryInterface
 
     public function findByUuid(string $uuid): ?array
     {
-        $user = $this->usersTable->find()->where(['uuid' => $uuid])->first();
+        $user = $this->usersTable->find()
+            ->select(['id', 'nome', 'email', 'role', 'status', 'uuid'])
+            ->where(['uuid' => $uuid])
+            ->first();
         return $user ? $user->toArray() : null;
     }
 
     public function findByResetToken(string $token): ?array
     {
         $user = $this->usersTable->find()
+            ->select(['id', 'nome', 'email', 'role', 'reset_token', 'reset_token_expires'])
             ->where(['reset_token' => $token, 'reset_token_expires >' => date('Y-m-d H:i:s')])
             ->first();
         return $user ? $user->toArray() : null;
@@ -91,5 +123,4 @@ class UserRepository implements UserRepositoryInterface
         $user->reset_token_expires = $expires;
         return (bool) $this->usersTable->save($user);
     }
-    
 }

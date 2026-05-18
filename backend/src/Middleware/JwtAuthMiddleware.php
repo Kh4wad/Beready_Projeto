@@ -29,7 +29,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
     {
         $path = $request->getUri()->getPath();
         
-        // Rotas públicas não precisam de token
+        // Rotas públicas
         if ($this->isPublicRoute($path)) {
             return $handler->handle($request);
         }
@@ -37,23 +37,34 @@ class JwtAuthMiddleware implements MiddlewareInterface
         $token = $this->jwtService->getTokenFromRequest($request);
         
         if (!$token) {
-            return $this->jsonError('Token não informado', 401);
+            error_log("JWT: Token não informado para rota {$path}");
+            return $this->unauthorizedResponse('Token não informado');
         }
         
         $payload = $this->jwtService->validateToken($token);
         
         if (!$payload) {
-            return $this->jsonError('Token inválido ou expirado', 401);
+            error_log("JWT: Token inválido ou expirado para rota {$path}");
+            return $this->unauthorizedResponse('Token inválido ou expirado');
         }
         
         if ($payload['type'] !== 'access') {
-            return $this->jsonError('Tipo de token inválido', 401);
+            error_log("JWT: Tipo de token inválido: {$payload['type']}");
+            return $this->unauthorizedResponse('Tipo de token inválido');
         }
         
-        // Adiciona dados do usuário na requisição
+        // EXTRAI A ROLE DO TOKEN
+        $role = $payload['role'] ?? 'user';
+        
+        error_log("=== JWT AUTH: Token válido para usuário {$payload['sub']} com role: {$role}");
+        
+        // ADICIONA OS ATRIBUTOS NA REQUISIÇÃO
         $request = $request->withAttribute('user_id', $payload['sub'])
                            ->withAttribute('user_email', $payload['email'])
-                           ->withAttribute('user_role', $payload['role']);
+                           ->withAttribute('role', $role);
+        
+        // VERIFICA SE O ATRIBUTO FOI ADICIONADO (LOG)
+        error_log("Atributo 'role' adicionado: " . ($request->getAttribute('role') ?? 'NÃO ADICIONADO'));
         
         return $handler->handle($request);
     }
@@ -68,17 +79,12 @@ class JwtAuthMiddleware implements MiddlewareInterface
         return false;
     }
     
-    private function jsonError(string $message, int $status): ResponseInterface
+    private function unauthorizedResponse(string $message): ResponseInterface
     {
-        $response = new Response([
-            'status' => $status,
+        return (new Response([
+            'status' => 401,
             'type' => 'application/json',
-            'body' => json_encode([
-                'success' => false,
-                'message' => $message
-            ])
-        ]);
-        
-        return $response->withHeader('Content-Type', 'application/json');
+            'body' => json_encode(['success' => false, 'message' => $message])
+        ]))->withHeader('Content-Type', 'application/json');
     }
 }

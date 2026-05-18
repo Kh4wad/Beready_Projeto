@@ -9,17 +9,16 @@ const api = axios.create({
   },
 })
 
-// ✅ Interceptor para adicionar token em todas as requisições
+// Interceptor para adicionar token em todas as requisições
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('access_token')
-  console.log('🔐 Token sendo enviado:', token ? '✅ Sim' : '❌ Não')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })
 
-// ✅ Interceptor para refresh automático
+// Interceptor para refresh automático
 api.interceptors.response.use(
   (response) => response,
   async (error) => {

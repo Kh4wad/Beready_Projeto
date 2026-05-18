@@ -36,13 +36,12 @@ class Application extends BaseApplication
             // 2. Rate Limit
             ->add(new RateLimitMiddleware(100, 60))
 
-            // 3. Jwt
+            // 3. JWT
             ->add(new JwtAuthMiddleware())
-            
-            // 4. ERROR HANDLER (tem que vir cedo)
+
+            // 4. Error Handler (captura exceções)
             ->add(new ErrorHandlerMiddleware([
                 'exceptionRenderer' => function ($exception, $request) {
-
                     $status = 500;
                     $message = $exception->getMessage();
 
@@ -65,14 +64,14 @@ class Application extends BaseApplication
                     ]);
                 }
             ]))
-            
-            // 5. Body parser
+
+            // 5. Body Parser
             ->add(new \Cake\Http\Middleware\BodyParserMiddleware())
-            
+
             // 6. Router
             ->add(new \Cake\Routing\Middleware\RoutingMiddleware($this))
-            
-            // 7.Asset
+
+            // 7. Asset
             ->add(new \Cake\Routing\Middleware\AssetMiddleware());
 
         return $middlewareQueue;

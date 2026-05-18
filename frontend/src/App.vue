@@ -9,9 +9,13 @@
 import { onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AlertContainer from '@/shared/components/common/AlertContainer.vue'
+import { useAuth } from '@/shared/composables/useAuth'
+import api from '@/core/services/api'
 
 // Páginas públicas que NÃO devem ter tema escuro/daltônico
 const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/reset-password']
+
+const { isAuthenticated, user } = useAuth()
 
 const loadUserPreferences = async () => {
   const currentRoute = window.location.pathname
@@ -28,44 +32,27 @@ const loadUserPreferences = async () => {
     return
   }
 
-  const userData = localStorage.getItem('user')
-  if (!userData) {
-    return
-  }
-
-  let user
-  try {
-    user = JSON.parse(userData)
-  } catch (e) {
-    console.error('Erro ao fazer parse:', e)
-    return
-  }
-
-  if (!user || !user.id) {
-    console.log('Usuário inválido ou sem ID')
+  if (!isAuthenticated.value || !user.value?.id) {
     return
   }
 
   try {
-    const response = await fetch(`http://localhost:8765/preferencias/usuario/${user.id}`)
-    if (response.ok) {
-      const data = await response.json()
-      if (data.success && data.data) {
-        if (data.data.tema === 'escuro') {
-          document.documentElement.classList.add('dark-mode')
-          document.body.classList.add('dark-mode')
-        } else {
-          document.documentElement.classList.remove('dark-mode')
-          document.body.classList.remove('dark-mode')
-        }
+    const response = await api.get(`/preferencias/usuario/${user.value.id}`)
+    if (response.data.success && response.data.data) {
+      if (response.data.data.tema === 'escuro') {
+        document.documentElement.classList.add('dark-mode')
+        document.body.classList.add('dark-mode')
+      } else {
+        document.documentElement.classList.remove('dark-mode')
+        document.body.classList.remove('dark-mode')
+      }
 
-        if (data.data.modo_daltonico) {
-          document.documentElement.classList.add('daltonico-mode')
-          document.body.classList.add('daltonico-mode')
-        } else {
-          document.documentElement.classList.remove('daltonico-mode')
-          document.body.classList.remove('daltonico-mode')
-        }
+      if (response.data.data.modo_daltonico) {
+        document.documentElement.classList.add('daltonico-mode')
+        document.body.classList.add('daltonico-mode')
+      } else {
+        document.documentElement.classList.remove('daltonico-mode')
+        document.body.classList.remove('daltonico-mode')
       }
     }
   } catch (err) {
@@ -77,6 +64,15 @@ const loadUserPreferences = async () => {
 const route = useRoute()
 watch(
   () => route.path,
+  () => {
+    loadUserPreferences()
+  },
+  { immediate: true },
+)
+
+// Monitorar mudanças no usuário (login/logout)
+watch(
+  () => user.value,
   () => {
     loadUserPreferences()
   },
