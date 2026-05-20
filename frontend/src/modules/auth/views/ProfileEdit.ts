@@ -4,6 +4,7 @@ import { useForm } from '@/shared/composables/useForm'
 import { usePasswordStrength } from '@/shared/composables/usePasswordStrength'
 import { usePhoneMask } from '@/shared/composables/usePhoneMask'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useProfileEdit() {
   const router = useRouter()
@@ -58,7 +59,7 @@ export function useProfileEdit() {
       const user = JSON.parse(userData)
       userId.value = user.id
 
-      const response = await fetch(`http://localhost:8765/users/view/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/view/${user.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -156,7 +157,7 @@ export function useProfileEdit() {
       if (form.objetivos_aprendizado) submitData.objetivos_aprendizado = form.objetivos_aprendizado
       if (form.nova_senha) submitData.senha = form.nova_senha
 
-      const url = `http://localhost:8765/users/update/${currentUserId}`
+      const url = `${API_BASE_URL}/users/update/${currentUserId}`
 
       const response = await fetch(url, {
         method: 'PUT',

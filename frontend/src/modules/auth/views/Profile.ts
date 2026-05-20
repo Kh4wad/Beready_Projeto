@@ -2,6 +2,7 @@ import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
 import { usePhoneMask } from '@/shared/composables/usePhoneMask'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useProfile() {
   const router = useRouter()
@@ -46,7 +47,7 @@ export function useProfile() {
     let response: Response | null = null
 
     try {
-      response = await fetch(`http://localhost:8765/users/delete/${user.value.id}`, {
+      response = await fetch(`${API_BASE_URL}/users/delete/${user.value.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ export function useProfile() {
       const localUser = JSON.parse(userData)
 
       // Busca dados atualizados do backend
-      const response = await fetch(`http://localhost:8765/users/view/${localUser.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/view/${localUser.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

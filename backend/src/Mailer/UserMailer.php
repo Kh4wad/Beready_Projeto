@@ -4,14 +4,17 @@ declare(strict_types=1);
 namespace App\Mailer;
 
 use Cake\Mailer\Mailer;
+use function Cake\Core\env;
 
 class UserMailer extends Mailer
 {
     public function resetPassword($user, string $token)
     {
-        $resetLink = env('APP_BASE_URL', 'http://localhost:5173') . '/reset-password/' . $token;
+        $frontendUrl = env('APP_BASE_URL', 'http://localhost:5173');
+        $resetLink = $frontendUrl . '/reset-password/' . $token;
+        
         $this->setTransport('default')
-            ->setFrom(['noreply@beready.com' => 'BeReady'])
+            ->setFrom([env('EMAIL_FROM', 'noreply@beready.com') => 'BeReady'])
             ->setTo($user->email)
             ->setSubject('Recuperação de Senha - BeReady')
             ->setEmailFormat('html')
