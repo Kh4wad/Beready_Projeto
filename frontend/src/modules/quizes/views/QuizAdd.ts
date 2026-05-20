@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useQuizAdd() {
   const router = useRouter()
@@ -39,7 +40,7 @@ export function useQuizAdd() {
     loading.value = true
 
     try {
-      const response = await fetch('http://localhost:8765/quizes', {
+      const response = await fetch('${API_BASE_URL}/quizes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

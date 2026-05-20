@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { API_BASE_URL } from '@/shared/config/env'
 
 // Composables internos para evitar erros de import
 function useForm(initialData: any) {
@@ -233,7 +234,7 @@ export function useRegister() {
     loading.value = true
 
     try {
-      const response = await fetch('http://localhost:8765/auth/register', {
+      const response = await fetch('${API_BASE_URL}/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

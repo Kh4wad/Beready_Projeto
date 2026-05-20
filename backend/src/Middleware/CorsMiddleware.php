@@ -8,14 +8,14 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Cake\Http\Response;
+use function Cake\Core\env;
 
 class CorsMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $origin = 'http://localhost:5173';
+        $origin = env('CORS_ORIGIN', 'http://localhost:5173');
         
-        // Para requisições OPTIONS (preflight)
         if ($request->getMethod() === 'OPTIONS') {
             return new Response([
                 'status' => 200,
@@ -30,10 +30,8 @@ class CorsMiddleware implements MiddlewareInterface
             ]);
         }
         
-        // Processa a requisição normal
         $response = $handler->handle($request);
         
-        // Adiciona os headers CORS na resposta
         return $response
             ->withHeader('Access-Control-Allow-Origin', $origin)
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')

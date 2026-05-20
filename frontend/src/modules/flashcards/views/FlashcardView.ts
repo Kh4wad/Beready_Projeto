@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useFlashcardView() {
   const router = useRouter()
@@ -21,7 +22,7 @@ export function useFlashcardView() {
 
     loading.value = true
     try {
-      const response = await fetch(`http://localhost:8765/flashcards/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/flashcards/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ export function useFlashcardView() {
 
     deleting.value = true
     try {
-      const response = await fetch(`http://localhost:8765/flashcards/${flashcard.value.id}`, {
+      const response = await fetch(`${API_BASE_URL}/flashcards/${flashcard.value.id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

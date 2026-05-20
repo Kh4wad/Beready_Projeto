@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 interface Flashcard {
   id: number
@@ -41,7 +42,7 @@ export function useFlashcards() {
   const loadFlashcards = async () => {
     loading.value = true
     try {
-      const response = await fetch('http://localhost:8765/flashcards', {
+      const response = await fetch('${API_BASE_URL}/flashcards', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -118,8 +119,8 @@ export function useFlashcards() {
     saving.value = true
     try {
       const url = isEditing.value
-        ? `http://localhost:8765/flashcards/${editingId.value}`
-        : 'http://localhost:8765/flashcards'
+        ? `${API_BASE_URL}/flashcards/${editingId.value}`
+        : '${API_BASE_URL}/flashcards'
 
       const method = isEditing.value ? 'PUT' : 'POST'
 
@@ -170,7 +171,7 @@ export function useFlashcards() {
     deleting.value = true
     try {
       const response = await fetch(
-        `http://localhost:8765/flashcards/${flashcardToDeleteId.value}`,
+        `${API_BASE_URL}/flashcards/${flashcardToDeleteId.value}`,
         {
           method: 'DELETE',
           headers: {

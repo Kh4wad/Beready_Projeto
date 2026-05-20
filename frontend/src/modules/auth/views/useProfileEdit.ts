@@ -1,6 +1,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useProfileEdit() {
   const router = useRouter()
@@ -45,7 +46,7 @@ export function useProfileEdit() {
       const user = JSON.parse(userData)
       userId.value = user.id
 
-      const response = await fetch(`http://localhost:8765/users/view/${user.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/view/${user.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -140,7 +141,7 @@ export function useProfileEdit() {
       if (form.value.objetivos_aprendizado) submitData.objetivos_aprendizado = form.value.objetivos_aprendizado
       if (form.value.nova_senha) submitData.senha = form.value.nova_senha
 
-      const response = await fetch(`http://localhost:8765/users/update/${currentUserId}`, {
+      const response = await fetch(`${API_BASE_URL}/users/update/${currentUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
