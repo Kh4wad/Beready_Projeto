@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useResetPassword() {
   const router = useRouter()
@@ -34,7 +35,7 @@ export function useResetPassword() {
 
     try {
       const response = await fetch(
-        `http://localhost:8765/auth/reset-password/${form.value.token}`,
+        `${API_BASE_URL}/auth/reset-password/${form.value.token}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

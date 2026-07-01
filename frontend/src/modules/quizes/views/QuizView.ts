@@ -1,6 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useQuizView() {
   const router = useRouter()
@@ -29,7 +30,7 @@ export function useQuizView() {
     quizId.value = Number(id)
 
     try {
-      const response = await fetch(`http://localhost:8765/quizes/${quizId.value}`, {
+      const response = await fetch(`${API_BASE_URL}quizes/${quizId.value}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

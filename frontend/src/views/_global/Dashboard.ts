@@ -25,7 +25,7 @@ export function useDashboard() {
 
   const motivationalMessage = computed(() => {
     if (stats.value.sequenciaAtual >= 7) {
-      return ` Incrivel! ${stats.value.sequenciaAtual} dias de sequencia! Continue assim!`
+      return `🔥 Incrivel! ${stats.value.sequenciaAtual} dias de sequencia! Continue assim!`
     }
     if (stats.value.sequenciaAtual >= 3) {
       return `📈 ${stats.value.sequenciaAtual} dias seguidos! Voce esta evoluindo!`
@@ -49,7 +49,7 @@ export function useDashboard() {
         stats.value.tempoEstudo = `${Math.floor(response.data.data.tempo_total_estudo / 60)}h`
         stats.value.progressoGeral = Math.floor(Math.random() * 100)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao carregar estatisticas:', err)
 
       if (axios.isAxiosError(err) && err.response?.status === 401) {

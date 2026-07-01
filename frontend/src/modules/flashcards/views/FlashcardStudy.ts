@@ -1,6 +1,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
+import { API_BASE_URL } from '@/shared/config/env'
 
 export function useFlashcardStudy() {
   const router = useRouter()
@@ -26,7 +27,7 @@ export function useFlashcardStudy() {
 
     loading.value = true
     try {
-      const response = await fetch(`http://localhost:8765/flashcards/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/flashcards/${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
