@@ -74,6 +74,14 @@ $routes->connect('/users/me', [
 ])->setMethods(['GET']);
 
 /**
+ * UPLOAD
+ */
+$routes->connect('/upload/profile-photo', [
+    'controller' => 'Upload',
+    'action' => 'profilePhoto'
+])->setMethods(['POST']);
+
+/**
  * USERS (UUID FIRST + ID FALLBACK)
  */
 $routes->connect('/users/{uuid}', [
@@ -470,6 +478,14 @@ $routes->connect('/flashcard-tags', [
     'controller' => 'FlashcardTags',
     'action' => 'remove'
 ])->setMethods(['DELETE']);
+
+/**
+ * Error Sentry
+ */
+$routes->connect('/test-sentry', [
+    'controller' => 'Users',
+    'action' => 'testSentry'
+])->setMethods(['GET']);
 
 /**
  * FALLBACK

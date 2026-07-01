@@ -18,9 +18,25 @@ class UserRepository implements UserRepositoryInterface
     public function findById(int $id): ?array
     {
         $user = $this->usersTable->find()
-            ->select(['id', 'nome', 'email', 'senha_hash', 'role', 'status', 'telefone', 'nivel_ingles', 'idioma_preferido', 'objetivos_aprendizado', 'uuid', 'criado_em', 'atualizado_em', 'ultimo_login'])
-            ->where(['id' => $id])
-            ->first();
+          ->select([
+              'id',
+              'nome',
+              'email',
+              'senha_hash',
+              'role',
+              'status',
+              'telefone',
+              'nivel_ingles',
+              'idioma_preferido',
+              'objetivos_aprendizado',
+              'foto_perfil',
+              'uuid',
+              'criado_em',
+              'atualizado_em',
+              'ultimo_login'
+          ])
+          ->where(['id' => $id])
+          ->first();
         
         if (!$user) {
             return null;
@@ -101,9 +117,17 @@ class UserRepository implements UserRepositoryInterface
     public function findByUuid(string $uuid): ?array
     {
         $user = $this->usersTable->find()
-            ->select(['id', 'nome', 'email', 'role', 'status', 'uuid'])
-            ->where(['uuid' => $uuid])
-            ->first();
+        ->select([
+            'id',
+            'nome',
+            'email',
+            'role',
+            'status',
+            'foto_perfil',
+            'uuid'
+        ])
+        ->where(['uuid' => $uuid])
+        ->first();
         return $user ? $user->toArray() : null;
     }
 

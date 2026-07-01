@@ -211,6 +211,29 @@ class UsersController extends AppController
             return $this->jsonError('Erro interno', 500);
         }
     }
+
+  public function testSentry()
+  {
+      try {
+
+          throw new \Exception(
+              'Teste Sentry Beready ' . date('Y-m-d H:i:s')
+          );
+
+      } catch (\Throwable $e) {
+
+          \Sentry\captureException($e);
+
+          \Sentry\flush(5000);
+
+          error_log("SENTRY TEST ENVIADO");
+
+      }
+
+      return $this->jsonSuccess([
+          'message' => 'evento enviado'
+      ]);
+  }
     
     public function notFound()
     {

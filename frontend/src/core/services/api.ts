@@ -17,7 +17,6 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
-
 // Interceptor para refresh automático
 api.interceptors.response.use(
   (response) => response,

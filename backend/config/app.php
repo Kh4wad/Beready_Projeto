@@ -139,16 +139,13 @@ return [
         'default' => [
             'className' => Connection::class,
             'driver' => Postgres::class,
-            'host' => 'aws-1-sa-east-1.pooler.supabase.com',
-            'port' => 6543,
-            'username' => 'postgres.bwppzgxlcqxfuzdehgyb',
-            'password' => 'B3r3@dy#Sup4_9Xq!2026',
-            'database' => 'postgres',
+            'url' => env('DATABASE_URL'),
             'encoding' => 'utf8',
             'timezone' => 'UTC',
             'cacheMetadata' => true,
             'quoteIdentifiers' => false,
         ],
+
         'test' => [
             'className' => Connection::class,
             'driver' => Mysql::class,
