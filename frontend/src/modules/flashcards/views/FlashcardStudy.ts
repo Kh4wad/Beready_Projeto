@@ -75,11 +75,43 @@ export function useFlashcardStudy() {
     }
   }
 
-  const rateCard = (rating: string) => {
+const rateCard = async (rating: string) => {
+    // 1. Atualiza as estatísticas locais da sessão
     if (rating === 'hard') stats.value.hard++
     if (rating === 'good') stats.value.good++
     if (rating === 'easy') stats.value.easy++
 
+    // 2. Recupera o usuário do localStorage para salvar no banco
+    const userData = localStorage.getItem('user')
+    if (userData && currentFlashcard.value) {
+      try {
+        const localUser = JSON.parse(userData)
+        const isCorrect = rating !== 'hard' // 'good' e 'easy' contam como acerto
+
+        // Dispara o POST sem travar a navegação do usuário (assíncrono em segundo plano)
+        fetch(`${API_BASE_URL}/respostas`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            usuario_id: localUser.id,
+            tipo: 'flashcard',
+            referencia_id: currentFlashcard.value.id,
+            correto: isCorrect
+          })
+        }).then(res => res.json())
+          .then(data => {
+            if (!data.success) console.warn('Falha ao registrar resposta no banco:', data.message)
+          })
+          .catch(err => console.error('Erro ao conectar ao endpoint de respostas:', err))
+      } catch (e) {
+        console.error('Erro ao processar dados do usuário para o progresso:', e)
+      }
+    }
+
+    // 3. Avança para o próximo card ou finaliza
     if (currentIndex.value < flashcards.value.length - 1) {
       nextCard()
     } else {
