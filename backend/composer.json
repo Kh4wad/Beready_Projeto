@@ -10,9 +10,11 @@
         "cakephp/cakephp": "5.2.*",
         "cakephp/migrations": "^4.0.0",
         "cakephp/plugin-installer": "^2.0",
+        "cloudinary/cloudinary_php": "^1.20",
         "firebase/php-jwt": "^7.0",
         "josegonzalez/dotenv": "^4.0",
         "ramsey/uuid": "^4.7",
+        "sentry/sentry": "^4.29",
         "symfony/mailer": "^6.4",
         "symfony/mime": "^6.4"
     },

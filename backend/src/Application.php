@@ -42,6 +42,10 @@ class Application extends BaseApplication
             // 4. Error Handler (captura exceções)
             ->add(new ErrorHandlerMiddleware([
                 'exceptionRenderer' => function ($exception, $request) {
+
+                    \Sentry\captureException($exception);
+                    \Sentry\flush(2000);
+
                     $status = 500;
                     $message = $exception->getMessage();
 

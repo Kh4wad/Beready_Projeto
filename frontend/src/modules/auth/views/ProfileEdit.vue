@@ -65,6 +65,13 @@
             </div>
             <div class="card-body">
               <div class="form-group">
+                <label class="form-label">Foto de Perfil</label>
+
+                <input type="file" accept="image/*" @change="uploadImage" class="form-input" />
+
+                <img v-if="form.foto_perfil" :src="form.foto_perfil" class="profile-preview" />
+              </div>
+              <div class="form-group">
                 <label class="form-label">Nome Completo *</label>
                 <input
                   v-model="form.nome"
@@ -308,6 +315,7 @@ const form = reactive({
   nome: '',
   email: '',
   telefone: '',
+  foto_perfil: '',
   nivel_ingles: '',
   idioma_preferido: '',
   objetivos_aprendizado: '',
@@ -327,12 +335,34 @@ const loadUserData = async () => {
     form.nome = user.nome || ''
     form.email = user.email || ''
     form.telefone = user.telefone || ''
+    form.foto_perfil = user.foto_perfil || ''
     form.nivel_ingles = user.nivel_ingles || ''
     form.idioma_preferido = user.idioma_preferido || ''
     form.objetivos_aprendizado = user.objetivos_aprendizado || ''
   } catch (e) {
     console.error('Erro ao carregar usuário:', e)
     router.push('/login')
+  }
+}
+
+const uploadImage = async (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.[0]
+
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append('image', file)
+
+  try {
+    const response = await api.post('/upload/profile-photo', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+
+    form.foto_perfil = response.data.url
+  } catch (err) {
+    error('Erro ao enviar imagem')
   }
 }
 
