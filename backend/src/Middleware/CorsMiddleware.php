@@ -14,7 +14,7 @@ class CorsMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $origin = env('CORS_ORIGIN', 'http://localhost:5173');
+        $origin = env('APP_BASE_URL');
         
         if ($request->getMethod() === 'OPTIONS') {
             return new Response([

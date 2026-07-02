@@ -154,7 +154,8 @@ class UsersController extends AppController
         } catch (EmailAlreadyExistsException | WeakPasswordException | \InvalidArgumentException $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         } catch (\Exception $e) {
-            return $this->jsonError('Erro interno', 500);
+            
+            return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
     

@@ -10,7 +10,7 @@
         "cakephp/cakephp": "5.2.*",
         "cakephp/migrations": "^4.0.0",
         "cakephp/plugin-installer": "^2.0",
-        "cloudinary/cloudinary_php": "^1.20",
+        "cloudinary/cloudinary_php": "^3.1",
         "firebase/php-jwt": "^7.0",
         "josegonzalez/dotenv": "^4.0",
         "ramsey/uuid": "^4.7",

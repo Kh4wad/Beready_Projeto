@@ -1,6 +1,6 @@
 <?php
 // CORS headers - valores hardcoded (sem usar env() antes do autoload)
-$corsOrigin = 'http://localhost:5173';
+$corsOrigin = getenv('APP_BASE_URL');
 
 header('Access-Control-Allow-Origin: ' . $corsOrigin);
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');

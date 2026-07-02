@@ -10,7 +10,7 @@ class UserMailer extends Mailer
 {
     public function resetPassword($user, string $token)
     {
-        $frontendUrl = env('APP_BASE_URL', 'http://localhost:5173');
+        $frontendUrl = env('APP_BASE_URL');
         $resetLink = $frontendUrl . '/reset-password/' . $token;
         
         $this->setTransport('default')

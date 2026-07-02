@@ -92,6 +92,12 @@ $routes->connect('/users/{uuid}', [
 ])->setMethods(['GET']);
 
 // fallback ID
+
+$routes->connect('/users/view/{id}', [
+    'controller' => 'Users',
+    'action' => 'view'
+])->setPatterns(['id' => '\d+'])->setMethods(['GET']);
+
 $routes->connect('/users/{id}', [
     'controller' => 'Users',
     'action' => 'view'

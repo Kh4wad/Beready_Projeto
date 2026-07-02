@@ -12,9 +12,7 @@ export function useQuizes() {
   const loadQuizes = async (usuarioId: number) => {
     loading.value = true
     try {
-      console.log('📡 Carregando quizes para usuário:', usuarioId)
       const response = await quizService.getByUsuario(usuarioId)
-      console.log('📦 Resposta:', response)
 
       if (response.data.success) {
         quizes.value = response.data.data || []
@@ -33,9 +31,7 @@ export function useQuizes() {
   const createQuiz = async (data: Omit<Quiz, 'id' | 'criado_em' | 'atualizado_em'>) => {
     loading.value = true
     try {
-      console.log('📡 Criando quiz com dados:', data)
       const response = await quizService.create(data)
-      console.log('📦 Resposta:', response)
 
       if (response.data.success) {
         success('Quiz criado com sucesso!')
@@ -59,9 +55,7 @@ export function useQuizes() {
   ) => {
     loading.value = true
     try {
-      console.log('📡 Atualizando quiz:', id, data)
       const response = await quizService.update(id, data)
-      console.log('📦 Resposta:', response)
 
       if (response.data.success) {
         success('Quiz atualizado com sucesso!')
@@ -82,9 +76,7 @@ export function useQuizes() {
   const deleteQuiz = async (id: number) => {
     loading.value = true
     try {
-      console.log('📡 Deletando quiz:', id)
       const response = await quizService.delete(id)
-      console.log('📦 Resposta:', response)
 
       if (response.data.success) {
         success('Quiz excluído com sucesso!')

@@ -104,7 +104,7 @@ export function useProfile() {
       const localUser = JSON.parse(userData)
 
       // Busca dados atualizados do backend
-      const response = await fetch(`${API_BASE_URL}/users/view/${localUser.id}`, {
+      const response = await fetch(`${API_BASE_URL}/users/${localUser.id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
