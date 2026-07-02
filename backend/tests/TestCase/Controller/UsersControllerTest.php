@@ -22,7 +22,7 @@ class UsuariosControllerTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.Usuarios',
+        'app.Users',
     ];
 
     /**

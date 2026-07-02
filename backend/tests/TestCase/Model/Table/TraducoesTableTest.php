@@ -24,8 +24,9 @@ class TraducoesTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.Traducoes',
+        'app.Users',
         'app.Prompts',
+        'app.Traducoes',
     ];
 
     /**

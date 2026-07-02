@@ -25,7 +25,7 @@ class ProgressoUsuarioTableTest extends TestCase
      */
     protected array $fixtures = [
         'app.ProgressoUsuario',
-        'app.Usuarios',
+        'app.Users',
     ];
 
     /**

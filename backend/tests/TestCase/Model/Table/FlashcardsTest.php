@@ -27,7 +27,7 @@ class FlashcardTagsTableTest extends TestCase
         'app.flashcard_tags',
         'app.Flashcards',
         'app.Flashcardsflashcard_tags',
-        'app.Usuarios', // se houver relação
+        'app.Users',
     ];
 
     /**

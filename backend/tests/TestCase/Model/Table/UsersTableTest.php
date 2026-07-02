@@ -24,7 +24,7 @@ class UsuariosTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.Usuarios',
+        'app.Users',
         'app.ProgressoUsuario',
         'app.Flashcards',
         'app.PreferenciasUsuario',

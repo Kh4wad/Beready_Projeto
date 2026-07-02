@@ -24,8 +24,9 @@ class FrasesSemelhantesTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.FrasesSemelhantes',
+        'app.Users',
         'app.Prompts',
+        'app.FrasesSemelhantes',
     ];
 
     /**
