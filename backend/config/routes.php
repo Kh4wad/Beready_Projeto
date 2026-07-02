@@ -496,3 +496,12 @@ $routes->connect('/respostas', [
     'action' => 'save'
 ])->setMethods(['POST']);
 
+$routes->connect('/progresso/incrementar-flashcards', [
+    'controller' => 'Progresso',
+    'action' => 'incrementarFlashcards'
+])->setMethods(['POST']);
+
+$routes->connect('/progresso/incrementar-tempo', [
+    'controller' => 'Progresso',
+    'action' => 'incrementarTempo'
+])->setMethods(['POST']);
