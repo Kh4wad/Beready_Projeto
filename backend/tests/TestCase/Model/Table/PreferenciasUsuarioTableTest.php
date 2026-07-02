@@ -28,8 +28,8 @@ final class PreferenciasUsuarioTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
+        'app.Users',
         'app.PreferenciasUsuario',
-        'app.Usuarios',
     ];
 
     /**

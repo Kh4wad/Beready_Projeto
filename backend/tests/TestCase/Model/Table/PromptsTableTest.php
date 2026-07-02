@@ -24,8 +24,8 @@ class PromptsTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
+        'app.Users',
         'app.Prompts',
-        'app.Usuarios',
         'app.Flashcards',
         'app.FrasesSemelhantes',
         'app.ImagensGeradas',

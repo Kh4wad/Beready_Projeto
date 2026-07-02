@@ -24,8 +24,9 @@ class ImagensGeradasTableTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
-        'app.ImagensGeradas',
+        'app.Users',
         'app.Prompts',
+        'app.ImagensGeradas',
     ];
 
     /**
