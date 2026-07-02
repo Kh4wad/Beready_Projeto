@@ -7,7 +7,6 @@ export function useDashboard() {
   const router = useRouter()
   const user = ref<any>(null)
   const loading = ref(false)
-
   const stats = ref({
     flashcardsCount: 0,
     acertoRate: 0,
@@ -37,17 +36,24 @@ export function useDashboard() {
     const userData = localStorage.getItem('user')
     if (!userData) return
 
+    loading.value = true
     try {
       user.value = JSON.parse(userData)
-
       // Usa o token automaticamente via api (interceptor)
       const response = await api.get(`/progresso/usuario/${user.value.id}`)
+
       if (response.data.success && response.data.data) {
-        stats.value.flashcardsCount = response.data.data.flashcards_concluidos || 0
-        stats.value.sequenciaAtual = response.data.data.sequencia_atual || 0
-        stats.value.acertoRate = Math.floor(Math.random() * 30) + 70
-        stats.value.tempoEstudo = `${Math.floor(response.data.data.tempo_total_estudo / 60)}h`
-        stats.value.progressoGeral = Math.floor(Math.random() * 100)
+        const data = response.data.data
+
+        stats.value.flashcardsCount = data.flashcards_concluidos || 0
+        stats.value.sequenciaAtual = data.sequencia_atual || 0
+        stats.value.tempoEstudo = `${Math.floor((data.tempo_total_estudo || 0) / 60)}h`
+
+        // Ainda não calculados no backend — usa 0 até a feature existir.
+        // Quando o backend passar a retornar taxa_acerto/progresso_geral,
+        // isso vai funcionar automaticamente sem mudar nada aqui.
+        stats.value.acertoRate = data.taxa_acerto ?? 0
+        stats.value.progressoGeral = data.progresso_geral ?? 0
       }
     } catch (err: any) {
       console.error('Erro ao carregar estatisticas:', err)
@@ -55,6 +61,8 @@ export function useDashboard() {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
         router.push('/login')
       }
+    } finally {
+      loading.value = false
     }
   }
 

@@ -114,6 +114,18 @@ CREATE TABLE quizes (
     FOREIGN KEY (usuario_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- FLASHCARDS
+CREATE TABLE flashcards (
+    id SERIAL PRIMARY KEY,
+    usuario_id INTEGER,
+    frente TEXT,
+    verso TEXT,
+    nivel_dificuldade VARCHAR(20) DEFAULT 'iniciante',
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- PROGRESSO USUARIO
 CREATE TABLE progresso_usuario (
     id SERIAL PRIMARY KEY,

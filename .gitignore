@@ -23,6 +23,7 @@ frontend/.env
 .env
 .env.local
 .env.*.local
+.env.example
 
 # ============================================
 # OS generated files
