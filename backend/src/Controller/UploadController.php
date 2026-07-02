@@ -11,27 +11,46 @@ class UploadController extends AppController
     {
         $this->request->allowMethod(['post']);
 
-        $file = $this->request->getUploadedFile('photo');
+        try {
+            // Verifica o arquivo
+            $file = $this->request->getUploadedFile('photo');
 
-        if (!$file) {
-            $this->set([
-                'success' => false,
-                'message' => 'Nenhuma imagem enviada.',
-                '_serialize' => ['success','message']
+            if (!$file || $file->getError() !== UPLOAD_ERR_OK) {
+                $this->response = $this->response->withStringBody(json_encode([
+                    'success' => false,
+                    'message' => 'Nenhuma imagem enviada ou erro no upload.'
+                ]));
+                $this->response = $this->response->withType('json');
+                return $this->response;
+            }
+
+            // Faz o upload para o Cloudinary
+            $service = new CloudinaryService();
+            
+            $url = $service->uploadProfilePhoto([
+                'tmp_name' => $file->getStream()->getMetadata('uri'),
+                'name' => $file->getClientFilename(),
+                'type' => $file->getClientMediaType(),
+                'size' => $file->getSize(),
             ]);
-            return;
+
+
+            // Retorna JSON diretamente
+            $this->response = $this->response->withStringBody(json_encode([
+                'success' => true,
+                'url' => $url
+            ]));
+            $this->response = $this->response->withType('json');
+            return $this->response;
+
+        } catch (\Exception $e) {
+            
+            $this->response = $this->response->withStringBody(json_encode([
+                'success' => false,
+                'message' => 'Erro: ' . $e->getMessage()
+            ]));
+            $this->response = $this->response->withType('json');
+            return $this->response;
         }
-
-        $service = new CloudinaryService();
-
-        $url = $service->uploadProfilePhoto([
-            'tmp_name' => $file->getStream()->getMetadata('uri')
-        ]);
-
-        $this->set([
-            'success' => true,
-            'url' => $url,
-            '_serialize' => ['success','url']
-        ]);
     }
 }

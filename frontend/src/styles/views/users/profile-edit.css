@@ -92,6 +92,14 @@
   margin: 0 auto;
 }
 
+/* Estilo para imagem no header */
+.hero-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
 .profile-edit-container {
   max-width: 1000px;
   margin: -2rem auto 0;
@@ -349,5 +357,293 @@
   .btn-cancel,
   .btn-save {
     width: 100%;
+  }
+}
+/* ============================================
+   ESTILOS ADICIONAIS - PREVIEW DA FOTO E SENHA
+   ============================================ */
+
+/* Preview da foto de perfil */
+.profile-preview-container {
+  margin-top: 0.625rem;
+  width: clamp(6.25rem, 12vw, 9.375rem);
+  height: clamp(6.25rem, 12vw, 9.375rem);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--border-color, #e5e7eb);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.profile-preview-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.profile-preview-container:hover {
+  transform: scale(1.02);
+  border-color: #3b82f6;
+  box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.2);
+}
+
+.profile-preview-container:hover::after {
+  opacity: 1;
+}
+
+.profile-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.profile-preview-container:hover .profile-preview {
+  transform: scale(1.05);
+}
+
+/* Dark mode para o preview */
+.dark-mode .profile-preview-container {
+  border-color: #334155;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.3),
+    0 2px 4px -1px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .profile-preview-container:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 8px 16px -4px rgba(59, 130, 246, 0.3);
+}
+
+/* Indicador de força da senha */
+.password-strength {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.strength-bar {
+  width: 100%;
+  height: 0.25rem;
+  background-color: var(--bg-muted, #e5e7eb);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.dark-mode .strength-bar {
+  background-color: #334155;
+}
+
+.strength-progress {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.strength-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.strength-progress.weak {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+  width: 33%;
+}
+
+.strength-progress.medium {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+  width: 66%;
+}
+
+.strength-progress.strong {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  width: 100%;
+}
+
+.strength-text {
+  font-size: clamp(0.625rem, 0.75vw, 0.75rem);
+  color: var(--text-muted, #6b7280);
+  display: block;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.dark-mode .strength-text {
+  color: #94a3b8;
+}
+
+/* Mensagens de erro do formulário */
+.form-error {
+  color: #ef4444;
+  font-size: clamp(0.625rem, 0.7vw, 0.75rem);
+  margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+}
+
+.form-error::before {
+  content: '⚠';
+  font-size: 0.75rem;
+}
+
+.dark-mode .form-error {
+  color: #f87171;
+}
+
+/* Grupo da foto com upload melhorado */
+.form-group .profile-preview-container {
+  margin-top: 0.5rem;
+}
+
+/* Animação de entrada para o preview */
+.profile-preview-container {
+  animation: fadeInUp 0.4s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(0.625rem) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Badge de upload na foto */
+.profile-preview-container .upload-badge {
+  position: absolute;
+  bottom: 0.25rem;
+  right: 0.25rem;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  width: clamp(1.5rem, 3vw, 2rem);
+  height: clamp(1.5rem, 3vw, 2rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.625rem, 0.8vw, 0.75rem);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+}
+
+.profile-preview-container:hover .upload-badge {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dark-mode .profile-preview-container .upload-badge {
+  border-color: #1e293b;
+}
+
+/* Responsividade completa */
+@media (max-width: 1024px) {
+  .profile-preview-container {
+    width: clamp(5rem, 10vw, 7.5rem);
+    height: clamp(5rem, 10vw, 7.5rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-preview-container {
+    width: clamp(4.5rem, 15vw, 6.25rem);
+    height: clamp(4.5rem, 15vw, 6.25rem);
+    margin-top: 0.5rem;
+  }
+
+  .strength-text {
+    font-size: 0.625rem;
+  }
+
+  .form-error {
+    font-size: 0.625rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-preview-container {
+    width: clamp(3.75rem, 20vw, 5rem);
+    height: clamp(3.75rem, 20vw, 5rem);
+    border-width: 2px;
+  }
+
+  .password-strength {
+    margin-top: 0.375rem;
+  }
+
+  .strength-bar {
+    height: 0.1875rem;
+  }
+
+  .strength-text {
+    font-size: 0.5625rem;
+  }
+
+  .form-error {
+    font-size: 0.5625rem;
+  }
+}
+
+/* Dark mode aprimorado */
+.dark-mode .profile-preview-container::after {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), transparent);
+}
+
+.dark-mode .strength-progress.weak {
+  background: linear-gradient(90deg, #ef4444, #b91c1c);
+}
+
+.dark-mode .strength-progress.medium {
+  background: linear-gradient(90deg, #f59e0b, #b45309);
+}
+
+.dark-mode .strength-progress.strong {
+  background: linear-gradient(90deg, #22c55e, #15803d);
+}
+
+/* Suporte para redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  .profile-preview-container,
+  .profile-preview,
+  .strength-progress,
+  .strength-progress::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .profile-preview-container::after {
+    display: none;
   }
 }

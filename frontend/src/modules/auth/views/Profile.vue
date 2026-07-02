@@ -5,7 +5,14 @@
       <div class="profile-content">
         <div class="profile-avatar">
           <div class="avatar-placeholder">
+            <img
+              v-if="user?.foto_perfil"
+              :src="user.foto_perfil"
+              alt="Foto de perfil"
+              class="profile-avatar-image"
+            />
             <svg
+              v-else
               xmlns="http://www.w3.org/2000/svg"
               class="h-8 w-8"
               fill="none"

@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm } from '@/shared/composables/useForm'
 import { usePasswordStrength } from '@/shared/composables/usePasswordStrength'
@@ -13,6 +13,7 @@ export function useProfileEdit() {
   const showPassword = ref(false)
   const showConfirmPassword = ref(false)
   const userId = ref<number | null>(null)
+  const selectedImage = ref<File | undefined>(undefined)
 
   const { strengthClass, strengthText, strengthWidth, checkPasswordStrength } =
     usePasswordStrength()
@@ -22,6 +23,7 @@ export function useProfileEdit() {
     nome: '',
     email: '',
     telefone: '',
+    foto_perfil: '',
     nivel_ingles: '',
     idioma_preferido: '',
     status: 'ativo',
@@ -35,17 +37,44 @@ export function useProfileEdit() {
     return form.nova_senha === form.confirmar_senha
   })
 
-  const checkPasswordMatch = () => {
-    passwordsMatch.value
-  }
+  const imagePreview = ref<string | null>(null)
+
+  watch(selectedImage, (newFile) => {
+    if (newFile) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        imagePreview.value = e.target?.result as string
+      }
+      reader.readAsDataURL(newFile)
+    } else {
+      imagePreview.value = null
+    }
+  })
 
   const handlePasswordInput = (event: Event) => {
     const input = event.target as HTMLInputElement
     checkPasswordStrength(input.value)
   }
 
-  const handleConfirmPasswordInput = (event: Event) => {
+  const handleConfirmPasswordInput = () => {
     passwordsMatch.value
+  }
+
+  const handleImageChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+
+    if (!input.files || input.files.length === 0) {
+      selectedImage.value = undefined
+      return
+    }
+
+    const file = input.files[0]
+    if (!file) {
+      selectedImage.value = undefined
+      return
+    }
+
+    selectedImage.value = file
   }
 
   const loadUserData = async () => {
@@ -70,31 +99,35 @@ export function useProfileEdit() {
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
-          form.nome = data.user.nome || ''
-          form.email = data.user.email || ''
-          form.telefone = formatPhone(data.user.telefone || '')
-          form.nivel_ingles = data.user.nivel_ingles || 'iniciante'
-          form.idioma_preferido = data.user.idioma_preferido || 'pt-BR'
-          form.status = data.user.status || 'ativo'
-          form.objetivos_aprendizado = data.user.objetivos_aprendizado || ''
+          const userData = data.data?.user || data.user || data.data
+
+          form.nome = userData.nome || ''
+          form.email = userData.email || ''
+          form.telefone = formatPhone(userData.telefone || '')
+          form.foto_perfil = userData.foto_perfil || ''
+          form.nivel_ingles = userData.nivel_ingles || 'iniciante'
+          form.idioma_preferido = userData.idioma_preferido || 'pt-BR'
+          form.status = userData.status || 'ativo'
+          form.objetivos_aprendizado = userData.objetivos_aprendizado || ''
         }
       } else {
         const user = JSON.parse(userData)
         form.nome = user.nome || ''
         form.email = user.email || ''
         form.telefone = formatPhone(user.telefone || '')
+        form.foto_perfil = user.foto_perfil || ''
         form.nivel_ingles = user.nivel_ingles || 'iniciante'
         form.idioma_preferido = user.idioma_preferido || 'pt-BR'
         form.status = user.status || 'ativo'
         form.objetivos_aprendizado = user.objetivos_aprendizado || ''
       }
     } catch (e) {
-      console.error('Erro ao carregar dados do usuário:', e)
       const user = JSON.parse(userData)
       userId.value = user.id
       form.nome = user.nome || ''
       form.email = user.email || ''
       form.telefone = formatPhone(user.telefone || '')
+      form.foto_perfil = user.foto_perfil || ''
       form.nivel_ingles = user.nivel_ingles || 'iniciante'
       form.idioma_preferido = user.idioma_preferido || 'pt-BR'
       form.status = user.status || 'ativo'
@@ -102,8 +135,32 @@ export function useProfileEdit() {
     }
   }
 
-  const handleSubmit = async () => {
+  const uploadImageToCloudinary = async (file: File): Promise<string | null> => {
+    try {
+      const formData = new FormData()
+      formData.append('photo', file)
 
+      const response = await fetch(`${API_BASE_URL}/upload/profile-photo`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+        },
+        body: formData,
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        return data.url
+      } else {
+        return null
+      }
+    } catch {
+      return null
+    }
+  }
+
+  const handleSubmit = async () => {
     let currentUserId = userId.value
 
     if (!currentUserId) {
@@ -121,7 +178,6 @@ export function useProfileEdit() {
       return
     }
 
-    // Validar telefone
     if (form.telefone) {
       const digits = form.telefone.replace(/\D/g, '')
       if (digits.length > 0 && digits.length < 11) {
@@ -130,7 +186,6 @@ export function useProfileEdit() {
       }
     }
 
-    // Validar senha
     if (form.nova_senha) {
       if (form.nova_senha.length < 6) {
         error('A nova senha deve ter pelo menos 6 caracteres')
@@ -145,21 +200,37 @@ export function useProfileEdit() {
     loading.value = true
 
     try {
-      // Enviar apenas os campos que mudaram
-      const submitData: any = {}
+      let uploadedImageUrl = form.foto_perfil
 
-      if (form.nome) submitData.nome = form.nome
-      if (form.email) submitData.email = form.email
-      if (form.telefone) submitData.telefone = form.telefone
-      if (form.nivel_ingles) submitData.nivel_ingles = form.nivel_ingles
-      if (form.idioma_preferido) submitData.idioma_preferido = form.idioma_preferido
-      if (form.status) submitData.status = form.status
-      if (form.objetivos_aprendizado) submitData.objetivos_aprendizado = form.objetivos_aprendizado
-      if (form.nova_senha) submitData.senha = form.nova_senha
+      if (selectedImage.value) {
+        const url = await uploadImageToCloudinary(selectedImage.value)
+        if (url) {
+          uploadedImageUrl = url
+          selectedImage.value = undefined
+          imagePreview.value = null
+        } else {
+          error('Erro ao fazer upload da imagem. Tente novamente.')
+          loading.value = false
+          return
+        }
+      }
 
-      const url = `${API_BASE_URL}/users/update/${currentUserId}`
+      const submitData: any = {
+        nome: form.nome,
+        email: form.email,
+        telefone: form.telefone,
+        nivel_ingles: form.nivel_ingles,
+        idioma_preferido: form.idioma_preferido,
+        status: form.status,
+        objetivos_aprendizado: form.objetivos_aprendizado,
+        foto_perfil: uploadedImageUrl,
+      }
 
-      const response = await fetch(url, {
+      if (form.nova_senha !== '') {
+        submitData.senha = form.nova_senha
+      }
+
+      const response = await fetch(`${API_BASE_URL}/users/update/${currentUserId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -171,21 +242,20 @@ export function useProfileEdit() {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        const updatedUser = data.user || {
-          id: currentUserId,
-          nome: form.nome,
-          email: form.email,
-          telefone: form.telefone,
-          nivel_ingles: form.nivel_ingles,
-          idioma_preferido: form.idioma_preferido,
-          status: form.status,
-          objetivos_aprendizado: form.objetivos_aprendizado,
-        }
+        const updatedUser = data.data?.user ||
+          data.user || {
+            id: currentUserId,
+            nome: form.nome,
+            email: form.email,
+            telefone: form.telefone,
+            foto_perfil: uploadedImageUrl,
+            nivel_ingles: form.nivel_ingles,
+            idioma_preferido: form.idioma_preferido,
+            status: form.status,
+            objetivos_aprendizado: form.objetivos_aprendizado,
+          }
 
-        // Salva no localStorage
         localStorage.setItem('user', JSON.stringify(updatedUser))
-
-        // Dispara evento para atualizar outras telas
         window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }))
 
         success('Perfil atualizado com sucesso!')
@@ -196,8 +266,7 @@ export function useProfileEdit() {
       } else {
         error(data.message || 'Erro ao atualizar perfil')
       }
-    } catch (err) {
-      console.error('Erro detalhado:', err)
+    } catch {
       error('Erro de conexão com o servidor')
     } finally {
       loading.value = false
@@ -219,12 +288,14 @@ export function useProfileEdit() {
     strengthWidth,
     phoneError,
     passwordsMatch,
+    imagePreview,
+    selectedImage,
     handlePhoneInput,
     handlePhoneKeydown,
     checkPasswordStrength,
-    checkPasswordMatch,
     handlePasswordInput,
     handleConfirmPasswordInput,
+    handleImageChange,
     handleSubmit,
   }
 }

@@ -19,8 +19,16 @@
         Voltar
       </button>
       <div class="hero-content">
+        <!--  AVATAR COM PREVIEW DA FOTO -->
         <div class="hero-icon">
+          <img
+            v-if="imagePreview || form.foto_perfil"
+            :src="imagePreview || form.foto_perfil"
+            alt="Foto de perfil"
+            class="hero-avatar-image"
+          />
           <svg
+            v-else
             xmlns="http://www.w3.org/2000/svg"
             class="h-10 w-10"
             fill="none"
@@ -67,9 +75,16 @@
               <div class="form-group">
                 <label class="form-label">Foto de Perfil</label>
 
-                <input type="file" accept="image/*" @change="uploadImage" class="form-input" />
+                <!--  Input de arquivo -->
+                <input
+                  type="file"
+                  accept="image/*"
+                  @change="handleImageChange"
+                  class="form-input"
+                />
 
-                <img v-if="form.foto_perfil" :src="form.foto_perfil" class="profile-preview" />
+                <!--  Preview removido daqui - agora está no topo -->
+                <!-- O preview agora aparece no círculo do header -->
               </div>
               <div class="form-group">
                 <label class="form-label">Nome Completo *</label>
@@ -98,11 +113,15 @@
                   type="tel"
                   class="form-input"
                   placeholder="(99)99999-9999"
+                  @input="handlePhoneInput"
+                  @keydown="handlePhoneKeydown"
                 />
+                <span v-if="phoneError" class="form-error">{{ phoneError }}</span>
               </div>
             </div>
           </div>
 
+          <!--  RESTO DO FORMULÁRIO IGUAL (não muda) -->
           <div class="form-card">
             <div class="card-header">
               <h3 class="card-title">
@@ -187,7 +206,18 @@
                       :type="showPassword ? 'text' : 'password'"
                       class="form-input"
                       placeholder="Mínimo 6 caracteres"
+                      @input="handlePasswordInput"
                     />
+                    <div v-if="form.nova_senha" class="password-strength">
+                      <div class="strength-bar">
+                        <div
+                          class="strength-progress"
+                          :class="strengthClass"
+                          :style="{ width: strengthWidth }"
+                        ></div>
+                      </div>
+                      <span class="strength-text">{{ strengthText }}</span>
+                    </div>
                     <button
                       type="button"
                       class="password-toggle"
@@ -238,7 +268,11 @@
                       :type="showConfirmPassword ? 'text' : 'password'"
                       class="form-input"
                       placeholder="Digite a senha novamente"
+                      @input="handleConfirmPasswordInput"
                     />
+                    <span v-if="!passwordsMatch && form.confirmar_senha" class="form-error">
+                      As senhas não coincidem
+                    </span>
                     <button
                       type="button"
                       class="password-toggle"
@@ -300,130 +334,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAlert } from '@/shared/composables/useAlert'
-import api from '@/core/services/api'
+import { useProfileEdit } from './ProfileEdit'
 
-const router = useRouter()
-const { success, error } = useAlert()
-const loading = ref(false)
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
-
-const form = reactive({
-  nome: '',
-  email: '',
-  telefone: '',
-  foto_perfil: '',
-  nivel_ingles: '',
-  idioma_preferido: '',
-  objetivos_aprendizado: '',
-  nova_senha: '',
-  confirmar_senha: '',
-})
-
-const loadUserData = async () => {
-  const userData = localStorage.getItem('user')
-  if (!userData) {
-    router.push('/login')
-    return
-  }
-
-  try {
-    const user = JSON.parse(userData)
-    form.nome = user.nome || ''
-    form.email = user.email || ''
-    form.telefone = user.telefone || ''
-    form.foto_perfil = user.foto_perfil || ''
-    form.nivel_ingles = user.nivel_ingles || ''
-    form.idioma_preferido = user.idioma_preferido || ''
-    form.objetivos_aprendizado = user.objetivos_aprendizado || ''
-  } catch (e) {
-    console.error('Erro ao carregar usuário:', e)
-    router.push('/login')
-  }
-}
-
-const uploadImage = async (event: Event) => {
-  const file = (event.target as HTMLInputElement).files?.[0]
-
-  if (!file) return
-
-  const formData = new FormData()
-  formData.append('image', file)
-
-  try {
-    const response = await api.post('/upload/profile-photo', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-
-    form.foto_perfil = response.data.url
-  } catch (err) {
-    error('Erro ao enviar imagem')
-  }
-}
-
-const handleSubmit = async () => {
-  const userData = localStorage.getItem('user')
-  if (!userData) return
-
-  let user
-  try {
-    user = JSON.parse(userData)
-  } catch (e) {
-    error('Erro ao carregar dados do usuário')
-    return
-  }
-
-  if (form.nova_senha && form.nova_senha !== form.confirmar_senha) {
-    error('As senhas não coincidem')
-    return
-  }
-
-  if (form.nova_senha && form.nova_senha.length < 6) {
-    error('A senha deve ter pelo menos 6 caracteres')
-    return
-  }
-
-  loading.value = true
-
-  try {
-    const submitData: any = {
-      nome: form.nome,
-      email: form.email,
-      telefone: form.telefone,
-      nivel_ingles: form.nivel_ingles,
-      idioma_preferido: form.idioma_preferido,
-      objetivos_aprendizado: form.objetivos_aprendizado,
-    }
-
-    if (form.nova_senha) {
-      submitData.senha = form.nova_senha
-    }
-
-    const response = await api.put(`/users/update/${user.id}`, submitData)
-
-    if (response.data.success) {
-      const updatedUser = { ...user, ...submitData }
-      localStorage.setItem('user', JSON.stringify(updatedUser))
-      success('Perfil atualizado com sucesso!')
-      setTimeout(() => router.push('/profile'), 1500)
-    } else {
-      error(response.data.message || 'Erro ao atualizar perfil')
-    }
-  } catch (err: any) {
-    error(err.response?.data?.message || 'Erro de conexão com o servidor')
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(() => {
-  loadUserData()
-})
+const {
+  form,
+  loading,
+  showPassword,
+  showConfirmPassword,
+  strengthClass,
+  strengthText,
+  strengthWidth,
+  phoneError,
+  passwordsMatch,
+  imagePreview,
+  selectedImage,
+  handlePhoneInput,
+  handlePhoneKeydown,
+  handlePasswordInput,
+  handleConfirmPasswordInput,
+  handleImageChange,
+  handleSubmit,
+} = useProfileEdit()
 </script>
 
 <style scoped>
