@@ -10,11 +10,11 @@ class UserMailer extends Mailer
 {
     public function resetPassword($user, string $token)
     {
-        $frontendUrl = env('APP_BASE_URL');
+        $frontendUrl = getenv('APP_BASE_URL');
         $resetLink = $frontendUrl . '/reset-password/' . $token;
         
         $this->setTransport('default')
-            ->setFrom([env('EMAIL_FROM', 'noreply@beready.com') => 'BeReady'])
+            ->setFrom(env('EMAIL_FROM'))
             ->setTo($user->email)
             ->setSubject('Recuperação de Senha - BeReady')
             ->setEmailFormat('html')

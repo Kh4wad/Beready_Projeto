@@ -91,9 +91,9 @@ try {
  * Load an environment local configuration file to provide overrides to your configuration.
  * Notice: For security reasons app_local.php **should not** be included in your git repo.
  */
-// if (file_exists(CONFIG . 'app_local.php')) {
-//     Configure::load('app_local', 'default');
-// }
+if (file_exists(CONFIG . 'app_local.php')) {
+    Configure::load('app_local', 'default');
+}
 
 /*
  * When debug = true the metadata cache should only last for a short time.
@@ -189,9 +189,6 @@ Log::setConfig(Configure::consume('Log'));
 $salt = Configure::consume('Security.salt');
 if (empty($salt)) {
     $salt = env('SECURITY_SALT');
-    if (empty($salt)) {
-        $salt = 'a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0';
-    }
 }
 Security::setSalt($salt);
 
