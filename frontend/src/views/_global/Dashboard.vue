@@ -120,7 +120,7 @@
             </svg>
           </div>
           <div class="stat-info">
-            <h3 class="stat-value">{{ stats.tempoEstudo || '0h' }}</h3>
+            <h3 class="stat-value">{{ stats.tempoEstudo || '0 min' }}</h3>
             <p class="stat-label">Tempo de Estudo</p>
           </div>
         </div>

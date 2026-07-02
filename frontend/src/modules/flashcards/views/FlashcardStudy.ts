@@ -1,24 +1,67 @@
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
 import { API_BASE_URL } from '@/shared/config/env'
+import { respostaService } from '@/modules/progresso/services/respostaService'
 
 export function useFlashcardStudy() {
+  const sessionStartTime = ref(Date.now())
+
   const router = useRouter()
   const route = useRoute()
   const { error } = useAlert()
+
   const flashcards = ref<any[]>([])
   const currentIndex = ref(0)
   const loading = ref(true)
   const isFlipped = ref(false)
   const showCompletionModal = ref(false)
-  const stats = ref({ hard: 0, good: 0, easy: 0 })
+  const stats = ref({
+    hard: 0,
+    good: 0,
+    easy: 0,
+  })
 
-  const currentFlashcard = computed(() => flashcards.value[currentIndex.value])
+  const allFlashcardIds = ref<number[]>([])
+  const hasNextFlashcard = ref(false)
+
+  const currentFlashcard = computed(
+    () => flashcards.value[currentIndex.value]
+  )
+
   const flashcard = computed(() => currentFlashcard.value)
+
+  const loadAllFlashcardIds = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/flashcards`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      })
+
+      const data = await response.json()
+
+      if (data.success && Array.isArray(data.data)) {
+        allFlashcardIds.value = data.data.map((item: any) => Number(item.id))
+      }
+    } catch (err) {
+      console.error('Erro ao carregar lista de flashcards:', err)
+    }
+  }
+
+  const updateHasNextFlashcard = () => {
+    const currentId = Number(route.params.id)
+    const idx = allFlashcardIds.value.indexOf(currentId)
+
+    hasNextFlashcard.value =
+      idx !== -1 && idx < allFlashcardIds.value.length - 1
+  }
 
   const loadFlashcards = async () => {
     const id = route.params.id
+
     if (!id) {
       error('ID do flashcard não informado')
       router.push('/flashcards')
@@ -26,6 +69,7 @@ export function useFlashcardStudy() {
     }
 
     loading.value = true
+
     try {
       const response = await fetch(`${API_BASE_URL}/flashcards/${id}`, {
         method: 'GET',
@@ -38,14 +82,26 @@ export function useFlashcardStudy() {
       const data = await response.json()
 
       if (data.success) {
-        flashcards.value = [data.data]
+        const item = data.data
+
+        flashcards.value = [
+          {
+            id: item.id,
+            pergunta: item.pergunta || item.frente || '',
+            resposta: item.resposta || item.verso || '',
+            nivel_dificuldade:
+              item.nivel_dificuldade || item.dificuldade || 'iniciante',
+          },
+        ]
+
         currentIndex.value = 0
+        updateHasNextFlashcard()
       } else {
         error(data.message || 'Erro ao carregar flashcard')
         router.push('/flashcards')
       }
     } catch (err) {
-      console.error('Erro:', err)
+      console.error(err)
       error('Erro de conexão com o servidor')
       router.push('/flashcards')
     } finally {
@@ -75,80 +131,176 @@ export function useFlashcardStudy() {
     }
   }
 
-const rateCard = async (rating: string) => {
-    // 1. Atualiza as estatísticas locais da sessão
+  const goToNextFlashcard = () => {
+    const currentId = Number(route.params.id)
+    const idx = allFlashcardIds.value.indexOf(currentId)
+
+    if (idx === -1 || idx >= allFlashcardIds.value.length - 1) {
+      return
+    }
+
+    const nextId = allFlashcardIds.value[idx + 1]
+
+    isFlipped.value = false
+
+    router.push({
+      name: route.name as string,
+      params: { id: nextId },
+    })
+  }
+
+  const incrementarProgresso = async (usuarioId: number) => {
+    try {
+      await fetch(`${API_BASE_URL}/progresso/incrementar-flashcards`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          usuario_id: usuarioId,
+          quantidade: 1,
+        }),
+      })
+    } catch (err) {
+      console.error('Erro ao incrementar progresso:', err)
+    }
+  }
+
+  const incrementarTempo = async (usuarioId: number) => {
+    const segundos = Math.floor(
+      (Date.now() - sessionStartTime.value) / 1000
+    )
+
+    if (segundos <= 0) return
+
+    try {
+      await fetch(`${API_BASE_URL}/progresso/incrementar-tempo`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          usuario_id: usuarioId,
+          segundos,
+        }),
+      })
+    } catch (err) {
+      console.error('Erro ao incrementar tempo de estudo:', err)
+    }
+  }
+
+  const rateCard = async (rating: 'hard' | 'good' | 'easy') => {
     if (rating === 'hard') stats.value.hard++
     if (rating === 'good') stats.value.good++
     if (rating === 'easy') stats.value.easy++
 
-    // 2. Recupera o usuário do localStorage para salvar no banco
     const userData = localStorage.getItem('user')
+
     if (userData && currentFlashcard.value) {
       try {
         const localUser = JSON.parse(userData)
-        const isCorrect = rating !== 'hard' // 'good' e 'easy' contam como acerto
+        const isCorrect = rating !== 'hard'
 
-        // Dispara o POST sem travar a navegação do usuário (assíncrono em segundo plano)
-        fetch(`${API_BASE_URL}/respostas`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            usuario_id: localUser.id,
+        respostaService
+          .registrarResposta({
+            usuario_id: Number(localUser.id),
             tipo: 'flashcard',
             referencia_id: currentFlashcard.value.id,
-            correto: isCorrect
+            correto: isCorrect,
           })
-        }).then(res => res.json())
-          .then(data => {
-            if (!data.success) console.warn('Falha ao registrar resposta no banco:', data.message)
+          .catch((err) => {
+            console.warn('Falha ao registrar resposta:', err)
           })
-          .catch(err => console.error('Erro ao conectar ao endpoint de respostas:', err))
+
+        incrementarProgresso(Number(localUser.id))
       } catch (e) {
-        console.error('Erro ao processar dados do usuário para o progresso:', e)
+        console.error(e)
       }
     }
 
-    // 3. Avança para o próximo card ou finaliza
-    if (currentIndex.value < flashcards.value.length - 1) {
-      nextCard()
+    if (hasNextFlashcard.value) {
+      goToNextFlashcard()
     } else {
       finishStudy()
     }
   }
 
   const finishStudy = () => {
+    const userData = localStorage.getItem('user')
+
+    if (userData) {
+      try {
+        const localUser = JSON.parse(userData)
+        incrementarTempo(Number(localUser.id))
+      } catch (e) {
+        console.error(e)
+      }
+    }
+
     showCompletionModal.value = true
   }
 
   const studyAgain = () => {
     showCompletionModal.value = false
-    currentIndex.value = 0
+
+    stats.value = {
+      hard: 0,
+      good: 0,
+      easy: 0,
+    }
+
     isFlipped.value = false
-    stats.value = { hard: 0, good: 0, easy: 0 }
+
+    sessionStartTime.value = Date.now()
+
+    if (allFlashcardIds.value.length > 0) {
+      const firstId = allFlashcardIds.value[0]
+
+      router.push({
+        name: route.name as string,
+        params: { id: firstId },
+      })
+    }
   }
 
   const getLevelClass = (level: string) => {
+    const normalized = String(level).toLowerCase()
+
     const classes: Record<string, string> = {
       iniciante: 'level-beginner',
+      medio: 'level-intermediate',
       intermediario: 'level-intermediate',
       avancado: 'level-advanced',
     }
-    return classes[level] || 'level-beginner'
+
+    return classes[normalized] || 'level-beginner'
   }
 
   const getLevelText = (level: string) => {
+    const normalized = String(level).toLowerCase()
+
     const texts: Record<string, string> = {
       iniciante: 'Iniciante',
+      medio: 'Intermediário',
       intermediario: 'Intermediário',
       avancado: 'Avançado',
     }
-    return texts[level] || level
+
+    return texts[normalized] || level
   }
 
+  watch(
+    () => route.params.id,
+    () => {
+      loadFlashcards()
+    }
+  )
+
   onMounted(() => {
+    sessionStartTime.value = Date.now()
+    loadAllFlashcardIds()
     loadFlashcards()
   })
 
@@ -161,6 +313,7 @@ const rateCard = async (rating: string) => {
     isFlipped,
     showCompletionModal,
     stats,
+    hasNextFlashcard,
     goBack,
     flipCard,
     nextCard,

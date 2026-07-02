@@ -1,5 +1,6 @@
 import { ref, onMounted } from 'vue'
 import { useProgresso as useProgressoComposable } from '@/modules/progresso/composables/useProgresso'
+import { formatTempoEstudo } from '@/shared/utils/formatTempoEstudo'
 
 export function useProgresso() {
     const { progresso, loading, fetchProgresso } = useProgressoComposable()
@@ -25,5 +26,6 @@ export function useProgresso() {
     return {
         progresso,
         loading,
+        formatTempoEstudo
     }
 }

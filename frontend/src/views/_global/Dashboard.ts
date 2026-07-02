@@ -1,6 +1,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/core/services/api'
+import { formatTempoEstudo } from '@/shared/utils/formatTempoEstudo'
 
 export function useDashboard() {
   const router = useRouter()
@@ -10,7 +11,7 @@ export function useDashboard() {
     flashcardsCount: 0,
     acertoRate: 0,
     sequenciaAtual: 0,
-    tempoEstudo: '0h',
+    tempoEstudo: '0min',
     progressoGeral: 0,
   })
 
@@ -31,6 +32,31 @@ export function useDashboard() {
     return 'Continue sua jornada de aprendizado. Hoje é um otimo dia para aprender algo novo!'
   })
 
+const formatTempoEstudo = (totalSegundos: number): string => {
+  if (totalSegundos <= 0) {
+    return '0 s'
+  }
+
+  if (totalSegundos < 60) {
+    return `${totalSegundos} s`
+  }
+
+  const minutos = Math.floor(totalSegundos / 60)
+
+  if (minutos < 60) {
+    return `${minutos} min`
+  }
+
+  const horas = Math.floor(minutos / 60)
+  const minutosRestantes = minutos % 60
+
+  if (minutosRestantes === 0) {
+    return `${horas} h`
+  }
+
+  return `${horas} h ${minutosRestantes} min`
+}
+
   const loadUserData = async () => {
     const userData = localStorage.getItem('user')
     if (!userData) return
@@ -38,25 +64,33 @@ export function useDashboard() {
     loading.value = true
     try {
       user.value = JSON.parse(userData)
-      // Usa o token automaticamente via api (interceptor)
       const response = await api.get(`/progresso/usuario/${user.value.id}`)
 
-      if (response.data.success && response.data.data) {
+      if (response.data && response.data.data) {
         const data = response.data.data
 
-        stats.value.flashcardsCount = data.flashcards_concluidos || 0
-        stats.value.sequenciaAtual = data.sequencia_atual || 0
-        stats.value.tempoEstudo = `${Math.floor((data.tempo_total_estudo || 0) / 60)}h`
+        stats.value.flashcardsCount =
+          data.total_flashcards_estudados ||
+          data.flashcards_concluidos ||
+          data.total_estudados ||
+          data.flashcards_count ||
+          data.total ||
+          0
 
-        // Ainda não calculados no backend — usa 0 até a feature existir.
-        // Quando o backend passar a retornar taxa_acerto/progresso_geral,
-        // isso vai funcionar automaticamente sem mudar nada aqui.
-        stats.value.acertoRate = data.taxa_acerto ?? 0
-        stats.value.progressoGeral = data.progresso_geral ?? 0
+        stats.value.sequenciaAtual =
+          data.sequencia_dias ||
+          data.sequencia_atual ||
+          data.sequencia ||
+          0
+
+        const totalSegundos = data.tempo_total_estudo || 0
+        stats.value.tempoEstudo = formatTempoEstudo(totalSegundos)
+
+        stats.value.acertoRate = data.taxa_acerto ?? data.acerto_rate ?? 0
+        stats.value.progressoGeral = Math.min(100, data.progresso_geral ?? data.taxa_acerto ?? 0)
       }
     } catch (err: any) {
       console.error('Erro ao carregar estatisticas:', err)
-      // Se for 401 (não autenticado), redireciona para login
       if (err.response?.status === 401) {
         router.push('/login')
       }
@@ -83,5 +117,6 @@ export function useDashboard() {
     stats,
     motivationalMessage,
     handleLogout,
+    formatTempoEstudo,
   }
 }

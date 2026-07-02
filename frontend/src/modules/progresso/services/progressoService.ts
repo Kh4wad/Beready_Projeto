@@ -19,6 +19,25 @@ export interface Progresso {
 }
 
 export const progressoService = {
-  getByUsuario: (usuarioId: number) => api.get(`/progresso/usuario/${usuarioId}`),
-  save: (data: Progresso) => api.post('/progresso', data),
+  getByUsuario(usuarioId: number) {
+    return api.get(`/progresso/usuario/${usuarioId}`)
+  },
+
+  save(data: Progresso) {
+    return api.post('/progresso', data)
+  },
+
+  incrementarFlashcards(usuario_id: number, quantidade = 1) {
+    return api.post('/progresso/incrementar-flashcards', {
+      usuario_id,
+      quantidade,
+    })
+  },
+
+  incrementarTempo(segundos: number, usuario_id: number) {
+    return api.post('/progresso/incrementar-tempo', {
+      usuario_id,
+      segundos,
+    })
+  },
 }

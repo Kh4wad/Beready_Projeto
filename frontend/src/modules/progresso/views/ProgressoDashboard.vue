@@ -126,7 +126,9 @@
             />
           </svg>
         </div>
-        <div class="progresso-value">{{ progresso?.tempo_total_estudo || 0 }} min</div>
+        <div class="progresso-value">
+       {{ formatTempoEstudo(progresso?.tempo_total_estudo || 0) }}
+       </div>
         <div class="progresso-label">Tempo Total de Estudo</div>
       </div>
 
@@ -177,7 +179,7 @@
 
 <script setup lang="ts">
 import { useProgresso } from './ProgressoDashboard'
-const { progresso, loading } = useProgresso()
+const { progresso, loading, formatTempoEstudo } = useProgresso()
 </script>
 
 <style scoped>
