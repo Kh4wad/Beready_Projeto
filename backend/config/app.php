@@ -2,22 +2,33 @@
 
 use Cake\Cache\Engine\FileEngine;
 use Cake\Database\Connection;
-use Cake\Database\Driver\Postgres;
+use Cake\Database\Driver\Mysql;
 use Cake\Log\Engine\FileLog;
+use Cake\Mailer\Transport\MailTransport;
+use Cake\Database\Driver\Postgres;
+use function Cake\Core\env;
 
 return [
-    'debug' => true,
+    /*
+     * Debug Level:
+     * Production Mode: false
+     * Development Mode: true
+     */
+    'debug' => filter_var(env('DEBUG', false), FILTER_VALIDATE_BOOLEAN),
 
+    /*
+     * Configure basic information about the application.
+     */
     'App' => [
         'namespace' => 'App',
-        'encoding' => 'UTF-8',
-        'defaultLocale' => 'pt_BR',
-        'defaultTimezone' => 'America/Sao_Paulo',
+        'encoding' => env('APP_ENCODING', 'UTF-8'),
+        'defaultLocale' => env('APP_DEFAULT_LOCALE', 'en_US'),
+        'defaultTimezone' => env('APP_DEFAULT_TIMEZONE', 'UTC'),
         'base' => false,
         'dir' => 'src',
         'webroot' => 'webroot',
         'wwwRoot' => WWW_ROOT,
-        'fullBaseUrl' => 'http://localhost:5173',
+        'fullBaseUrl' => false,
         'imageBaseUrl' => 'img/',
         'cssBaseUrl' => 'css/',
         'jsBaseUrl' => 'js/',
@@ -28,39 +39,38 @@ return [
         ],
     ],
 
+    /*
+     * Security and encryption configuration
+     */
     'Security' => [
-        'salt' => 'd7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592',
+        'salt' => env('SECURITY_SALT', 'd7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592'),
     ],
 
-    // CONFIGURAÇÃO JWT - ADICIONADA
+    /*
+     * JWT CONFIGURATION
+     */
     'Jwt' => [
-        'secret' => 'd7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592',
+        'secret' => env('JWT_SECRET', 'd7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592'),
         'algorithm' => 'HS256',
-        'expires' => 3600,
-        'refresh_expires' => 604800,
+        'expires' => 3600, // 1 hora em segundos
+        'refresh_expires' => 604800, // 7 dias
     ],
 
-    'Datasources' => [
-        'default' => [
-            'className' => Connection::class,
-            'driver' => Postgres::class,
-            'host' => 'aws-1-sa-east-1.pooler.supabase.com',
-            'port' => 6543,
-            'username' => 'postgres.bwppzgxlcqxfuzdehgyb',
-            'password' => 'B3r3@dy#Sup4_9Xq!2026',
-            'database' => 'postgres',
-            'encoding' => 'utf8',
-            'timezone' => 'UTC',
-            'cacheMetadata' => true,
-            'quoteIdentifiers' => false,
-            'log' => false,
-        ],
+    /*
+     * Asset timestamps
+     */
+    'Asset' => [
+        //'timestamp' => true,
     ],
 
+    /*
+     * Cache adapters - MODIFICADO para usar Array em desenvolvimento
+     */
     'Cache' => [
         'default' => [
             'className' => FileEngine::class,
             'path' => CACHE,
+            'url' => env('CACHE_DEFAULT_URL', null),
         ],
         '_cake_core_' => [
             'className' => 'Array',
@@ -74,32 +84,38 @@ return [
             'serialize' => true,
             'duration' => '+1 years',
         ],
+        '_cake_translations_' => [
+            'className' => 'Array',
+            'prefix' => 'myapp_cake_translations_',
+            'serialize' => true,
+            'duration' => '+1 years',
+        ],
     ],
 
+    /*
+     * Error and Exception handlers
+     */
     'Error' => [
-        'errorLevel' => E_ALL,
+        'errorLevel' => E_ALL & ~E_WARNING & ~E_USER_WARNING & ~E_NOTICE & ~E_DEPRECATED,
+        'skipLog' => [],
         'log' => true,
         'trace' => true,
+        'ignoredDeprecationPaths' => [],
     ],
 
-    'Log' => [
-        'debug' => [
-            'className' => FileLog::class,
-            'path' => LOGS,
-            'file' => 'debug',
-            'levels' => ['notice', 'info', 'debug'],
-        ],
-        'error' => [
-            'className' => FileLog::class,
-            'path' => LOGS,
-            'file' => 'error',
-            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
-        ],
+    /*
+     * Debugger configuration
+     */
+    'Debugger' => [
+        'editor' => 'phpstorm',
     ],
 
+    /*
+     * Email configuration
+     */
     'EmailTransport' => [
         'default' => [
-            'className' => 'Cake\Mailer\Transport\MailTransport',
+            'className' => MailTransport::class,
             'host' => 'localhost',
             'port' => 25,
             'timeout' => 30,
@@ -112,13 +128,84 @@ return [
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => ['noreply@beready.com' => 'BeReady'],
-            'charset' => 'utf-8',
-            'headerCharset' => 'utf-8',
+            'from' => 'you@localhost',
         ],
     ],
 
+    /*
+     * Database connections
+     */
+    'Datasources' => [
+        'default' => [
+            'className' => Connection::class,
+            'driver' => Postgres::class,
+            'url' => env('DATABASE_URL'),
+            'encoding' => 'utf8',
+            'timezone' => 'UTC',
+            'cacheMetadata' => true,
+            'quoteIdentifiers' => false,
+        ],
+
+        'test' => [
+            'className' => Connection::class,
+            'driver' => Mysql::class,
+            'persistent' => false,
+            'timezone' => 'UTC',
+            'encoding' => 'utf8mb4',
+            'flags' => [],
+            'cacheMetadata' => true,
+            'quoteIdentifiers' => false,
+            'log' => false,
+        ],
+    ],
+
+    /*
+     * Logging configuration
+     */
+    'Log' => [
+        'debug' => [
+            'className' => FileLog::class,
+            'path' => LOGS,
+            'file' => 'debug',
+            'url' => env('LOG_DEBUG_URL', null),
+            'scopes' => null,
+            'levels' => ['notice', 'info', 'debug'],
+        ],
+        'error' => [
+            'className' => FileLog::class,
+            'path' => LOGS,
+            'file' => 'error',
+            'url' => env('LOG_ERROR_URL', null),
+            'scopes' => null,
+            'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
+        ],
+        'queries' => [
+            'className' => FileLog::class,
+            'path' => LOGS,
+            'file' => 'queries',
+            'url' => env('LOG_QUERIES_URL', null),
+            'scopes' => ['cake.database.queries'],
+        ],
+    ],
+
+    /*
+     * Session configuration
+     */
     'Session' => [
         'defaults' => 'php',
+    ],
+
+    /*
+     * DebugKit configuration
+     */
+    'DebugKit' => [
+        'forceEnable' => false,
+        'safeTld' => env('DEBUG_KIT_SAFE_TLD', null),
+        'ignoreAuthorization' => env('DEBUG_KIT_IGNORE_AUTHORIZATION', false),
+    ],
+
+    'TestSuite' => [
+        'errorLevel' => null,
+        'fixtureStrategy' => null,
     ],
 ];

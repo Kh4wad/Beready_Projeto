@@ -23,6 +23,7 @@ class User extends Entity
         'nivel_ingles' => true,
         'idioma_preferido' => true,
         'objetivos_aprendizado' => true,
+        'foto_perfil' => true,
         'status' => true,
         'token' => true,
         'token_expires' => true,

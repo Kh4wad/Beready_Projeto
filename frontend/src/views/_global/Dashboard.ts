@@ -1,7 +1,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/core/services/api'
-import { formatTempoEstudo } from '@/shared/utils/formatTempoEstudo'
+import axios from 'axios'
 
 export function useDashboard() {
   const router = useRouter()
@@ -91,7 +91,8 @@ const formatTempoEstudo = (totalSegundos: number): string => {
       }
     } catch (err: any) {
       console.error('Erro ao carregar estatisticas:', err)
-      if (err.response?.status === 401) {
+
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
         router.push('/login')
       }
     } finally {
