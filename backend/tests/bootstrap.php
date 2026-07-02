@@ -1,5 +1,4 @@
 <?php
-declare(strict_types=1);
 
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
@@ -15,11 +14,15 @@ declare(strict_types=1);
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
 
+declare(strict_types=1);
+
+// phpcs:disable CakePHP.Classes.Import.UseFullyQualifiedName
 use Cake\Chronos\Chronos;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\ConnectionHelper;
-use Migrations\TestSuite\Migrator;
+
+// phpcs:enable CakePHP.Classes.Import.UseFullyQualifiedName
 
 /**
  * Test runner bootstrap.
@@ -28,22 +31,25 @@ use Migrations\TestSuite\Migrator;
  * unit tests in this file.
  */
 require dirname(__DIR__) . '/vendor/autoload.php';
-
 require dirname(__DIR__) . '/config/bootstrap.php';
 
-if (empty($_SERVER['HTTP_HOST']) && !Configure::read('App.fullBaseUrl')) {
-    Configure::write('App.fullBaseUrl', env('EMAIL_HOST'));
+$httpHost = getenv('HTTP_HOST');
+
+// phpcs:disable CakePHP.Usage.YodaConditions
+if ((null === $httpHost || '' === $httpHost) && !Configure::read('App.fullBaseUrl')) {
+    Configure::write('App.fullBaseUrl', getenv('EMAIL_HOST'));
 }
+// phpcs:enable CakePHP.Usage.YodaConditions
 
 // DebugKit skips settings these connection config if PHP SAPI is CLI / PHPDBG.
 // But since PagesControllerTest is run with debug enabled and DebugKit is loaded
 // in application, without setting up these config DebugKit errors out.
 ConnectionManager::setConfig('test_debug_kit', [
-    'className' => 'Cake\Database\Connection',
-    'driver' => 'Cake\Database\Driver\Sqlite',
-    'database' => TMP . 'debug_kit.sqlite',
-    'encoding' => 'utf8',
     'cacheMetadata' => true,
+    'className' => 'Cake\Database\Connection',
+    'database' => TMP . 'debug_kit.sqlite',
+    'driver' => 'Cake\Database\Driver\Sqlite',
+    'encoding' => 'utf8',
     'quoteIdentifiers' => false,
 ]);
 
@@ -60,16 +66,5 @@ session_id('cli');
 // Connection aliasing needs to happen before migrations are run.
 // Otherwise, table objects inside migrations would use the default datasource
 ConnectionHelper::addTestAliases();
-
-// Use migrations to build test database schema.
-//
-// Will rebuild the database if the migration state differs
-// from the migration history in files.
-//
-// If you are not using CakePHP's migrations you can
-// hook into your migration tool of choice here or
-// load schema from a SQL dump file with
-// use Cake\TestSuite\Fixture\SchemaLoader;
-// (new SchemaLoader())->loadSqlFiles('./tests/schema.sql', 'test');
 
 // (new Migrator())->run();

@@ -208,7 +208,7 @@ ServerRequest::addDetector('tablet', function ($request) {
     return $detector->isTablet();
 });
 
-  if (getenv('SENTRY_DSN')) {
+  if (env('SENTRY_DSN')) {
     require CONFIG . 'sentry.php';
 }
 

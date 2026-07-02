@@ -15,12 +15,12 @@ class CloudinaryService implements CloudinaryServiceInterface
 
     public function __construct()
     {
-        $this->cloudName    = getenv('CLOUDINARY_CLOUD_NAME');
-        $this->apiKey       = getenv('CLOUDINARY_API_KEY');
-        $this->apiSecret    = getenv('CLOUDINARY_API_SECRET');
-        $this->uploadFolder = getenv('CLOUDINARY_UPLOAD_FOLDER');
-        $this->apiBaseUrl = getenv('CLOUDINARY_API_URL');
-        $this->disableSSL   = getenv('CLOUDINARY_DISABLE_SSL');
+        $this->cloudName    = env('CLOUDINARY_CLOUD_NAME');
+        $this->apiKey       = env('CLOUDINARY_API_KEY');
+        $this->apiSecret    = env('CLOUDINARY_API_SECRET');
+        $this->uploadFolder = env('CLOUDINARY_UPLOAD_FOLDER');
+        $this->apiBaseUrl   = env('CLOUDINARY_API_URL');
+        $this->disableSSL   = env('CLOUDINARY_DISABLE_SSL');
     }
 
     public function uploadProfilePhoto(array $file): string
