@@ -11,6 +11,11 @@ export interface Progresso {
   maior_sequencia?: number
   ultima_atividade?: string
   progresso_nivel?: any
+  // Ainda não implementados no backend (ver plano de implementação).
+  // Quando o backend passar a retornar esses campos, o front já vai
+  // reconhecê-los automaticamente sem precisar de outra alteração aqui.
+  taxa_acerto?: number
+  progresso_geral?: number
 }
 
 export const progressoService = {

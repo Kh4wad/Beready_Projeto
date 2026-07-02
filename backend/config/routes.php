@@ -282,6 +282,15 @@ $routes->connect('/progresso', [
     'action' => 'save'
 ])->setMethods(['POST']);
 
+
+/**
+ * RESPOSTAS
+ */
+$routes->connect('/respostas', [
+    'controller' => 'Respostas',
+    'action' => 'save'
+])->setMethods(['POST']);
+
 /**
  * PROMPTS - COMPLETO
  */
@@ -494,3 +503,12 @@ $routes->connect('/*', [
     'controller' => 'Users',
     'action' => 'notFound'
 ]);
+
+/**
+ * RESPOSTAS
+ */
+$routes->connect('/respostas', [
+    'controller' => 'Respostas',
+    'action' => 'save'
+])->setMethods(['POST']);
+
