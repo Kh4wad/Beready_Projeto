@@ -3,7 +3,7 @@
 use function Cake\Core\env;
 
 \Sentry\init([
-    'dsn' => env('SENTRY_DSN'),
+    'dsn' => getenv('SENTRY_DSN'),
 
     'environment' => env('APP_ENV', 'development'),
 
