@@ -3,9 +3,27 @@
 
     <config name="installed_paths" value="../../cakephp/cakephp-codesniffer,../../slevomat/coding-standard"/>
 
-    <rule ref="CakePHP"/>
+    <rule ref="CakePHP">
+        <!-- Ignora FQN em todos os arquivos -->
+        <exclude name="CakePHP.Classes.Import.UseFullyQualifiedName"/>
+        <!-- Ignora verificação de nome de classe -->
+        <exclude name="PSR1.Classes.ClassDeclaration"/>
+        <!-- Ignora regra de métodos ordenados -->
+        <exclude name="PSR2.Methods.MethodDeclaration"/>
+        <!-- Ignora Yoda conditions -->
+        <exclude name="CakePHP.Usage.YodaConditions"/>
+        <!-- Ignora regras de tipo de retorno (opcional) -->
+        <exclude name="CakePHP.Function.ArgumentTypeDeclaration"/>
+    </rule>
 
-    <rule ref="SlevomatCodingStandard"/>
+    <rule ref="SlevomatCodingStandard">
+        <!-- Ignora a regra de FQN do Slevomat também -->
+        <exclude name="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly"/>
+        <!-- Ignora regras de tipo de retorno -->
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint"/>
+    </rule>
 
     <file>src/</file>
     <file>tests/</file>

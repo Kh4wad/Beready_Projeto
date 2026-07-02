@@ -1,6 +1,5 @@
 <?php
-// CORS headers - valores hardcoded (sem usar env() antes do autoload)
-$corsOrigin = getenv('APP_BASE_URL');
+$corsOrigin = env('APP_BASE_URL');
 
 header('Access-Control-Allow-Origin: ' . $corsOrigin);
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');

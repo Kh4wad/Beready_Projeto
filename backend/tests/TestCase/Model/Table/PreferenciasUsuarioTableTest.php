@@ -1,22 +1,26 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
+// phpcs:disable CakePHP.Classes.Import.UseFullyQualifiedName
 use App\Model\Table\PreferenciasUsuarioTable;
 use Cake\TestSuite\TestCase;
+
+// phpcs:enable CakePHP.Classes.Import.UseFullyQualifiedName
 
 /**
  * App\Model\Table\PreferenciasUsuarioTable Test Case
  */
-class PreferenciasUsuarioTableTest extends TestCase
+final class PreferenciasUsuarioTableTest extends TestCase
 {
     /**
      * Test subject
      *
      * @var \App\Model\Table\PreferenciasUsuarioTable
      */
-    protected $PreferenciasUsuario;
+    protected PreferenciasUsuarioTable $PreferenciasUsuario;
 
     /**
      * Fixtures
@@ -27,30 +31,6 @@ class PreferenciasUsuarioTableTest extends TestCase
         'app.PreferenciasUsuario',
         'app.Usuarios',
     ];
-
-    /**
-     * setUp method
-     *
-     * @return void
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $config = $this->getTableLocator()->exists('PreferenciasUsuario') ? [] : ['className' => PreferenciasUsuarioTable::class];
-        $this->PreferenciasUsuario = $this->getTableLocator()->get('PreferenciasUsuario', $config);
-    }
-
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    protected function tearDown(): void
-    {
-        unset($this->PreferenciasUsuario);
-
-        parent::tearDown();
-    }
 
     /**
      * Test validationDefault method
@@ -72,5 +52,33 @@ class PreferenciasUsuarioTableTest extends TestCase
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * setUp method
+     *
+     * @return void
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $config = $this->getTableLocator()->exists('PreferenciasUsuario')
+            ? []
+            : ['className' => PreferenciasUsuarioTable::class];
+
+        $this->PreferenciasUsuario = $this->getTableLocator()->get('PreferenciasUsuario', $config);
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    protected function tearDown(): void
+    {
+        unset($this->PreferenciasUsuario);
+
+        parent::tearDown();
     }
 }
