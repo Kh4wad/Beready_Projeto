@@ -21,9 +21,9 @@ return [
      */
     'App' => [
         'namespace' => 'App',
-        'encoding' => env('APP_ENCODING', 'UTF-8'),
-        'defaultLocale' => env('APP_DEFAULT_LOCALE', 'en_US'),
-        'defaultTimezone' => env('APP_DEFAULT_TIMEZONE', 'UTC'),
+        'encoding' => env('APP_ENCODING'),
+        'defaultLocale' => env('APP_DEFAULT_LOCALE'),
+        'defaultTimezone' => env('APP_DEFAULT_TIMEZONE'),
         'base' => false,
         'dir' => 'src',
         'webroot' => 'webroot',
@@ -43,14 +43,14 @@ return [
      * Security and encryption configuration
      */
     'Security' => [
-        'salt' => env('SECURITY_SALT', 'd7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592'),
+        'salt' => env('SECURITY_SALT'),
     ],
 
     /*
      * JWT CONFIGURATION
      */
     'Jwt' => [
-        'secret' => env('JWT_SECRET', 'd7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592'),
+        'secret' => env('JWT_SECRET'),
         'algorithm' => 'HS256',
         'expires' => 3600, // 1 hora em segundos
         'refresh_expires' => 604800, // 7 dias
@@ -116,8 +116,8 @@ return [
     'EmailTransport' => [
         'default' => [
             'className' => MailTransport::class,
-            'host' => 'localhost',
-            'port' => 25,
+            'host' => env('EMAIL_HOST'),
+            'port' => env('EMAIL_PORT'),
             'timeout' => 30,
             'client' => null,
             'tls' => false,

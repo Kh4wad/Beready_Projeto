@@ -5,12 +5,30 @@ return [
             'className' => 'Debug',
         ],
     ],
+
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => ['noreply@beready.com' => 'BeReady'],
-            'charset' => 'utf-8',
-            'headerCharset' => 'utf-8',
+            'from'    => env('EMAIL_FROM'),
+            'charset' => env('APP_ENCODING'),
+            'headerCharset' => env('APP_ENCODING'),
+        ],
+    ],
+
+    'Datasources' => [
+        'default' => [
+            'className' => Connection::class,
+            'driver' => Postgres::class,
+            'url' => env('DATABASE_URL'),
+        ],
+
+        'test' => [
+            'className' => Connection::class,
+            'driver' => Postgres::class,
+            'url' => env('DATABASE_URL'),
+            'database' => 'beready_test',
+            'schema' => 'public',
+            'cacheMetadata' => true,
         ],
     ],
 ];

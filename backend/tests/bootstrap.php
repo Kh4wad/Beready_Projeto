@@ -32,7 +32,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 require dirname(__DIR__) . '/config/bootstrap.php';
 
 if (empty($_SERVER['HTTP_HOST']) && !Configure::read('App.fullBaseUrl')) {
-    Configure::write('App.fullBaseUrl', 'http://localhost');
+    Configure::write('App.fullBaseUrl', env('EMAIL_HOST'));
 }
 
 // DebugKit skips settings these connection config if PHP SAPI is CLI / PHPDBG.
@@ -72,4 +72,4 @@ ConnectionHelper::addTestAliases();
 // use Cake\TestSuite\Fixture\SchemaLoader;
 // (new SchemaLoader())->loadSqlFiles('./tests/schema.sql', 'test');
 
-(new Migrator())->run();
+// (new Migrator())->run();
