@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - develop
-      - 'feature/**'
+      - "feature/**"
   pull_request:
   workflow_dispatch:
 
@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.4']
+        php-version: ["8.4"]
 
     defaults:
       run:
@@ -60,7 +60,7 @@ jobs:
       - name: Run PHPUnit
         run: vendor/bin/phpunit
         env:
-          DATABASE_URL: sqlite:///:memory:
+          DATABASE_URL: "sqlite:///:memory:"
           APP_ENV: test
           APP_DEFAULT_TIMEZONE: UTC
           APP_DEFAULT_LOCALE: pt_BR
@@ -84,7 +84,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: mbstring, intl
           coverage: none
 
