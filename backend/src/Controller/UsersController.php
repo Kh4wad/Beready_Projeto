@@ -215,24 +215,32 @@ class UsersController extends AppController
 
   public function testSentry()
   {
-      try {
-
-          throw new \Exception(
-              'Teste Sentry Beready ' . date('Y-m-d H:i:s')
-          );
-
-      } catch (\Throwable $e) {
-
-          \Sentry\captureException($e);
-
-          \Sentry\flush(5000);
-
-          error_log("SENTRY TEST ENVIADO");
-
+      error_log("=== TESTE SENTRY ===");
+      
+      // Garante que o Sentry está inicializado
+      $dsn = env('SENTRY_DSN');
+      if (!empty($dsn) && !\Sentry\SentrySdk::getCurrentHub()->getClient()) {
+          \Sentry\init([
+              'dsn' => $dsn,
+              'environment' => env('APP_ENV', 'development'),
+              'traces_sample_rate' => 1.0,
+              'send_default_pii' => false,
+              'http_ssl_verify_peer' => false,
+          ]);
       }
-
+      
+      try {
+          throw new \Exception('Teste Sentry Beready ' . date('Y-m-d H:i:s'));
+      } catch (\Throwable $e) {
+          $id = \Sentry\captureException($e);
+      }
+      
+      // FLUSH com tempo suficiente
+      \Sentry\flush(5000);
+      
       return $this->jsonSuccess([
-          'message' => 'evento enviado'
+          'message' => 'evento enviado',
+          'timestamp' => date('Y-m-d H:i:s')
       ]);
   }
     

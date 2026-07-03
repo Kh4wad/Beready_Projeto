@@ -120,6 +120,42 @@ mb_internal_encoding(Configure::read('App.encoding'));
  */
 ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
 
+if (env('SENTRY_DSN')) {
+    require CONFIG . 'sentry.php';
+}
+
+// Captura de erros do sentry
+set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    // Ignora erros que não estão no nível de reporte atual
+    if (!(error_reporting() & $errno)) {
+        return false;
+    }
+    
+    // Define o nível do erro
+    $severity = match($errno) {
+        E_WARNING, E_USER_WARNING => \Sentry\Severity::warning(),
+        E_NOTICE, E_USER_NOTICE => \Sentry\Severity::info(),
+        E_DEPRECATED, E_USER_DEPRECATED => \Sentry\Severity::info(),
+        default => \Sentry\Severity::error()
+    };
+    
+    // Envia para o Sentry
+    \Sentry\captureMessage("Erro [$errno] $errstr em $errfile linha $errline", $severity);
+    \Sentry\flush(2000);
+    
+    // Retorna false para o PHP manter o comportamento padrão
+    return false;
+});
+
+// Captura de erros fatais
+register_shutdown_function(function () {
+    $error = error_get_last();
+    if ($error !== null && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+        \Sentry\captureMessage("ERRO FATAL: {$error['message']} em {$error['file']} linha {$error['line']}", \Sentry\Severity::fatal());
+        \Sentry\flush(2000);
+    }
+});
+
 /*
  * Register application error and exception handlers.
  */
@@ -207,10 +243,6 @@ ServerRequest::addDetector('tablet', function ($request) {
 
     return $detector->isTablet();
 });
-
-  if (env('SENTRY_DSN')) {
-    require CONFIG . 'sentry.php';
-}
 
 /*
  * You can enable default locale format parsing by adding calls
