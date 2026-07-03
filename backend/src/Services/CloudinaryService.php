@@ -11,6 +11,7 @@ class CloudinaryService implements CloudinaryServiceInterface
     private string $apiKey;
     private string $apiSecret;
     private string $uploadFolder;
+    private string $apiBaseUrl;
     private bool $disableSSL;
 
     public function __construct()
@@ -20,7 +21,7 @@ class CloudinaryService implements CloudinaryServiceInterface
         $this->apiSecret    = env('CLOUDINARY_API_SECRET');
         $this->uploadFolder = env('CLOUDINARY_UPLOAD_FOLDER');
         $this->apiBaseUrl   = env('CLOUDINARY_API_URL');
-        $this->disableSSL   = env('CLOUDINARY_DISABLE_SSL');
+        $this->disableSSL   = filter_var(env('CLOUDINARY_DISABLE_SSL'), FILTER_VALIDATE_BOOLEAN);
     }
 
     public function uploadProfilePhoto(array $file): string
@@ -49,7 +50,6 @@ class CloudinaryService implements CloudinaryServiceInterface
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         
-        // Desabilita SSL se configurado no .env
         if ($this->disableSSL) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);

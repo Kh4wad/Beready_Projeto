@@ -140,10 +140,13 @@ export function useProfileEdit() {
       const formData = new FormData()
       formData.append('photo', file)
 
+      const token = localStorage.getItem('access_token')
+
       const response = await fetch(`${API_BASE_URL}/upload/profile-photo`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       })
@@ -153,9 +156,11 @@ export function useProfileEdit() {
       if (response.ok && data.success) {
         return data.url
       } else {
+        console.error('Erro no upload:', data.message)
         return null
       }
-    } catch {
+    } catch (error) {
+      console.error('Erro no upload:', error)
       return null
     }
   }
@@ -215,7 +220,19 @@ export function useProfileEdit() {
         }
       }
 
-      const submitData: any = {
+      interface SubmitData {
+        nome: string
+        email: string
+        telefone: string
+        nivel_ingles: string
+        idioma_preferido: string
+        status: string
+        objetivos_aprendizado: string
+        foto_perfil: string
+        senha?: string
+      }
+
+      const submitData: SubmitData = {
         nome: form.nome,
         email: form.email,
         telefone: form.telefone,
@@ -224,6 +241,10 @@ export function useProfileEdit() {
         status: form.status,
         objetivos_aprendizado: form.objetivos_aprendizado,
         foto_perfil: uploadedImageUrl,
+      }
+
+      if (form.nova_senha !== '') {
+        submitData.senha = form.nova_senha
       }
 
       if (form.nova_senha !== '') {
