@@ -29,54 +29,52 @@ class Application extends BaseApplication
 
     public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {
-        $middlewareQueue
-            // 1. CORS
-            ->add(new CorsMiddleware())
+        // CORS
+        $middlewareQueue->add(new CorsMiddleware());
 
-            // 2. Rate Limit
-            ->add(new RateLimitMiddleware(100, 60))
+        // Rate Limit
+        $middlewareQueue->add(new RateLimitMiddleware(100, 60));
 
-            // 3. JWT
-            ->add(new JwtAuthMiddleware())
+        // JWT
+        $middlewareQueue->add(new JwtAuthMiddleware());
 
-            // 4. Error Handler (captura exceções)
-            ->add(new ErrorHandlerMiddleware([
-                'exceptionRenderer' => function ($exception, $request) {
+        // Error Handler
+        $middlewareQueue->add(new ErrorHandlerMiddleware([
+            'exceptionRenderer' => function ($exception, $request) {
+                \Sentry\captureException($exception);
+                \Sentry\flush(2000);
 
-                    \Sentry\captureException($exception);
-                    \Sentry\flush(2000);
+                $status = 500;
+                $message = $exception->getMessage();
 
-                    $status = 500;
-                    $message = $exception->getMessage();
+                if ($exception instanceof EmailAlreadyExistsException) $status = 409;
+                elseif ($exception instanceof WeakPasswordException) $status = 400;
+                elseif ($exception instanceof InvalidTokenException) $status = 400;
+                elseif ($exception instanceof UserNotFoundException) $status = 404;
+                elseif ($exception instanceof FlashcardNotFoundException) $status = 404;
+                elseif ($exception instanceof QuizNotFoundException) $status = 404;
+                elseif ($exception instanceof \InvalidArgumentException) $status = 400;
+                elseif ($exception instanceof \RuntimeException && $exception->getCode() === 404) $status = 404;
 
-                    if ($exception instanceof EmailAlreadyExistsException) $status = 409;
-                    elseif ($exception instanceof WeakPasswordException) $status = 400;
-                    elseif ($exception instanceof InvalidTokenException) $status = 400;
-                    elseif ($exception instanceof UserNotFoundException) $status = 404;
-                    elseif ($exception instanceof FlashcardNotFoundException) $status = 404;
-                    elseif ($exception instanceof QuizNotFoundException) $status = 404;
-                    elseif ($exception instanceof \InvalidArgumentException) $status = 400;
-                    elseif ($exception instanceof \RuntimeException && $exception->getCode() === 404) $status = 404;
+                return new Response([
+                    'status' => $status,
+                    'type' => 'application/json',
+                    'body' => json_encode([
+                        'success' => false,
+                        'message' => $message
+                    ])
+                ]);
+            }
+        ]));
 
-                    return new Response([
-                        'status' => $status,
-                        'type' => 'application/json',
-                        'body' => json_encode([
-                            'success' => false,
-                            'message' => $message
-                        ])
-                    ]);
-                }
-            ]))
+        // Body Parser
+        $middlewareQueue->add(new \Cake\Http\Middleware\BodyParserMiddleware());
 
-            // 5. Body Parser
-            ->add(new \Cake\Http\Middleware\BodyParserMiddleware())
+        // Router
+        $middlewareQueue->add(new \Cake\Routing\Middleware\RoutingMiddleware($this));
 
-            // 6. Router
-            ->add(new \Cake\Routing\Middleware\RoutingMiddleware($this))
-
-            // 7. Asset
-            ->add(new \Cake\Routing\Middleware\AssetMiddleware());
+        // Asset
+        $middlewareQueue->add(new \Cake\Routing\Middleware\AssetMiddleware());
 
         return $middlewareQueue;
     }
