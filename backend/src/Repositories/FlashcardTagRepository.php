@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -9,19 +10,19 @@ use Cake\ORM\TableRegistry;
 class FlashcardTagRepository implements FlashcardTagRepositoryInterface
 {
     private $table;
-    
+
     public function __construct()
     {
         $this->table = TableRegistry::getTableLocator()->get('FlashcardTags');
     }
-    
+
     public function findByFlashcardId(int $flashcardId): array
     {
         $relations = $this->table->find()
             ->where(['flashcard_id' => $flashcardId])
             ->contain(['Tags'])
             ->all();
-        
+
         $result = [];
         foreach ($relations as $relation) {
             $data = $relation->toArray();
@@ -32,7 +33,7 @@ class FlashcardTagRepository implements FlashcardTagRepositoryInterface
         }
         return $result;
     }
-    
+
     public function findByTagId(int $tagId): array
     {
         $relations = $this->table->find()
@@ -40,27 +41,27 @@ class FlashcardTagRepository implements FlashcardTagRepositoryInterface
             ->all();
         return array_map(fn($r) => $r->toArray(), $relations->toArray());
     }
-    
+
     public function create(array $data): array
     {
         $relation = $this->table->newEntity($data);
         $this->table->saveOrFail($relation);
         return $relation->toArray();
     }
-    
+
     public function deleteByFlashcardAndTag(int $flashcardId, int $tagId): bool
     {
         $relation = $this->table->find()
             ->where(['flashcard_id' => $flashcardId, 'tag_id' => $tagId])
             ->first();
-        
+
         if (!$relation) {
             return false;
         }
-        
+
         return $this->table->delete($relation);
     }
-    
+
     public function exists(int $flashcardId, int $tagId): bool
     {
         return $this->table->find()

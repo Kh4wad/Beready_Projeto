@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Middleware;
@@ -15,7 +16,7 @@ class CorsMiddleware implements MiddlewareInterface
     {
 
         $origin = $request->getHeaderLine('Origin');
-        
+
         if ($request->getMethod() === 'OPTIONS') {
             $response = new Response();
             return $response

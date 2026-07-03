@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -9,12 +10,12 @@ use Cake\ORM\TableRegistry;
 class FraseRepository implements FraseRepositoryInterface
 {
     private $table;
-    
+
     public function __construct()
     {
         $this->table = TableRegistry::getTableLocator()->get('FrasesSemelhantes');
     }
-    
+
     public function findByPromptId(int $promptId): array
     {
         $frases = $this->table->find()
@@ -23,20 +24,20 @@ class FraseRepository implements FraseRepositoryInterface
             ->all();
         return array_map(fn($f) => $f->toArray(), $frases->toArray());
     }
-    
+
     public function findById(int $id): ?array
     {
         $frase = $this->table->get($id);
         return $frase ? $frase->toArray() : null;
     }
-    
+
     public function create(array $data): array
     {
         $frase = $this->table->newEntity($data);
         $this->table->saveOrFail($frase);
         return $frase->toArray();
     }
-    
+
     public function update(int $id, array $data): array
     {
         $frase = $this->table->get($id);
@@ -44,7 +45,7 @@ class FraseRepository implements FraseRepositoryInterface
         $this->table->saveOrFail($frase);
         return $frase->toArray();
     }
-    
+
     public function delete(int $id): bool
     {
         $frase = $this->table->get($id);

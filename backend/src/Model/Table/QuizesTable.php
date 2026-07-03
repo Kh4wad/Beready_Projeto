@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\Table;
@@ -21,7 +22,7 @@ class QuizesTable extends Table
             'joinType' => 'INNER',
             'className' => 'Users'
         ]);
-        
+
         $this->addBehavior('Timestamp', [
             'events' => [
                 'Model.beforeSave' => [

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -15,7 +16,7 @@ class HealthController extends AppController
         ]));
         return $this->response;
     }
-    
+
     public function ping()
     {
         return $this->check();

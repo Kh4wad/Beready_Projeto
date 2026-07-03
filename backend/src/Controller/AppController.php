@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -11,7 +12,7 @@ class AppController extends Controller
     public function initialize(): void
     {
         parent::initialize();
-        
+
         $this->response = $this->response->withType('application/json');
         $this->autoRender = false;
     }
@@ -19,13 +20,13 @@ class AppController extends Controller
     public function beforeFilter(EventInterface $event): void
     {
         parent::beforeFilter($event);
-        
+
         if ($this->request->is('options')) {
             $this->response = $this->response->withStatus(200);
             $this->response = $this->response->withStringBody('');
         }
     }
-    
+
     protected function jsonResponse($data, $status = 200)
     {
         $this->response = $this->response->withStatus($status);
@@ -56,5 +57,4 @@ class AppController extends Controller
         ]));
         return $this->response;
     }
-
 }

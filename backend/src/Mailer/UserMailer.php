@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Mailer;
 
 use Cake\Mailer\Mailer;
+
 use function Cake\Core\env;
 
 class UserMailer extends Mailer
@@ -12,7 +14,7 @@ class UserMailer extends Mailer
     {
         $frontendUrl = env('APP_BASE_URL');
         $resetLink = $frontendUrl . '/reset-password/' . $token;
-        
+
         $this->setTransport('default')
             ->setFrom(env('EMAIL_FROM'))
             ->setTo($user->email)

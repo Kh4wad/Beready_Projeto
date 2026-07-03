@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models\DTO;
@@ -14,7 +15,7 @@ class FlashcardDTO
     public string $nivel_dificuldade = 'iniciante';
     public ?DateTime $criado_em = null;
     public ?DateTime $atualizado_em = null;
-    
+
     public function toArray(): array
     {
         return [
@@ -27,7 +28,7 @@ class FlashcardDTO
             'atualizado_em' => $this->atualizado_em?->format('Y-m-d H:i:s'),
         ];
     }
-    
+
     public static function fromArray(array $data): self
     {
         $dto = new self();
