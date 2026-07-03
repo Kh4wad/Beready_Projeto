@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App;
@@ -11,7 +12,6 @@ use App\Middleware\RateLimitMiddleware;
 use App\Middleware\JwtAuthMiddleware;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\Response;
-
 // Exceptions custom
 use App\Exceptions\EmailAlreadyExistsException;
 use App\Exceptions\WeakPasswordException;
@@ -25,7 +25,7 @@ class Application extends BaseApplication
     public function bootstrap(): void
     {
         parent::bootstrap();
-        
+
         $dsn = env('SENTRY_DSN');
         if (!empty($dsn)) {
             \Sentry\init([
@@ -59,14 +59,23 @@ class Application extends BaseApplication
                 $status = 500;
                 $message = $exception->getMessage();
 
-                if ($exception instanceof EmailAlreadyExistsException) $status = 409;
-                elseif ($exception instanceof WeakPasswordException) $status = 400;
-                elseif ($exception instanceof InvalidTokenException) $status = 400;
-                elseif ($exception instanceof UserNotFoundException) $status = 404;
-                elseif ($exception instanceof FlashcardNotFoundException) $status = 404;
-                elseif ($exception instanceof QuizNotFoundException) $status = 404;
-                elseif ($exception instanceof \InvalidArgumentException) $status = 400;
-                elseif ($exception instanceof \RuntimeException && $exception->getCode() === 404) $status = 404;
+                if ($exception instanceof EmailAlreadyExistsException) {
+                    $status = 409;
+                } elseif ($exception instanceof WeakPasswordException) {
+                    $status = 400;
+                } elseif ($exception instanceof InvalidTokenException) {
+                    $status = 400;
+                } elseif ($exception instanceof UserNotFoundException) {
+                    $status = 404;
+                } elseif ($exception instanceof FlashcardNotFoundException) {
+                    $status = 404;
+                } elseif ($exception instanceof QuizNotFoundException) {
+                    $status = 404;
+                } elseif ($exception instanceof \InvalidArgumentException) {
+                    $status = 400;
+                } elseif ($exception instanceof \RuntimeException && $exception->getCode() === 404) {
+                    $status = 404;
+                }
 
                 return new Response([
                     'status' => $status,

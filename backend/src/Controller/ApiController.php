@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -8,15 +9,15 @@ use Cake\ORM\TableRegistry;
 class ApiController extends AppController
 {
     private $UsersTable;
-    
+
     public function initialize(): void
     {
         parent::initialize();
-        
+
         // CakePHP 5.x: Use TableRegistry
         $this->UsersTable = TableRegistry::getTableLocator()->get('Users');
     }
-    
+
     public function health()
     {
         $this->response = $this->response->withType('application/json');
@@ -27,7 +28,7 @@ class ApiController extends AppController
         ]));
         return $this->response;
     }
-    
+
     public function notFound()
     {
         $this->response = $this->response->withStatus(404)

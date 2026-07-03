@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -26,7 +27,7 @@ class UploadController extends AppController
 
             // Faz o upload para o Cloudinary
             $service = new CloudinaryService();
-            
+
             $url = $service->uploadProfilePhoto([
                 'tmp_name' => $file->getStream()->getMetadata('uri'),
                 'name' => $file->getClientFilename(),
@@ -42,9 +43,7 @@ class UploadController extends AppController
             ]));
             $this->response = $this->response->withType('json');
             return $this->response;
-
         } catch (\Exception $e) {
-            
             $this->response = $this->response->withStringBody(json_encode([
                 'success' => false,
                 'message' => 'Erro: ' . $e->getMessage()

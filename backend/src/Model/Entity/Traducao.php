@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\Entity;
@@ -17,8 +18,14 @@ class Traducao extends Entity
         'criado_em' => true,
         'prompt' => true,
     ];
-    
-    protected function _getTraducoesAlternativas($value)
+
+    /**
+     * Get traduções alternativas decodificadas
+     *
+     * @param string|null $value
+     * @return array|null
+     */
+    protected function getTraducoesAlternativas($value)
     {
         if ($value) {
             return json_decode($value, true);

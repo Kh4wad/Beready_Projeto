@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -13,7 +14,7 @@ class JwtService
     private string $algorithm;
     private int $expires;
     private int $refreshExpires;
-    
+
     public function __construct()
     {
         $this->secret = Configure::read('Jwt.secret');
@@ -21,13 +22,13 @@ class JwtService
         $this->expires = Configure::read('Jwt.expires');
         $this->refreshExpires = Configure::read('Jwt.refresh_expires');
     }
-    
+
     public function generateTokens(array $user): array
     {
         $issuedAt = time();
-        
+
         $accessToken = JWT::encode(
-             [
+            [
                 'sub' => $user['id'],
                 'email' => $user['email'],
                 'nome' => $user['nome'],
@@ -35,11 +36,11 @@ class JwtService
                 'iat' => $issuedAt,
                 'exp' => $issuedAt + $this->expires,
                 'type' => 'access'
-            ],
+             ],
             $this->secret,
             $this->algorithm
         );
-        
+
         $refreshToken = JWT::encode(
             [
                 'sub' => $user['id'],
@@ -50,7 +51,7 @@ class JwtService
             $this->secret,
             $this->algorithm
         );
-        
+
         return [
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken,
@@ -58,7 +59,7 @@ class JwtService
             'token_type' => 'Bearer'
         ];
     }
-    
+
     public function validateToken(string $token): ?array
     {
         try {
@@ -69,19 +70,19 @@ class JwtService
             return null;
         }
     }
-    
+
     public function refreshAccessToken(string $refreshToken): ?array
     {
         $payload = $this->validateToken($refreshToken);
-        
+
         if (!$payload || $payload['type'] !== 'refresh') {
             return null;
         }
-        
+
         $userService = new \App\Services\UserService(new \App\Repositories\UserRepository());
         try {
             $user = $userService->getUserById($payload['sub']);
-            
+
             $issuedAt = time();
             $newAccessToken = JWT::encode(
                 [
@@ -96,7 +97,7 @@ class JwtService
                 $this->secret,
                 $this->algorithm
             );
-            
+
             return [
                 'access_token' => $newAccessToken,
                 'expires_in' => $this->expires,
@@ -107,24 +108,24 @@ class JwtService
             return null;
         }
     }
-    
+
     public function getTokenFromRequest($request): ?string
-  {
-      $authHeader = $request->getHeaderLine('Authorization');
-      error_log("JWT Service: Authorization header: " . ($authHeader ?: 'VAZIO'));
-      
-      if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
-          error_log("JWT Service: Token encontrado via Bearer");
-          return $matches[1];
-      }
-      
-      $token = $request->getQuery('token');
-      if ($token) {
-          error_log("JWT Service: Token encontrado via query param");
-          return $token;
-      }
-      
-      error_log("JWT Service: Token NÃO encontrado");
-      return null;
-  }
+    {
+        $authHeader = $request->getHeaderLine('Authorization');
+        error_log("JWT Service: Authorization header: " . ($authHeader ?: 'VAZIO'));
+
+        if (preg_match('/Bearer\s+(.+)/', $authHeader, $matches)) {
+            error_log("JWT Service: Token encontrado via Bearer");
+            return $matches[1];
+        }
+
+        $token = $request->getQuery('token');
+        if ($token) {
+            error_log("JWT Service: Token encontrado via query param");
+            return $token;
+        }
+
+        error_log("JWT Service: Token NÃO encontrado");
+        return null;
+    }
 }

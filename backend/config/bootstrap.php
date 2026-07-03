@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -107,7 +108,10 @@ if (Configure::read('debug')) {
  * Set the default server timezone. Using UTC makes time calculations / conversions easier.
  * Check https://php.net/manual/en/timezones.php for list of valid timezone strings.
  */
-date_default_timezone_set(env('APP_DEFAULT_TIMEZONE'));
+$timezone = env('APP_DEFAULT_TIMEZONE');
+if (!empty($timezone)) {
+    date_default_timezone_set($timezone);
+}
 
 /*
  * Configure the mbstring extension to use the correct encoding.
@@ -130,19 +134,19 @@ set_error_handler(function ($errno, $errstr, $errfile, $errline) {
     if (!(error_reporting() & $errno)) {
         return false;
     }
-    
+
     // Define o nível do erro
-    $severity = match($errno) {
+    $severity = match ($errno) {
         E_WARNING, E_USER_WARNING => \Sentry\Severity::warning(),
         E_NOTICE, E_USER_NOTICE => \Sentry\Severity::info(),
         E_DEPRECATED, E_USER_DEPRECATED => \Sentry\Severity::info(),
         default => \Sentry\Severity::error()
     };
-    
+
     // Envia para o Sentry
     \Sentry\captureMessage("Erro [$errno] $errstr em $errfile linha $errline", $severity);
     \Sentry\flush(2000);
-    
+
     // Retorna false para o PHP manter o comportamento padrão
     return false;
 });

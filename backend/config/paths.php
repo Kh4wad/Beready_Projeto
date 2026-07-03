@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 use Cake\Core\Configure;
@@ -6,6 +7,7 @@ use Cake\Core\Configure;
 /**
  * Use the DS to separate the directories in other defines
  */
+
 if (!defined('DS')) {
     define('DS', DIRECTORY_SEPARATOR);
 }

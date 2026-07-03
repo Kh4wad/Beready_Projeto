@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services;
@@ -31,9 +32,9 @@ class CloudinaryService implements CloudinaryServiceInterface
         }
 
         $url = "{$this->apiBaseUrl}/{$this->cloudName}/image/upload";
-        
+
         $curlFile = new \CURLFile($file['tmp_name']);
-        
+
         $postFields = [
             'file' => $curlFile,
             'api_key' => $this->apiKey,
@@ -49,12 +50,12 @@ class CloudinaryService implements CloudinaryServiceInterface
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        
+
         if ($this->disableSSL) {
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
         }
-        
+
         $response = curl_exec($ch);
         $error = curl_error($ch);
         curl_close($ch);
@@ -64,7 +65,7 @@ class CloudinaryService implements CloudinaryServiceInterface
         }
 
         $result = json_decode($response, true);
-        
+
         if (!isset($result['secure_url'])) {
             throw new \Exception('Erro no upload: ' . ($result['error']['message'] ?? 'Erro desconhecido'));
         }
@@ -84,7 +85,7 @@ class CloudinaryService implements CloudinaryServiceInterface
         }
         $toSign = rtrim($toSign, '&');
         $toSign .= $this->apiSecret;
-        
+
         return sha1($toSign);
     }
 }

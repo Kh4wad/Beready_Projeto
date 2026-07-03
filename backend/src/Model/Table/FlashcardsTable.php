@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Model\Table;
@@ -7,7 +8,7 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Flashcards Model 
+ * Flashcards Model
  *
  * @property \App\Model\Table\UsersTable&\Cake\ORM\Association\BelongsTo $Users
  * @property \App\Model\Table\TagsTable&\Cake\ORM\Association\BelongsToMany $Tags
@@ -28,7 +29,7 @@ class FlashcardsTable extends Table
         $this->setDisplayField('frente');
         $this->setPrimaryKey('id');
 
-        
+
         // Timestamp behavior
         $this->addBehavior('Timestamp', [
             'events' => [

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Models\DTO;
@@ -19,10 +20,10 @@ class UserDTO
     public ?DateTime $criado_em = null;
     public ?DateTime $atualizado_em = null;
     public ?DateTime $ultimo_login = null;
-    
+
     public ?string $senha = null;
     public ?string $confirmar_senha = null;
-    
+
     public function toArray(): array
     {
         return [
@@ -39,7 +40,7 @@ class UserDTO
             'ultimo_login' => $this->ultimo_login?->format('Y-m-d H:i:s'),
         ];
     }
-    
+
     public static function fromArray(array $data): self
     {
         $dto = new self();

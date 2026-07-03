@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -15,14 +16,14 @@ class UsersController extends AppController
 {
     private UserService $userService;
     private JwtService $jwtService;
-    
+
     public function initialize(): void
     {
         parent::initialize();
         $this->userService = new UserService(new UserRepository());
         $this->jwtService = new JwtService();
     }
-    
+
     public function health()
     {
         return $this->jsonSuccess(['timestamp' => date('Y-m-d H:i:s')], 'API funcionando!');
@@ -40,63 +41,62 @@ class UsersController extends AppController
             return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
-    
+
     public function login()
     {
         $data = $this->getRequestData();
         if (empty($data['email']) || empty($data['password'])) {
             return $this->jsonError('E-mail e senha são obrigatórios', 400);
         }
-        
+
         try {
             $user = $this->userService->login($data['email'], $data['password']);
-            
+
             $tokens = $this->jwtService->generateTokens($user);
-            
+
             return $this->jsonSuccess([
                 'user' => $user,
                 'tokens' => $tokens
             ], 'Login realizado com sucesso');
-            
         } catch (\RuntimeException $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 401);
         } catch (\Exception $e) {
             return $this->jsonError('Erro interno', 500);
         }
     }
-    
+
     public function refresh()
     {
         $data = $this->getRequestData();
         $refreshToken = $data['refresh_token'] ?? null;
-        
+
         if (!$refreshToken) {
             return $this->jsonError('Refresh token não informado', 400);
         }
-        
+
         $newTokens = $this->jwtService->refreshAccessToken($refreshToken);
-        
+
         if (!$newTokens) {
             return $this->jsonError('Refresh token inválido ou expirado', 401);
         }
-        
+
         return $this->jsonSuccess($newTokens, 'Token renovado com sucesso');
     }
-    
+
     public function me()
     {
         $token = $this->jwtService->getTokenFromRequest($this->request);
-        
+
         if (!$token) {
             return $this->jsonError('Token não informado', 401);
         }
-        
+
         $payload = $this->jwtService->validateToken($token);
-        
+
         if (!$payload) {
             return $this->jsonError('Token inválido ou expirado', 401);
         }
-        
+
         try {
             $user = $this->userService->getUserById($payload['sub']);
             return $this->jsonSuccess($user);
@@ -104,13 +104,13 @@ class UsersController extends AppController
             return $this->jsonError('Usuário não encontrado', 404);
         }
     }
-    
+
     public function logout()
     {
         // JWT é stateless, o logout é feito no frontend removendo os tokens
         return $this->jsonSuccess(null, 'Logout realizado com sucesso');
     }
-    
+
     public function view($id = null)
     {
         $userId = $id ?? $this->request->getParam('id');
@@ -126,7 +126,7 @@ class UsersController extends AppController
             return $this->jsonError('Erro interno', 500);
         }
     }
-    
+
     public function viewByUuid($uuid)
     {
         try {
@@ -138,7 +138,7 @@ class UsersController extends AppController
             return $this->jsonError('Erro interno', 500);
         }
     }
-    
+
     public function update($id = null)
     {
         $userId = $id ?? $this->request->getParam('id');
@@ -154,11 +154,10 @@ class UsersController extends AppController
         } catch (EmailAlreadyExistsException | WeakPasswordException | \InvalidArgumentException $e) {
             return $this->jsonError($e->getMessage(), $e->getCode() ?: 400);
         } catch (\Exception $e) {
-            
             return $this->jsonError('Erro interno: ' . $e->getMessage(), 500);
         }
     }
-    
+
     public function delete($id = null)
     {
         $userId = $id ?? $this->request->getParam('id');
@@ -192,7 +191,7 @@ class UsersController extends AppController
             return $this->jsonError('Erro ao processar solicitação', 500);
         }
     }
-    
+
     public function resetPassword($token = null)
     {
         $this->request->allowMethod(['post']);
@@ -213,42 +212,42 @@ class UsersController extends AppController
         }
     }
 
-  public function testSentry()
-  {
-      error_log("=== TESTE SENTRY ===");
-      
-      // Garante que o Sentry está inicializado
-      $dsn = env('SENTRY_DSN');
-      if (!empty($dsn) && !\Sentry\SentrySdk::getCurrentHub()->getClient()) {
-          \Sentry\init([
+    public function testSentry()
+    {
+        error_log("=== TESTE SENTRY ===");
+
+        // Garante que o Sentry está inicializado
+        $dsn = env('SENTRY_DSN');
+        if (!empty($dsn) && !\Sentry\SentrySdk::getCurrentHub()->getClient()) {
+            \Sentry\init([
               'dsn' => $dsn,
               'environment' => env('APP_ENV', 'development'),
               'traces_sample_rate' => 1.0,
               'send_default_pii' => false,
               'http_ssl_verify_peer' => false,
-          ]);
-      }
-      
-      try {
-          throw new \Exception('Teste Sentry Beready ' . date('Y-m-d H:i:s'));
-      } catch (\Throwable $e) {
-          $id = \Sentry\captureException($e);
-      }
-      
-      // FLUSH com tempo suficiente
-      \Sentry\flush(5000);
-      
-      return $this->jsonSuccess([
+            ]);
+        }
+
+        try {
+            throw new \Exception('Teste Sentry Beready ' . date('Y-m-d H:i:s'));
+        } catch (\Throwable $e) {
+            $id = \Sentry\captureException($e);
+        }
+
+        // FLUSH com tempo suficiente
+        \Sentry\flush(5000);
+
+        return $this->jsonSuccess([
           'message' => 'evento enviado',
           'timestamp' => date('Y-m-d H:i:s')
-      ]);
-  }
-    
+        ]);
+    }
+
     public function notFound()
     {
         return $this->jsonError('Rota não encontrada', 404);
     }
-    
+
     private function getRequestData(): array
     {
         $input = file_get_contents('php://input');

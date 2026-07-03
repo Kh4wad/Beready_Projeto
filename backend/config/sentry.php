@@ -16,5 +16,4 @@ if (!empty($dsn)) {
             return $event;
         },
     ]);
-    
 }

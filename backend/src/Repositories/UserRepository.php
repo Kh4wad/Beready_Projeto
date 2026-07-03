@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Repositories;
@@ -9,12 +10,12 @@ use Cake\ORM\TableRegistry;
 class UserRepository implements UserRepositoryInterface
 {
     private $usersTable;
-    
+
     public function __construct()
     {
         $this->usersTable = TableRegistry::getTableLocator()->get('Users');
     }
-    
+
     public function findById(int $id): ?array
     {
         $user = $this->usersTable->find()
@@ -37,60 +38,60 @@ class UserRepository implements UserRepositoryInterface
           ])
           ->where(['id' => $id])
           ->first();
-        
+
         if (!$user) {
             return null;
         }
-        
+
         $data = $user->toArray();
-        
+
         // Garantir que senha_hash está presente
         if (isset($user->senha_hash)) {
             $data['senha_hash'] = $user->senha_hash;
         }
-        
+
         if (!isset($data['role']) || empty($data['role'])) {
             $data['role'] = 'user';
         }
-        
+
         return $data;
     }
-    
+
     public function findByEmail(string $email): ?array
     {
         $user = $this->usersTable->find()
             ->select(['id', 'nome', 'email', 'senha_hash', 'role', 'status', 'telefone', 'nivel_ingles', 'idioma_preferido', 'objetivos_aprendizado', 'uuid', 'criado_em', 'atualizado_em', 'ultimo_login'])
             ->where(['email' => $email])
             ->first();
-        
+
         if (!$user) {
             return null;
         }
-        
+
         $data = $user->toArray();
-        
+
         if (isset($user->senha_hash)) {
             $data['senha_hash'] = $user->senha_hash;
         }
-        
+
         if (!isset($data['role']) || empty($data['role'])) {
             $data['role'] = 'user';
         }
-        
+
         return $data;
     }
-    
+
     public function create(array $data): array
     {
         if (!isset($data['role'])) {
             $data['role'] = 'user';
         }
-        
+
         $user = $this->usersTable->newEntity($data);
         $this->usersTable->saveOrFail($user);
         return $user->toArray();
     }
-    
+
     public function update(int $id, array $data): array
     {
         $user = $this->usersTable->get($id);
@@ -98,13 +99,13 @@ class UserRepository implements UserRepositoryInterface
         $this->usersTable->saveOrFail($user);
         return $user->toArray();
     }
-    
+
     public function delete(int $id): bool
     {
         $user = $this->usersTable->get($id);
         return $this->usersTable->delete($user);
     }
-    
+
     public function emailExists(string $email, ?int $excludeId = null): bool
     {
         $query = $this->usersTable->find()->where(['email' => $email]);
