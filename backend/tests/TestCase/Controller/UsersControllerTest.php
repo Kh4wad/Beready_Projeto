@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\UsuariosController;
+use App\Controller\UsersController;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Controller\UsuariosController Test Case
+ * App\Controller\UsersController Test Case
  *
- * @link \App\Controller\UsuariosController
+ * @link \App\Controller\UsersController
  */
-class UsuariosControllerTest extends TestCase
+class UsersControllerTest extends TestCase
 {
     use IntegrationTestTrait;
 
@@ -30,7 +30,7 @@ class UsuariosControllerTest extends TestCase
      * Test index method
      *
      * @return void
-     * @link \App\Controller\UsuariosController::index()
+     * @link \App\Controller\UsersController::index()
      */
     public function testIndex(): void
     {
@@ -41,7 +41,7 @@ class UsuariosControllerTest extends TestCase
      * Test view method
      *
      * @return void
-     * @link \App\Controller\UsuariosController::view()
+     * @link \App\Controller\UsersController::view()
      */
     public function testView(): void
     {
@@ -52,7 +52,7 @@ class UsuariosControllerTest extends TestCase
      * Test add method
      *
      * @return void
-     * @link \App\Controller\UsuariosController::add()
+     * @link \App\Controller\UsersController::add()
      */
     public function testAdd(): void
     {
@@ -63,7 +63,7 @@ class UsuariosControllerTest extends TestCase
      * Test edit method
      *
      * @return void
-     * @link \App\Controller\UsuariosController::edit()
+     * @link \App\Controller\UsersController::edit()
      */
     public function testEdit(): void
     {
@@ -74,7 +74,7 @@ class UsuariosControllerTest extends TestCase
      * Test delete method
      *
      * @return void
-     * @link \App\Controller\UsuariosController::delete()
+     * @link \App\Controller\UsersController::delete()
      */
     public function testDelete(): void
     {

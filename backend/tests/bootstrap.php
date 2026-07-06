@@ -49,9 +49,9 @@ try {
     // DESABILITA TOTALMENTE AS FK
     $connection->execute('PRAGMA foreign_keys = OFF');
     $connection->execute('PRAGMA defer_foreign_keys = ON');
-    error_log("✅ Testes usando SQLite em memória - FK desabilitadas!");
+    error_log("Testes usando SQLite em memória - FK desabilitadas!");
 } catch (\Exception $e) {
-    error_log("⚠️ Erro ao configurar SQLite: " . $e->getMessage());
+    error_log("Erro ao configurar SQLite: " . $e->getMessage());
 }
 
 // ============================================
@@ -263,7 +263,7 @@ try {
         )
     ");
 
-    error_log("✅ Todas as tabelas criadas sem restrições FK!");
+    error_log("Todas as tabelas criadas sem restrições FK!");
 } catch (Exception $e) {
     error_log("❌ Erro ao criar tabelas: " . $e->getMessage());
 }

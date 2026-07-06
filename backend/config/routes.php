@@ -22,7 +22,6 @@ $routes->connect('/admin/users', [
     'action' => 'users'
 ])->setMethods(['GET']);
 
-// ✅ Rota simples - ID vai no body
 $routes->connect('/admin/users/role', [
     'controller' => 'Admin',
     'action' => 'updateRole'

@@ -333,15 +333,15 @@ const toggleRole = async (targetUser: any) => {
     if (response.data.success) {
       await loadUsers()
 
-      // ✅ Mensagem padronizada com sucesso
+      // Mensagem padronizada com sucesso
       success(`${targetUser.nome} agora é ${newRoleText}`)
     } else {
-      // ✅ Mensagem de erro padronizada
+      // Mensagem de erro padronizada
       error(response.data.message || 'Erro ao alterar permissão')
     }
   } catch (err: any) {
     console.error('Erro:', err)
-    // ✅ Mensagem de erro padronizada
+    // Mensagem de erro padronizada
     error(err.response?.data?.message || 'Erro ao alterar permissão')
   } finally {
     updatingRole.value = null

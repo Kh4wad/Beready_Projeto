@@ -65,7 +65,7 @@ class AdminController extends AppController
         $data = $this->getRequestData();
         error_log("Dados recebidos: " . print_r($data, true));
 
-        // ✅ Pega o ID dos dados (não da URL)
+        // Pega o ID dos dados (não da URL)
         $userId = $data['user_id'] ?? null;
         $newRole = $data['role'] ?? null;
 
