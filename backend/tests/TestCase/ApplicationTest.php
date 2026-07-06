@@ -2,25 +2,15 @@
 
 declare(strict_types=1);
 
-/**
- * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- *
- * Licensed under The MIT License
- * For full copyright and license information, please see the LICENSE.txt
- * Redistributions of files must retain the above copyright notice
- *
- * @copyright     Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
- * @link          https://cakephp.org CakePHP(tm) Project
- * @since         3.3.0
- * @license       https://opensource.org/licenses/mit-license.php MIT License
- */
-
 namespace App\Test\TestCase;
 
 use App\Application;
+use App\Middleware\CorsMiddleware;
+use App\Middleware\JwtAuthMiddleware;
+use App\Middleware\RateLimitMiddleware;
 use Cake\Core\Configure;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
+use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
@@ -34,11 +24,6 @@ class ApplicationTest extends TestCase
 {
     use IntegrationTestTrait;
 
-    /**
-     * Test bootstrap in production.
-     *
-     * @return void
-     */
     public function testBootstrap()
     {
         Configure::write('debug', false);
@@ -46,16 +31,11 @@ class ApplicationTest extends TestCase
         $app->bootstrap();
         $plugins = $app->getPlugins();
 
-        $this->assertTrue($plugins->has('Bake'), 'plugins has Bake?');
-        $this->assertFalse($plugins->has('DebugKit'), 'plugins has DebugKit?');
-        $this->assertTrue($plugins->has('Migrations'), 'plugins has Migrations?');
+        $this->assertTrue($plugins->has('Bake'));
+        $this->assertFalse($plugins->has('DebugKit'));
+        $this->assertTrue($plugins->has('Migrations'));
     }
 
-    /**
-     * Test bootstrap add DebugKit plugin in debug mode.
-     *
-     * @return void
-     */
     public function testBootstrapInDebug()
     {
         Configure::write('debug', true);
@@ -63,14 +43,9 @@ class ApplicationTest extends TestCase
         $app->bootstrap();
         $plugins = $app->getPlugins();
 
-        $this->assertTrue($plugins->has('DebugKit'), 'plugins has DebugKit?');
+        $this->assertTrue($plugins->has('DebugKit'));
     }
 
-    /**
-     * testMiddleware
-     *
-     * @return void
-     */
     public function testMiddleware()
     {
         $app = new Application(dirname(__DIR__, 2) . '/config');
@@ -78,10 +53,31 @@ class ApplicationTest extends TestCase
 
         $middleware = $app->middleware($middleware);
 
-        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
+        // Posição 0: CorsMiddleware
+        $this->assertInstanceOf(CorsMiddleware::class, $middleware->current());
+
+        // Posição 1: RateLimitMiddleware
         $middleware->seek(1);
-        $this->assertInstanceOf(AssetMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(RateLimitMiddleware::class, $middleware->current());
+
+        // Posição 2: JwtAuthMiddleware
         $middleware->seek(2);
+        $this->assertInstanceOf(JwtAuthMiddleware::class, $middleware->current());
+
+        // Posição 3: ErrorHandlerMiddleware
+        $middleware->seek(3);
+        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
+
+        // Posição 4: BodyParserMiddleware
+        $middleware->seek(4);
+        $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
+
+        // Posição 5: RoutingMiddleware
+        $middleware->seek(5);
         $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+
+        // Posição 6: AssetMiddleware
+        $middleware->seek(6);
+        $this->assertInstanceOf(AssetMiddleware::class, $middleware->current());
     }
 }

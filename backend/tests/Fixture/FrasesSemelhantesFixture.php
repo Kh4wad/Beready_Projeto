@@ -15,19 +15,17 @@ class FrasesSemelhantesFixture extends TestFixture
                 'id' => 1,
                 'prompt_id' => 1,
                 'frase_semelhante' => 'The capital city of Brazil is Brasília',
-                'pontuacao_semelhante' => 0.95,
-                'tipo_frase' => 'relacionada',
-                'nivel_dificuldade' => 'iniciante',
-                'criado_em' => date('Y-m-d H:i:s'),
+                'idioma' => 'en', // ADICIONE ESTE CAMPO
+                'pontuacao_similaridade' => 0.95,
+                'criado_em' => '2026-07-05 21:30:58',
             ],
             [
                 'id' => 2,
                 'prompt_id' => 1,
                 'frase_semelhante' => 'Brasília is the capital of Brazil',
-                'pontuacao_semelhante' => 0.90,
-                'tipo_frase' => 'relacionada',
-                'nivel_dificuldade' => 'iniciante',
-                'criado_em' => date('Y-m-d H:i:s'),
+                'idioma' => 'en', // ADICIONE ESTE CAMPO
+                'pontuacao_similaridade' => 0.90,
+                'criado_em' => '2026-07-05 21:30:58',
             ],
         ];
         parent::init();
