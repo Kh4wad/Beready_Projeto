@@ -13,31 +13,23 @@ class QuizesFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'usuario_id' => 1,
+                'user_id' => 1, // ADICIONE ESTE CAMPO
                 'titulo' => 'Geography Quiz',
                 'descricao' => 'Test your geography knowledge',
-                'tipo_criacao' => 'manual',
                 'nivel_dificuldade' => 'intermediario',
-                'total_questoes' => 10,
-                'tempo_limite' => 30,
-                'publico' => true,
-                'criado_em' => date('Y-m-d H:i:s'),
-                'atualizado_em' => date('Y-m-d H:i:s'),
-                'uuid' => 'dddddddd-dddd-dddd-dddd-dddddddddddd',
+                'pontuacao_maxima' => 100,
+                'criado_em' => '2026-07-05 21:30:58',
+                'atualizado_em' => '2026-07-05 21:30:58',
             ],
             [
                 'id' => 2,
-                'usuario_id' => 1,
+                'user_id' => 1, // ADICIONE ESTE CAMPO
                 'titulo' => 'English Vocabulary',
                 'descricao' => 'Test your English skills',
-                'tipo_criacao' => 'ia_gerado',
                 'nivel_dificuldade' => 'iniciante',
-                'total_questoes' => 5,
-                'tempo_limite' => 15,
-                'publico' => false,
-                'criado_em' => date('Y-m-d H:i:s'),
-                'atualizado_em' => date('Y-m-d H:i:s'),
-                'uuid' => 'eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee',
+                'pontuacao_maxima' => 50,
+                'criado_em' => '2026-07-05 21:30:58',
+                'atualizado_em' => '2026-07-05 21:30:58',
             ],
         ];
         parent::init();

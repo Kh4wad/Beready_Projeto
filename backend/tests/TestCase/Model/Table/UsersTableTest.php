@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\UsuariosTable;
+use App\Model\Table\UsersTable;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\UsuariosTable Test Case
+ * App\Model\Table\UsersTable Test Case
  */
-class UsuariosTableTest extends TestCase
+class UsersTableTest extends TestCase
 {
     /**
      * Test subject
      *
-     * @var \App\Model\Table\UsuariosTable
+     * @var \App\Model\Table\UsersTable
      */
-    protected $Usuarios;
+    protected $Users;
 
     /**
      * Fixtures
@@ -31,7 +31,6 @@ class UsuariosTableTest extends TestCase
         'app.PreferenciasUsuario',
         'app.Prompts',
         'app.Quizes',
-        'app.TentativasQuiz',
         'app.Vocabulario',
     ];
 
@@ -43,8 +42,8 @@ class UsuariosTableTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Usuarios') ? [] : ['className' => UsuariosTable::class];
-        $this->Usuarios = $this->getTableLocator()->get('Usuarios', $config);
+        $config = $this->getTableLocator()->exists('Users') ? [] : ['className' => UsersTable::class];
+        $this->Users = $this->getTableLocator()->get('Users', $config);
     }
 
     /**
@@ -54,7 +53,7 @@ class UsuariosTableTest extends TestCase
      */
     protected function tearDown(): void
     {
-        unset($this->Usuarios);
+        unset($this->Users);
 
         parent::tearDown();
     }
@@ -63,7 +62,7 @@ class UsuariosTableTest extends TestCase
      * Test validationDefault method
      *
      * @return void
-     * @link \App\Model\Table\UsuariosTable::validationDefault()
+     * @link \App\Model\Table\UsersTable::validationDefault()
      */
     public function testValidationDefault(): void
     {
@@ -74,7 +73,7 @@ class UsuariosTableTest extends TestCase
      * Test buildRules method
      *
      * @return void
-     * @link \App\Model\Table\UsuariosTable::buildRules()
+     * @link \App\Model\Table\UsersTable::buildRules()
      */
     public function testBuildRules(): void
     {

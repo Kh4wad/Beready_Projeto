@@ -15,15 +15,21 @@ class VocabularioFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'usuario_id' => 1,
-                'palavra_frase' => 'Hello',
-                'criado_em' => date('Y-m-d H:i:s'),
+                'user_id' => 1,
+                'palavra' => 'Hello',
+                'traducao' => 'Olá',
+                'nivel' => 'iniciante',
+                'criado_em' => '2026-07-05 21:44:23',
+                'atualizado_em' => '2026-07-05 21:44:23',
             ],
             [
                 'id' => 2,
-                'usuario_id' => 1,
-                'palavra_frase' => 'World',
-                'criado_em' => date('Y-m-d H:i:s'),
+                'user_id' => 2,
+                'palavra' => 'Goodbye',
+                'traducao' => 'Adeus',
+                'nivel' => 'iniciante',
+                'criado_em' => '2026-07-05 21:44:23',
+                'atualizado_em' => '2026-07-05 21:44:23',
             ],
         ];
         parent::init();

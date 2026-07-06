@@ -10,7 +10,7 @@ use Cake\TestSuite\TestCase;
 /**
  * App\Model\Table\FlashcardTagsTable Test Case
  */
-class FlashcardTagsTableTest extends TestCase
+class FlashcardsTagsTableTest extends TestCase
 {
     /**
      * Test subject
