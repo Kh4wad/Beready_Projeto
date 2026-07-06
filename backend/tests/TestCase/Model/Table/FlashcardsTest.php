@@ -1,74 +1,37 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\FlashcardTagsTable;
+use App\Model\Table\FlashcardsTable;
 use Cake\TestSuite\TestCase;
 
-/**
- * App\Model\Table\FlashcardTagsTable Test Case
- */
-class FlashcardsTagsTableTest extends TestCase
+class FlashcardsTableTest extends TestCase
 {
-    /**
-     * Test subject
-     *
-     * @var \App\Model\Table\FlashcardTagsTable
-     */
-    protected $FlashcardTags;
+    protected FlashcardsTable $Flashcards;
 
-    /**
-     * Fixtures
-     *
-     * @var array<string>
-     */
     protected array $fixtures = [
-        'app.flashcard_tags',
         'app.Flashcards',
-        'app.Flashcardsflashcard_tags',
         'app.Users',
     ];
 
-    /**
-     * setUp method
-     *
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('flashcard_tags') ? [] : ['className' => flashcardsTable::class];
-        $this->FlashcardTags = $this->getTableLocator()->get('FlashcardTags', $config);
+        $this->Flashcards = $this->getTableLocator()->get('Flashcards');
     }
 
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
     protected function tearDown(): void
     {
-        unset($this->FlashcardTags);
+        unset($this->Flashcards);
         parent::tearDown();
     }
 
-    /**
-     * Test validationDefault method
-     *
-     * @return void
-     */
     public function testValidationDefault(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    /**
-     * Test buildRules method
-     *
-     * @return void
-     */
     public function testBuildRules(): void
     {
         $this->markTestIncomplete('Not implemented yet.');
