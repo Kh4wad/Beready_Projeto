@@ -4,8 +4,54 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cba74a1145e06553743feb05febcadb",
+    "content-hash": "60518bbc394c787aab57300bae8a9884",
     "packages": [
+        {
+            "name": "admad/cakephp-social-auth",
+            "version": "2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ADmad/cakephp-social-auth.git",
+                "reference": "9ee1f2c88705fed6868f81b970d754ea32878467"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ADmad/cakephp-social-auth/zipball/9ee1f2c88705fed6868f81b970d754ea32878467",
+                "reference": "9ee1f2c88705fed6868f81b970d754ea32878467",
+                "shasum": ""
+            },
+            "require": {
+                "cakephp/cakephp": "^5.0",
+                "php": ">=8.1",
+                "socialconnect/auth": "^3.3"
+            },
+            "require-dev": {
+                "cakephp/cakephp-codesniffer": "^5.3",
+                "phpunit/phpunit": "^10.5.58 || ^11.5.3 || ^12.4"
+            },
+            "type": "cakephp-plugin",
+            "autoload": {
+                "psr-4": {
+                    "ADmad\\SocialAuth\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A CakePHP plugin which allows you to authenticate using social providers like Facebook/Google/Twitter etc.",
+            "support": {
+                "issues": "https://github.com/ADmad/cakephp-social-auth/issues",
+                "source": "https://github.com/ADmad/cakephp-social-auth/tree/2.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ADmad",
+                    "type": "github"
+                }
+            ],
+            "time": "2026-01-06T12:35:18+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.18.0",
@@ -2407,6 +2453,63 @@
             "time": "2026-06-18T03:57:49+00:00"
         },
         {
+            "name": "resend/resend-php",
+            "version": "v1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/resend/resend-php.git",
+                "reference": "24e4f0507316776bc6a7c9136b2832ea2ecba6c3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/24e4f0507316776bc6a7c9136b2832ea2ecba6c3",
+                "reference": "24e4f0507316776bc6a7c9136b2832ea2ecba6c3",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.5",
+                "php": "^8.1.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.13",
+                "mockery/mockery": "^1.6",
+                "pestphp/pest": "^1.0|^2.0|^3.0|^4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/Resend.php"
+                ],
+                "psr-4": {
+                    "Resend\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Resend and contributors",
+                    "homepage": "https://github.com/resend/resend-php/contributors"
+                }
+            ],
+            "description": "Resend PHP library.",
+            "homepage": "https://resend.com/",
+            "keywords": [
+                "api",
+                "client",
+                "php",
+                "resend",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/resend/resend-php/issues",
+                "source": "https://github.com/resend/resend-php/tree/v1.4.0"
+            },
+            "time": "2026-06-26T21:11:51+00:00"
+        },
+        {
             "name": "robmorgan/phinx",
             "version": "0.16.10",
             "source": {
@@ -2586,6 +2689,134 @@
                 }
             ],
             "time": "2026-06-29T14:47:44+00:00"
+        },
+        {
+            "name": "socialconnect/auth",
+            "version": "3.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialConnect/auth.git",
+                "reference": "3a5ccbe7ca51e6bf0769904c3aeb8b6afc656d08"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialConnect/auth/zipball/3a5ccbe7ca51e6bf0769904c3aeb8b6afc656d08",
+                "reference": "3a5ccbe7ca51e6bf0769904c3aeb8b6afc656d08",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.4|^8.0",
+                "psr/http-client": "^1.0 || ^2.0",
+                "psr/http-factory": "^1.0 || ^2.0",
+                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0",
+                "socialconnect/jwx": "^1.0"
+            },
+            "replace": {
+                "socialconnect/common": "self.version",
+                "socialconnect/oauth1": "self.version",
+                "socialconnect/oauth2": "self.version",
+                "socialconnect/openid": "self.version",
+                "socialconnect/openid-connect": "self.version",
+                "socialconnect/provider": "self.version"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^9.6",
+                "socialconnect/http-client": "^1.0",
+                "squizlabs/php_codesniffer": "^3.12"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialConnect\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitry Patsura",
+                    "email": "talk@dmtry.me"
+                }
+            ],
+            "description": "Social Connect Auth Component",
+            "keywords": [
+                "amazon",
+                "auth",
+                "bitbucket",
+                "facebook",
+                "github",
+                "gitlab",
+                "google",
+                "login",
+                "oauth",
+                "slack",
+                "socialconnect",
+                "twitch",
+                "twitter",
+                "vk"
+            ],
+            "support": {
+                "issues": "https://github.com/SocialConnect/auth/issues",
+                "source": "https://github.com/SocialConnect/auth/tree/3.6.2"
+            },
+            "time": "2025-08-28T07:30:08+00:00"
+        },
+        {
+            "name": "socialconnect/jwx",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SocialConnect/jwx.git",
+                "reference": "973492237a3c06fe23199b420b48d43ea30e98f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SocialConnect/jwx/zipball/973492237a3c06fe23199b420b48d43ea30e98f3",
+                "reference": "973492237a3c06fe23199b420b48d43ea30e98f3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^9.6"
+            },
+            "suggest": {
+                "ext-openssl": "Please install openssl extension to use RS encryption"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SocialConnect\\JWX\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dmitry Patsura",
+                    "email": "talk@dmtry.me"
+                }
+            ],
+            "description": "PHP library for JSON web tokens (JWT) and JWT",
+            "keywords": [
+                "JSON Web Token",
+                "JWE",
+                "jwt"
+            ],
+            "support": {
+                "issues": "https://github.com/SocialConnect/jwx/issues",
+                "source": "https://github.com/SocialConnect/jwx/tree/1.4.0"
+            },
+            "time": "2025-12-17T15:47:15+00:00"
         },
         {
             "name": "symfony/config",

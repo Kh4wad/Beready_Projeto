@@ -19,6 +19,9 @@ use App\Exceptions\InvalidTokenException;
 use App\Exceptions\UserNotFoundException;
 use App\Exceptions\FlashcardNotFoundException;
 use App\Exceptions\QuizNotFoundException;
+use App\Exceptions\SentryExceptionRenderer;
+
+use ADmad\SocialAuth\Middleware\SocialAuthMiddleware;
 
 class Application extends BaseApplication
 {
@@ -44,6 +47,9 @@ class Application extends BaseApplication
         // CORS
         $middlewareQueue->add(new CorsMiddleware());
 
+        // Body Parser
+        $middlewareQueue->add(new \Cake\Http\Middleware\BodyParserMiddleware());
+
         // Rate Limit
         $middlewareQueue->add(new RateLimitMiddleware(100, 60));
 
@@ -51,48 +57,47 @@ class Application extends BaseApplication
         $middlewareQueue->add(new JwtAuthMiddleware());
 
         // Error Handler
-        $middlewareQueue->add(new ErrorHandlerMiddleware([
-            'exceptionRenderer' => function ($exception, $request) {
-                \Sentry\captureException($exception);
-                \Sentry\flush(2000);
-
-                $status = 500;
-                $message = $exception->getMessage();
-
-                if ($exception instanceof EmailAlreadyExistsException) {
-                    $status = 409;
-                } elseif ($exception instanceof WeakPasswordException) {
-                    $status = 400;
-                } elseif ($exception instanceof InvalidTokenException) {
-                    $status = 400;
-                } elseif ($exception instanceof UserNotFoundException) {
-                    $status = 404;
-                } elseif ($exception instanceof FlashcardNotFoundException) {
-                    $status = 404;
-                } elseif ($exception instanceof QuizNotFoundException) {
-                    $status = 404;
-                } elseif ($exception instanceof \InvalidArgumentException) {
-                    $status = 400;
-                } elseif ($exception instanceof \RuntimeException && $exception->getCode() === 404) {
-                    $status = 404;
-                }
-
-                return new Response([
-                    'status' => $status,
-                    'type' => 'application/json',
-                    'body' => json_encode([
-                        'success' => false,
-                        'message' => $message
-                    ])
-                ]);
-            }
+         $middlewareQueue->add(new ErrorHandlerMiddleware([
+            'exceptionRenderer' => \App\Exceptions\SentryExceptionRenderer::class
         ]));
-
-        // Body Parser
-        $middlewareQueue->add(new \Cake\Http\Middleware\BodyParserMiddleware());
 
         // Router
         $middlewareQueue->add(new \Cake\Routing\Middleware\RoutingMiddleware($this));
+
+        // SOCIAL AUTH
+        $middlewareQueue->add(new SocialAuthMiddleware([
+            'requestMethod' => 'GET',
+            'loginUrl' => '/login',
+            'loginRedirect' => env('APP_BASE_URL') . 'oauth-callback',
+            'userModel' => 'Users',
+            'userFinder' => 'getUser',
+            'redirectUri' => env('GOOGLE_REDIRECT_URI'),
+            'serviceConfig' => [
+                'provider' => [
+                    'google' => [
+                        'applicationId' => env('GOOGLE_CLIENT_ID'),
+                        'applicationSecret' => env('GOOGLE_CLIENT_SECRET'),
+                        'redirectUri' => env('GOOGLE_REDIRECT_URI'),
+                        'scope' => [
+                            'https://www.googleapis.com/auth/userinfo.email',
+                            'https://www.googleapis.com/auth/userinfo.profile',
+                        ],
+                    ],
+                    'facebook' => [
+                        'applicationId' => env('FACEBOOK_CLIENT_ID'),
+                        'applicationSecret' => env('FACEBOOK_CLIENT_SECRET'),
+                        'redirectUri' => env('FACEBOOK_REDIRECT_URI'),
+                        'scope' => ['email', 'public_profile'],
+                    ],
+                    'linkedin' => [
+                        'applicationId' => env('LINKEDIN_CLIENT_ID'),
+                        'applicationSecret' => env('LINKEDIN_CLIENT_SECRET'),
+                        'redirectUri' => env('LINKEDIN_REDIRECT_URI'),
+                        'scope' => ['openid', 'profile', 'email'],
+                    ],
+                ],
+            ],
+        ]));
 
         // Asset
         $middlewareQueue->add(new \Cake\Routing\Middleware\AssetMiddleware());

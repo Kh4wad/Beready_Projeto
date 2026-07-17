@@ -45,6 +45,46 @@ $routes->connect('/auth/login', [
     'action' => 'login'
 ])->setMethods(['POST']);
 
+/** SOCIAL AUTH ROUTES - INÍCIO */
+$routes->connect('/auth/login/google', [
+    'plugin' => 'ADmad/SocialAuth',
+    'controller' => 'Auth',
+    'action' => 'login',
+    'provider' => 'google'
+])->setMethods(['GET', 'POST']);
+
+$routes->connect('/auth/login/facebook', [
+    'plugin' => 'ADmad/SocialAuth',
+    'controller' => 'Auth',
+    'action' => 'login',
+    'provider' => 'facebook'
+])->setMethods(['GET', 'POST']);
+
+$routes->connect('/auth/login/linkedin', [
+    'plugin' => 'ADmad/SocialAuth',
+    'controller' => 'Auth',
+    'action' => 'login',
+    'provider' => 'linkedin'
+])->setMethods(['GET', 'POST']);
+
+$routes->connect('/social-auth/callback/google', [
+    'controller' => 'SocialAuth',
+    'action' => 'callback',
+    'provider' => 'google'
+])->setMethods(['GET']);
+
+$routes->connect('/social-auth/callback/facebook', [
+    'controller' => 'SocialAuth',
+    'action' => 'callback',
+    'provider' => 'facebook'
+])->setMethods(['GET']);
+
+$routes->connect('/social-auth/callback/linkedin', [
+    'controller' => 'SocialAuth',
+    'action' => 'callback',
+    'provider' => 'linkedin'
+])->setMethods(['GET']);
+
 $routes->connect('/auth/logout', [
     'controller' => 'Users',
     'action' => 'logout'
