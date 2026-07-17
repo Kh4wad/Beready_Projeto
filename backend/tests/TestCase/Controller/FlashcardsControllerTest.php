@@ -16,8 +16,6 @@ class FlashcardsControllerTest extends TestCase
     protected array $fixtures = [
         'app.Flashcards',
         'app.Users',
-        'app.Tags',
-        'app.FlashcardTags',
     ];
 
     public function testIndex(): void

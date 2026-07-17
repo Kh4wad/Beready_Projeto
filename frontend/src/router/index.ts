@@ -10,6 +10,7 @@ const Profile = () => import('../modules/auth/views/Profile.vue')
 const ProfileEdit = () => import('../modules/auth/views/ProfileEdit.vue')
 const ForgotPassword = () => import('../modules/auth/views/ForgotPassword.vue')
 const ResetPassword = () => import('../modules/auth/views/ResetPassword.vue')
+const OAuthCallback = () => import('../modules/auth/views/OAuthCallback.vue')
 
 const Flashcards = () => import('../modules/flashcards/views/Flashcards.vue')
 const FlashcardView = () => import('../modules/flashcards/views/FlashcardView.vue')
@@ -57,6 +58,12 @@ const router = createRouter({
       path: '/reset-password/:token',
       name: 'reset-password',
       component: ResetPassword,
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/oauth-callback',
+      name: 'oauth-callback',
+      component: OAuthCallback,
       meta: { requiresAuth: false },
     },
     {

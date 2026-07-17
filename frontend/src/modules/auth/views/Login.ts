@@ -4,6 +4,8 @@ import { useForm } from '@/shared/composables/useForm'
 import { useAlert } from '@/shared/composables/useAlert'
 import { auth } from '@/core/services/api'
 
+const API_BASE_URL = import.meta.env.VITE_API_URL
+
 export function useLogin() {
   const router = useRouter()
   const { success, error, clearAllAlerts } = useAlert()
@@ -41,11 +43,46 @@ export function useLogin() {
         error(response.message || 'E-mail ou senha inválidos')
       }
     } catch (err) {
-      console.error(' Erro:', err)
+      console.error('Erro:', err)
       error('Erro de conexão com o servidor. Verifique se o backend está rodando.')
     } finally {
       loading.value = false
     }
+  }
+
+  const loginWithProvider = (provider: string) => {
+    loading.value = true
+
+    const width = 500
+    const height = 600
+    const left = window.screen.width / 2 - width / 2
+    const top = window.screen.height / 2 - height / 2
+
+    const popup = window.open(
+      `${API_BASE_URL}/auth/login/${provider}`,
+      `Login ${provider}`,
+      `width=${width},height=${height},left=${left},top=${top}`,
+    )
+
+    if (!popup) {
+      loading.value = false
+      error('Popup bloqueado! Permita popups para este site.')
+      return
+    }
+
+    const interval = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(interval)
+        loading.value = false
+
+        const userData = localStorage.getItem('user')
+        const token = localStorage.getItem('access_token')
+
+        if (userData && token) {
+          window.location.href = '/dashboard'
+        }
+      }
+    }, 500)
   }
 
   return {
@@ -53,5 +90,6 @@ export function useLogin() {
     errors,
     loading,
     handleSubmit,
+    loginWithProvider,
   }
 }
