@@ -8,6 +8,7 @@ use App\Application;
 use App\Middleware\CorsMiddleware;
 use App\Middleware\JwtAuthMiddleware;
 use App\Middleware\RateLimitMiddleware;
+use ADmad\SocialAuth\Middleware\SocialAuthMiddleware;
 use Cake\Core\Configure;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\Middleware\BodyParserMiddleware;
@@ -53,31 +54,38 @@ class ApplicationTest extends TestCase
 
         $middleware = $app->middleware($middleware);
 
+        // ORDEM ATUAL DOS MIDDLEWARES (com SocialAuth)
+
         // Posição 0: CorsMiddleware
+        $middleware->seek(0);
         $this->assertInstanceOf(CorsMiddleware::class, $middleware->current());
 
-        // Posição 1: RateLimitMiddleware
+        // Posição 1: BodyParserMiddleware
         $middleware->seek(1);
+        $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
+
+        // Posição 2: RateLimitMiddleware
+        $middleware->seek(2);
         $this->assertInstanceOf(RateLimitMiddleware::class, $middleware->current());
 
-        // Posição 2: JwtAuthMiddleware
-        $middleware->seek(2);
+        // Posição 3: JwtAuthMiddleware
+        $middleware->seek(3);
         $this->assertInstanceOf(JwtAuthMiddleware::class, $middleware->current());
 
-        // Posição 3: ErrorHandlerMiddleware
-        $middleware->seek(3);
-        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
-
-        // Posição 4: BodyParserMiddleware
+        // Posição 4: ErrorHandlerMiddleware
         $middleware->seek(4);
-        $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
 
         // Posição 5: RoutingMiddleware
         $middleware->seek(5);
         $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
 
-        // Posição 6: AssetMiddleware
+        // Posição 6: SocialAuthMiddleware
         $middleware->seek(6);
+        $this->assertInstanceOf(SocialAuthMiddleware::class, $middleware->current());
+
+        // Posição 7: AssetMiddleware
+        $middleware->seek(7);
         $this->assertInstanceOf(AssetMiddleware::class, $middleware->current());
     }
 }
