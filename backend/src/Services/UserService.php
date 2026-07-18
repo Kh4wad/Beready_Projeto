@@ -10,13 +10,11 @@ use App\Exceptions\EmailAlreadyExistsException;
 use App\Exceptions\WeakPasswordException;
 use App\Exceptions\InvalidTokenException;
 use App\Exceptions\UserNotFoundException;
-use Cake\Mailer\MailerAwareTrait;
+use App\Mailer\UserMailer;
 use Ramsey\Uuid\Uuid;
 
 class UserService implements UserUseCaseInterface
 {
-    use MailerAwareTrait;
-
     private UserRepositoryInterface $userRepository;
 
     public function __construct(UserRepositoryInterface $userRepository)
@@ -40,6 +38,16 @@ class UserService implements UserUseCaseInterface
         unset($data['senha']);
         $user = $this->userRepository->create($data);
         unset($user['senha_hash']);
+
+        // ENVIA E-MAIL DE BOAS-VINDAS
+        try {
+            $mailer = new UserMailer();
+            $mailer->welcome((object)$user);
+        } catch (\Exception $e) {
+            error_log("❌ Erro ao enviar e-mail de boas-vindas: " . $e->getMessage());
+            // Não interrompe o registro se o e-mail falhar
+        }
+
         return $user;
     }
 
@@ -144,8 +152,12 @@ class UserService implements UserUseCaseInterface
         $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
         $this->userRepository->updateResetToken($user['id'], $token, $expires);
 
-        // Envia e-mail (você precisa implementar o Mailer)
-        // $this->getMailer('User')->resetPassword((object)$user, $token);
+        try {
+            $mailer = new UserMailer();
+            $mailer->resetPassword((object)$user, $token);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Erro ao enviar email de recuperação');
+        }
     }
 
     public function resetPassword(string $token, string $newPassword): void

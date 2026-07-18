@@ -19,9 +19,9 @@
         <h2>Olá, <?= h($nome) ?>!</h2>
         <p>Recebemos uma solicitação para redefinir sua senha. Clique no botão abaixo para criar uma nova senha:</p>
         <div style="text-align: center;">
-            <a href="<?= $resetLink ?>" class="button">Redefinir Senha</a>
+            <a href="<?= h($resetLink) ?>" class="button">Redefinir Senha</a>
         </div>
-        <p>Se você não solicitou, ignore este e-mail. O link expira em <?= $expires ?>.</p>
+        <p>Se você não solicitou, ignore este e-mail. O link expira em <?= h($expires) ?>.</p>
         <div class="footer">
             BeReady - Aprendizado de Inglês<br>
             Este e-mail foi enviado automaticamente, não responda.

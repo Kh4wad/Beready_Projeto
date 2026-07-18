@@ -66,7 +66,6 @@ class UsersController extends AppController
 
         try {
             $user = $this->userService->login($data['email'], $data['password']);
-
             $tokens = $this->jwtService->generateTokens($user);
 
             return $this->jsonSuccess([
@@ -246,11 +245,18 @@ class UsersController extends AppController
     public function resetPassword($token = null)
     {
         $this->request->allowMethod(['post']);
+        
+        if (empty($token)) {
+            return $this->jsonError('Token não fornecido', 400);
+        }
+        
         $data = $this->getRequestData();
-        $newPassword = $data['senha'] ?? '';
+        $newPassword = $data['senha'] ?? $data['password'] ?? '';
+        
         if (empty($newPassword)) {
             return $this->jsonError('Nova senha é obrigatória', 400);
         }
+        
         try {
             $this->userService->resetPassword($token, $newPassword);
             return $this->jsonSuccess(null, 'Senha redefinida com sucesso');
@@ -259,7 +265,7 @@ class UsersController extends AppController
         } catch (WeakPasswordException $e) {
             return $this->jsonError($e->getMessage(), 400);
         } catch (\Exception $e) {
-            return $this->jsonError('Erro interno', 500);
+            return $this->jsonError('Erro interno ao redefinir senha', 500);
         }
     }
 

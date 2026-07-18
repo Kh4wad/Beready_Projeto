@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Services\SocialAuthService;
 use Cake\ORM\TableRegistry;
 use Cake\Http\Client;
+use App\Mailer\UserMailer;
 
 class SocialAuthController extends AppController
 {
@@ -74,7 +75,10 @@ class SocialAuthController extends AppController
         }
         $picture = $userInfo['picture'] ?? $userInfo['avatar'] ?? null;
         
+        $isNewUser = false;
+        
         if (!$user) {
+            $isNewUser = true;
             $user = $usersTable->newEntity([
                 'email' => $userInfo['email'],
                 'nome' => $name,
@@ -97,6 +101,16 @@ class SocialAuthController extends AppController
             if (!empty($updateData)) {
                 $user = $usersTable->patchEntity($user, $updateData);
                 $usersTable->save($user);
+            }
+        }
+
+        // ENVIA E-MAIL DE BOAS-VINDAS PARA NOVOS USUÁRIOS
+        if ($isNewUser) {
+            try {
+                $mailer = new UserMailer();
+                $mailer->welcome($user);
+            } catch (\Exception $e) {
+                error_log("❌ Erro ao enviar e-mail de boas-vindas: " . $e->getMessage());
             }
         }
 
