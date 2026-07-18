@@ -11,6 +11,7 @@ use App\Exceptions\EmailAlreadyExistsException;
 use App\Exceptions\WeakPasswordException;
 use App\Exceptions\InvalidTokenException;
 use App\Exceptions\UserNotFoundException;
+use Cake\Http\Client;
 
 class UsersController extends AppController
 {
@@ -45,8 +46,22 @@ class UsersController extends AppController
     public function login()
     {
         $data = $this->getRequestData();
+        
         if (empty($data['email']) || empty($data['password'])) {
             return $this->jsonError('E-mail e senha são obrigatórios', 400);
+        }
+
+        // VALIDA O reCAPTCHA
+        $recaptchaToken = $data['recaptcha_token'] ?? null;
+        
+        if (!$recaptchaToken) {
+            return $this->jsonError('Token de segurança não enviado', 400);
+        }
+        
+        $isValid = $this->validateRecaptcha($recaptchaToken);
+        
+        if (!$isValid) {
+            return $this->jsonError('Falha na verificação de segurança. Tente novamente.', 400);
         }
 
         try {
@@ -63,6 +78,42 @@ class UsersController extends AppController
         } catch (\Exception $e) {
             return $this->jsonError('Erro interno', 500);
         }
+    }
+
+    /**
+     * Valida o token do reCAPTCHA v3
+     */
+    private function validateRecaptcha(string $token): bool
+    {
+        $secretKey = env('RECAPTCHA_SECRET_KEY');
+        $verifyUrl = env('RECAPTCHA_VERIFY_URL');
+        
+        if (empty($secretKey)) {
+            return false;
+        }
+
+        $http = new Client();
+        $response = $http->post($verifyUrl, [
+            'secret' => $secretKey,
+            'response' => $token,
+        ]);
+
+        if (!$response->isOk()) {
+            return false;
+        }
+
+        $data = $response->getJson();
+
+        if (!$data['success']) {
+            $errorCodes = implode(', ', $data['error-codes'] ?? []);
+            return false;
+        }
+
+        if (isset($data['score']) && $data['score'] < 0.5) {
+            return false;
+        }
+
+        return true;
     }
 
     public function refresh()

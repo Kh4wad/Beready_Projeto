@@ -63,7 +63,7 @@ export const auth = {
   register: (data: { nome: string; email: string; senha: string }) =>
     api.post('/auth/register', data),
 
-  login: async (data: { email: string; password: string }) => {
+  login: async (data: { email: string; password: string; recaptcha_token?: string }) => {
     const response = await api.post('/auth/login', data)
     if (response.data.success) {
       const { user, tokens } = response.data.data
