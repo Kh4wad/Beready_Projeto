@@ -112,24 +112,32 @@ return [
     ],
 
     /*
-     * Email configuration
-     */
+    * Email configuration
+    */
     'EmailTransport' => [
         'default' => [
-            'className' => MailTransport::class,
+            'className' => 'Smtp',
             'host' => env('EMAIL_HOST'),
             'port' => env('EMAIL_PORT'),
+            'username' => env('EMAIL_USERNAME'),
+            'password' => env('EMAIL_PASSWORD'),
+            'tls' => env('EMAIL_TLS'),
             'timeout' => 30,
-            'client' => null,
-            'tls' => false,
-            'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
+            'ssl_allow_self_signed' => true,
+            'context' => [
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                    'allow_self_signed' => true,
+                ],
+            ],
         ],
     ],
 
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => 'you@localhost',
+            'from' => [env('EMAIL_FROM') => env('EMAIL_FROM_NAME')],
         ],
     ],
 

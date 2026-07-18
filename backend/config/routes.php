@@ -100,7 +100,8 @@ $routes->connect('/auth/reset-password/{token}', [
     'action' => 'resetPassword'
 ])->setPatterns([
     'token' => '[a-f0-9]{64}'
-])->setMethods(['POST']);
+])->setPass(['token'])
+->setMethods(['POST']);
 
 $routes->connect('/auth/refresh', [
     'controller' => 'Users',

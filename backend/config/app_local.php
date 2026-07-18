@@ -3,19 +3,25 @@
 return [
     'EmailTransport' => [
         'default' => [
-            'className' => 'Debug',
+            'className' => 'Smtp',
+            'host' => env('EMAIL_HOST'),
+            'port' => env('EMAIL_PORT'),
+            'username' => env('EMAIL_USERNAME'),
+            'password' => env('EMAIL_PASSWORD'),
+            'tls' => (bool)env('EMAIL_TLS'),
+            'timeout' => 30,
         ],
     ],
 
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from'    => env('EMAIL_FROM'),
+            'from' => env('EMAIL_FROM'),
             'charset' => env('APP_ENCODING'),
             'headerCharset' => env('APP_ENCODING'),
         ],
     ],
-
+    
     'Datasources' => [
         'default' => [
             'className' => Connection::class,
