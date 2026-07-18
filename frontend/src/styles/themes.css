@@ -11,6 +11,35 @@
   --hero-bg: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   --accent-color: #3b82f6;
   --accent-hover: #2563eb;
+  --hero-text: #ffffff;
+  --hero-text-secondary: rgba(255, 255, 255, 0.9);
+  --empty-text: #1e293b;
+  --empty-icon: rgba(0, 0, 0, 0.1);
+  --card-text-primary: #1a202c;
+  --card-text-secondary: #4a5568;
+  --card-badge-bg: rgba(0, 0, 0, 0.7);
+  --card-badge-text: white;
+  --footer-bg: #f7fafc;
+  --footer-border: #e2e8f0;
+  --loading-text: #1e293b;
+  --loading-spinner-border: rgba(0, 0, 0, 0.1);
+  --loading-spinner-top: #3b82f6;
+}
+
+/* Loading State */
+.loading-state {
+  text-align: center;
+  padding: 4rem;
+  color: var(--loading-text, #1e293b) !important;
+}
+
+.loading-state p {
+  color: var(--loading-text, #1e293b) !important;
+}
+
+.loading-state .spinner {
+  border: 3px solid var(--loading-spinner-border, rgba(0, 0, 0, 0.1)) !important;
+  border-top: 3px solid var(--loading-spinner-top, #3b82f6) !important;
 }
 
 /* Aplicar tema claro */
@@ -46,7 +75,7 @@
   box-shadow: var(--card-shadow) !important;
 }
 
-/* Textos no tema claro (exceto nome e email do perfil que ficam brancos) */
+/* Textos no tema claro */
 .welcome-title,
 .stat-value,
 .feature-title,
@@ -56,7 +85,9 @@
 .question-text,
 .answer-text,
 .login-title,
-.card-title {
+.card-title,
+.hero-title,
+.empty-title {
   color: var(--text-primary) !important;
 }
 
@@ -70,7 +101,9 @@
 .question-label,
 .login-subtitle,
 .form-label,
-.form-hint {
+.form-hint,
+.hero-subtitle,
+.empty-description {
   color: var(--text-secondary) !important;
 }
 
@@ -89,7 +122,6 @@
   color: white !important;
 }
 
-/* Demais textos do perfil seguem o tema */
 .profile-info-value,
 .profile-info-label,
 .card-title {
@@ -100,6 +132,86 @@
 .dark-mode .profile-info-label,
 .dark-mode .card-title {
   color: var(--text-primary, #f1f5f9) !important;
+}
+
+/* ============================================
+   HERO SECTIONS
+   ============================================ */
+.flashcards-hero,
+.quizes-hero,
+.prompts-hero,
+.tags-hero,
+.progresso-hero,
+.preferencias-hero,
+.profile-edit-hero {
+  background: var(--hero-bg) !important;
+}
+
+.hero-title {
+  color: var(--hero-text, #ffffff) !important;
+}
+
+.hero-subtitle {
+  color: var(--hero-text-secondary, rgba(255, 255, 255, 0.9)) !important;
+}
+
+.hero-back-btn {
+  background: rgba(255, 255, 255, 0.9) !important;
+  color: var(--accent-color, #3b82f6) !important;
+}
+
+.dark-mode .hero-back-btn {
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: white !important;
+}
+
+.dark-mode .hero-back-btn:hover {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* ============================================
+   CARDS - TEXTO
+   ============================================ */
+.flashcard-card .question-text,
+.flashcard-card .answer-text,
+.quiz-card-title,
+.prompt-text {
+  color: var(--card-text-primary, #1a202c) !important;
+}
+
+.flashcard-card .question-label,
+.flashcard-card .answer-label,
+.quiz-card-description,
+.prompt-meta {
+  color: var(--card-text-secondary, #4a5568) !important;
+}
+
+.flashcard-footer,
+.quiz-card-footer,
+.prompt-footer {
+  background: var(--footer-bg, #f7fafc) !important;
+  border-top: 1px solid var(--footer-border, #e2e8f0) !important;
+}
+
+.quiz-card-badge {
+  background: var(--card-badge-bg, rgba(0, 0, 0, 0.7)) !important;
+  color: var(--card-badge-text, white) !important;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state .empty-title {
+  color: var(--empty-text, #1e293b) !important;
+}
+
+.empty-state .empty-icon {
+  background: var(--empty-icon, rgba(0, 0, 0, 0.1)) !important;
+  color: var(--empty-text, #1e293b) !important;
+}
+
+.empty-state .empty-description {
+  color: var(--text-secondary, #64748b) !important;
 }
 
 /* ============================================
@@ -115,6 +227,19 @@
   --hero-bg: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   --accent-color: #3b82f6;
   --accent-hover: #2563eb;
+  --hero-text: #ffffff;
+  --hero-text-secondary: rgba(255, 255, 255, 0.9);
+  --empty-text: #ffffff;
+  --empty-icon: rgba(255, 255, 255, 0.1);
+  --card-text-primary: #f1f5f9;
+  --card-text-secondary: #94a3b8;
+  --card-badge-bg: rgba(0, 0, 0, 0.7);
+  --card-badge-text: white;
+  --footer-bg: #0f172a;
+  --footer-border: #334155;
+  --loading-text: #f1f5f9;
+  --loading-spinner-border: rgba(255, 255, 255, 0.1);
+  --loading-spinner-top: #3b82f6;
 }
 
 .dark-mode {
@@ -161,7 +286,9 @@
 .dark-mode .answer-text,
 .dark-mode .register-title,
 .dark-mode .login-title,
-.dark-mode .card-title {
+.dark-mode .card-title,
+.dark-mode .hero-title,
+.dark-mode .empty-title {
   color: var(--text-primary) !important;
 }
 
@@ -176,11 +303,22 @@
 .dark-mode .register-subtitle,
 .dark-mode .login-subtitle,
 .dark-mode .form-label,
-.dark-mode .form-hint {
+.dark-mode .form-hint,
+.dark-mode .hero-subtitle,
+.dark-mode .empty-description {
   color: var(--text-secondary) !important;
 }
 
-/* Headers dos cards no escuro */
+.dark-mode .flashcards-hero,
+.dark-mode .quizes-hero,
+.dark-mode .prompts-hero,
+.dark-mode .tags-hero,
+.dark-mode .progresso-hero,
+.dark-mode .preferencias-hero,
+.dark-mode .profile-edit-hero {
+  background: var(--hero-bg) !important;
+}
+
 .dark-mode .prompt-header,
 .dark-mode .quiz-card-footer,
 .dark-mode .flashcard-footer,
@@ -192,7 +330,6 @@
   border-color: var(--border-color) !important;
 }
 
-/* Formulários no escuro */
 .dark-mode .form-input,
 .dark-mode .form-textarea,
 .dark-mode .form-select {
@@ -208,7 +345,6 @@
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* Botões no escuro */
 .dark-mode .btn-cancel {
   background: #334155 !important;
   color: var(--text-secondary) !important;
@@ -218,38 +354,12 @@
   background: #475569 !important;
 }
 
-/* Hero sections */
-.dark-mode .flashcards-hero,
-.dark-mode .quizes-hero,
-.dark-mode .prompts-hero,
-.dark-mode .tags-hero,
-.dark-mode .progresso-hero,
-.dark-mode .preferencias-hero,
-.dark-mode .profile-edit-hero {
-  background: var(--hero-bg) !important;
-}
-
-/* Botão voltar */
-.dark-mode .hero-back-btn {
-  background: rgba(0, 0, 0, 0.5) !important;
-  color: white !important;
-}
-
-.dark-mode .hero-back-btn:hover {
-  background: rgba(0, 0, 0, 0.7) !important;
-}
-
-/* Seções internas */
 .dark-mode .register-section,
 .dark-mode .login-section,
 .dark-mode .form-card {
   background: #0f172a !important;
   border-color: var(--border-color) !important;
 }
-
-/* ============================================
-   CORREÇÃO DO PERFIL - TEMA ESCURO (INFO)
-   ============================================ */
 
 .dark-mode .profile-info-value,
 .dark-mode .profile-info-label,
@@ -284,7 +394,6 @@
   color: #fee2e2 !important;
 }
 
-/* Modal de exclusão no tema escuro */
 .dark-mode .modal-container {
   background: var(--bg-card, #1e293b) !important;
 }
@@ -326,6 +435,44 @@
 
 .dark-mode .modal-btn-delete:hover:not(:disabled) {
   background: #b91c1c !important;
+}
+
+.dark-mode .alert {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.dark-mode .alert.success {
+  background: linear-gradient(135deg, #065f46, #047857) !important;
+}
+
+.dark-mode .alert.error {
+  background: linear-gradient(135deg, #991b1b, #b91c1c) !important;
+}
+
+.dark-mode .alert.warning {
+  background: linear-gradient(135deg, #92400e, #b45309) !important;
+}
+
+.dark-mode .alert.info {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af) !important;
+}
+
+.dark-mode .alert-message {
+  color: white !important;
+}
+
+.dark-mode .loading-state {
+  color: var(--loading-text, #f1f5f9) !important;
+}
+
+.dark-mode .loading-state p {
+  color: var(--loading-text, #f1f5f9) !important;
+}
+
+.dark-mode .loading-state .spinner {
+  border: 3px solid var(--loading-spinner-border, rgba(255, 255, 255, 0.1)) !important;
+  border-top: 3px solid var(--loading-spinner-top, #3b82f6) !important;
 }
 
 /* ============================================
@@ -375,30 +522,4 @@
 .daltonico-mode .feature-link,
 .daltonico-mode .progress-cta {
   color: #a0aec0 !important;
-}
-
-/* Dark mode para alerts */
-.dark-mode .alert {
-  background: var(--bg-card) !important;
-  border: 1px solid var(--border-color) !important;
-}
-
-.dark-mode .alert.success {
-  background: linear-gradient(135deg, #065f46, #047857) !important;
-}
-
-.dark-mode .alert.error {
-  background: linear-gradient(135deg, #991b1b, #b91c1c) !important;
-}
-
-.dark-mode .alert.warning {
-  background: linear-gradient(135deg, #92400e, #b45309) !important;
-}
-
-.dark-mode .alert.info {
-  background: linear-gradient(135deg, #1e3a8a, #1e40af) !important;
-}
-
-.dark-mode .alert-message {
-  color: white !important;
 }

@@ -1,245 +1,163 @@
-import { ref, computed, onMounted, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useAlert } from '@/shared/composables/useAlert'
-import { API_BASE_URL } from '@/shared/config/env'
-import { respostaService } from '@/modules/progresso/services/respostaService'
+// src/modules/flashcards/views/Flashcards.ts
 
-export function useFlashcardStudy() {
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useFlashcards } from '../composables/useFlashcards'
+import type { Flashcard, User } from '@/core/types'
+
+interface FormData {
+  frente: string
+  verso: string
+  nivel_dificuldade: string
+}
+
+export function useFlashcardsView() {
   const router = useRouter()
-  const route = useRoute()
-  const { error } = useAlert()
-  const flashcards = ref<any[]>([])
-  const currentIndex = ref(0)
-  const loading = ref(true)
-  const isFlipped = ref(false)
-  const showCompletionModal = ref(false)
-  const stats = ref({ hard: 0, good: 0, easy: 0 })
-  const allFlashcardIds = ref<number[]>([])
-  const hasNextFlashcard = ref(false)
+  const { flashcards, loading, loadFlashcards, createFlashcard, updateFlashcard, deleteFlashcard } =
+    useFlashcards()
 
-  const currentFlashcard = computed(() => flashcards.value[currentIndex.value])
-  const flashcard = computed(() => currentFlashcard.value)
+  const showModal = ref(false)
+  const showDeleteModal = ref(false)
+  const isEditing = ref(false)
+  const editingId = ref<number | null>(null)
+  const deletingFlashcard = ref<Flashcard | null>(null)
+  const submitting = ref(false)
+  const deleting = ref(false)
 
-  const loadAllFlashcardIds = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/flashcards`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      })
-      const data = await response.json()
-      if (data.success && Array.isArray(data.data)) {
-        allFlashcardIds.value = data.data.map((item: any) => Number(item.id))
-      }
-    } catch (err) {
-      console.error('Erro ao carregar lista de flashcards:', err)
-    }
+  const form = reactive<FormData>({
+    frente: '',
+    verso: '',
+    nivel_dificuldade: 'medio',
+  })
+
+  const resetForm = (): void => {
+    form.frente = ''
+    form.verso = ''
+    form.nivel_dificuldade = 'medio'
+    editingId.value = null
+    isEditing.value = false
   }
 
-  const updateHasNextFlashcard = () => {
-    const currentId = Number(route.params.id)
-    const idx = allFlashcardIds.value.indexOf(currentId)
-    hasNextFlashcard.value = idx !== -1 && idx < allFlashcardIds.value.length - 1
+  const openCreateModal = (): void => {
+    resetForm()
+    isEditing.value = false
+    showModal.value = true
   }
 
-  const loadFlashcards = async () => {
-    const id = route.params.id
-    if (!id) {
-      error('ID do flashcard não informado')
-      router.push('/flashcards')
-      return
-    }
+  const openEditModal = (flashcard: Flashcard): void => {
+    form.frente = flashcard.frente
+    form.verso = flashcard.verso
+    form.nivel_dificuldade = flashcard.nivel_dificuldade || 'medio'
+    editingId.value = flashcard.id
+    isEditing.value = true
+    showModal.value = true
+  }
 
-    loading.value = true
+  const viewFlashcard = (id: number): void => {
+    router.push(`/flashcards/${id}`)
+  }
+
+  const studyFlashcard = (id: number): void => {
+    router.push(`/flashcards/${id}/study`)
+  }
+
+  const confirmDelete = (flashcard: Flashcard): void => {
+    deletingFlashcard.value = flashcard
+    showDeleteModal.value = true
+  }
+
+  const handleDelete = async (): Promise<void> => {
+    if (!deletingFlashcard.value) return
+    deleting.value = true
     try {
-      const response = await fetch(`${API_BASE_URL}/flashcards/${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        const item = data.data
-        flashcards.value = [{
-          id: item.id,
-          pergunta: item.pergunta || item.frente || '',
-          resposta: item.resposta || item.verso || '',
-          nivel_dificuldade: item.nivel_dificuldade || item.dificuldade || 'iniciante'
-        }]
-        currentIndex.value = 0
-        updateHasNextFlashcard()
-      } else {
-        error(data.message || 'Erro ao carregar flashcard')
-        router.push('/flashcards')
+      await deleteFlashcard(deletingFlashcard.value.id)
+      showDeleteModal.value = false
+      const userData = localStorage.getItem('user')
+      if (userData) {
+        const user = JSON.parse(userData) as User
+        await loadFlashcards(user.id)
       }
-    } catch (err) {
-      console.error('Erro:', err)
-      error('Erro de conexão com o servidor')
-      router.push('/flashcards')
     } finally {
-      loading.value = false
+      deleting.value = false
+      deletingFlashcard.value = null
     }
   }
 
-  const goBack = () => {
-    router.push('/flashcards')
-  }
+  const submitForm = async (): Promise<void> => {
+    const userData = localStorage.getItem('user')
+    if (!userData) return
 
-  const flipCard = () => {
-    isFlipped.value = !isFlipped.value
-  }
-
-  const nextCard = () => {
-    if (currentIndex.value < flashcards.value.length - 1) {
-      currentIndex.value++
-      isFlipped.value = false
-    }
-  }
-
-  const previousCard = () => {
-    if (currentIndex.value > 0) {
-      currentIndex.value--
-      isFlipped.value = false
-    }
-  }
-
-  const goToNextFlashcard = () => {
-    const currentId = Number(route.params.id)
-    const idx = allFlashcardIds.value.indexOf(currentId)
-
-    if (idx === -1 || idx >= allFlashcardIds.value.length - 1) {
-      error('Não há mais flashcards para estudar.')
+    let user: User
+    try {
+      user = JSON.parse(userData) as User
+    } catch (e) {
+      console.error('Erro ao fazer parse do userData:', e)
       return
     }
 
-    const nextId = allFlashcardIds.value[idx + 1]
-    showCompletionModal.value = false
-    isFlipped.value = false
-    router.push({ name: route.name as string, params: { id: nextId } })
-  }
+    submitting.value = true
 
-  const incrementarProgresso = async (usuarioId: number) => {
     try {
-      await fetch(`${API_BASE_URL}/progresso/incrementar-flashcards`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          usuario_id: usuarioId,
-          quantidade: 1
-        })
-      })
-    } catch (err) {
-      console.error('Erro ao incrementar progresso:', err)
-    }
-  }
-
-  const rateCard = async (rating: 'hard' | 'good' | 'easy') => {
-    if (rating === 'hard') stats.value.hard++
-    if (rating === 'good') stats.value.good++
-    if (rating === 'easy') stats.value.easy++
-
-    const userData = localStorage.getItem('user')
-    if (userData && currentFlashcard.value) {
-      try {
-        const localUser = JSON.parse(userData)
-        const isCorrect = rating !== 'hard'
-
-        respostaService.registrarResposta({
-          usuario_id: Number(localUser.id),
-          tipo: 'flashcard',
-          referencia_id: currentFlashcard.value.id,
-          correto: isCorrect
-        }).catch(err => {
-          console.warn('Falha ao registrar resposta no banco:', err)
-        })
-
-        incrementarProgresso(Number(localUser.id))
-      } catch (e) {
-        console.error('Erro ao processar dados do usuário para o progresso:', e)
+      const data = {
+        usuario_id: user.id,
+        frente: form.frente,
+        verso: form.verso,
+        nivel_dificuldade: form.nivel_dificuldade,
       }
-    }
 
-    if (currentIndex.value < flashcards.value.length - 1) {
-      nextCard()
-    } else {
-      finishStudy()
+      if (isEditing.value && editingId.value) {
+        await updateFlashcard(editingId.value, data)
+      } else {
+        await createFlashcard(data)
+      }
+
+      closeModal()
+      await loadFlashcards(user.id)
+    } finally {
+      submitting.value = false
     }
   }
 
-  const finishStudy = () => {
-    showCompletionModal.value = true
+  const closeModal = (): void => {
+    showModal.value = false
+    resetForm()
   }
 
-  const studyAgain = () => {
-    showCompletionModal.value = false
-    currentIndex.value = 0
-    isFlipped.value = false
-    stats.value = { hard: 0, good: 0, easy: 0 }
-  }
-
-  const getLevelClass = (level: string) => {
-    const normalized = String(level).toLowerCase()
-    const classes: Record<string, string> = {
-      iniciante: 'level-beginner',
-      medio: 'level-intermediate',
-      intermediario: 'level-intermediate',
-      avancado: 'level-advanced',
+  const getUserFromLocalStorage = (): User | null => {
+    const userData = localStorage.getItem('user')
+    if (!userData) return null
+    try {
+      return JSON.parse(userData) as User
+    } catch {
+      return null
     }
-    return classes[normalized] || 'level-beginner'
   }
 
-  const getLevelText = (level: string) => {
-    const normalized = String(level).toLowerCase()
-    const texts: Record<string, string> = {
-      iniciante: 'Iniciante',
-      medio: 'Intermediário',
-      intermediario: 'Intermediário',
-      avancado: 'Avançado',
+  onMounted(async () => {
+    const user = getUserFromLocalStorage()
+    if (user?.id) {
+      await loadFlashcards(user.id)
     }
-    return texts[normalized] || level
-  }
-
-  watch(
-    () => route.params.id,
-    () => {
-      stats.value = { hard: 0, good: 0, easy: 0 }
-      loadFlashcards()
-    }
-  )
-
-  onMounted(() => {
-    loadAllFlashcardIds()
-    loadFlashcards()
   })
 
   return {
-    flashcard,
     flashcards,
-    currentIndex,
-    currentFlashcard,
     loading,
-    isFlipped,
-    showCompletionModal,
-    stats,
-    hasNextFlashcard,
-    goBack,
-    flipCard,
-    nextCard,
-    previousCard,
-    rateCard,
-    finishStudy,
-    studyAgain,
-    goToNextFlashcard,
-    getLevelClass,
-    getLevelText,
+    showModal,
+    showDeleteModal,
+    isEditing,
+    editingId,
+    deletingFlashcard,
+    submitting,
+    deleting,
+    form,
+    openCreateModal,
+    openEditModal,
+    viewFlashcard,
+    studyFlashcard,
+    confirmDelete,
+    handleDelete,
+    submitForm,
+    closeModal,
   }
 }
