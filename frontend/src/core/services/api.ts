@@ -17,11 +17,17 @@ api.interceptors.request.use((config) => {
   }
   return config
 })
+
 // Interceptor para refresh automático
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
+
+    if (originalRequest.url?.includes('/auth/login')) {
+      // Repassa o erro para o frontend exibir
+      return Promise.reject(error)
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
@@ -64,15 +70,29 @@ export const auth = {
     api.post('/auth/register', data),
 
   login: async (data: { email: string; password: string; recaptcha_token?: string }) => {
-    const response = await api.post('/auth/login', data)
-    if (response.data.success) {
-      const { user, tokens } = response.data.data
-      localStorage.setItem('user', JSON.stringify(user))
-      localStorage.setItem('access_token', tokens.access_token)
-      localStorage.setItem('refresh_token', tokens.refresh_token)
-      return { success: true, user }
+    try {
+      const response = await api.post('/auth/login', data)
+      if (response.data.success) {
+        const { user, tokens } = response.data.data
+        localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem('access_token', tokens.access_token)
+        localStorage.setItem('refresh_token', tokens.refresh_token)
+        return { success: true, user }
+      }
+      return response.data
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return {
+          success: false,
+          message: error.response?.data?.message ?? 'Erro ao fazer login. Tente novamente.',
+        }
+      }
+
+      return {
+        success: false,
+        message: 'Erro ao fazer login. Tente novamente.',
+      }
     }
-    return response.data
   },
 
   logout: () => {

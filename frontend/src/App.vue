@@ -95,7 +95,7 @@ html,
 body,
 #app {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-primary, #f8fafc);
 }
 
 body {
@@ -110,6 +110,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-primary, #f8fafc);
+  color: var(--text-primary, #1e293b);
 }
 
 svg {
