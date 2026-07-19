@@ -1,10 +1,14 @@
+// src/views/_global/Dashboard.ts
+
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/core/services/api'
 import axios from 'axios'
+import { useI18n } from 'vue-i18n'
 
 export function useDashboard() {
   const router = useRouter()
+  const { t } = useI18n()
   const user = ref<any>(null)
   const loading = ref(false)
   const stats = ref({
@@ -19,43 +23,43 @@ export function useDashboard() {
     if (user.value?.nome) {
       return user.value.nome.split(' ')[0]
     }
-    return 'Usuário'
+    return t('common.usuario')
   })
 
   const motivationalMessage = computed(() => {
     if (stats.value.sequenciaAtual >= 7) {
-      return `🔥 Incrivel! ${stats.value.sequenciaAtual} dias de sequencia! Continue assim!`
+      return `🔥 ${t('dashboard.motivacional.alta', { dias: stats.value.sequenciaAtual })}`
     }
     if (stats.value.sequenciaAtual >= 3) {
-      return `📈 ${stats.value.sequenciaAtual} dias seguidos! Voce esta evoluindo!`
+      return `📈 ${t('dashboard.motivacional.media', { dias: stats.value.sequenciaAtual })}`
     }
-    return 'Continue sua jornada de aprendizado. Hoje é um otimo dia para aprender algo novo!'
+    return t('dashboard.motivacional.padrao')
   })
 
-const formatTempoEstudo = (totalSegundos: number): string => {
-  if (totalSegundos <= 0) {
-    return '0 s'
+  const formatTempoEstudo = (totalSegundos: number): string => {
+    if (totalSegundos <= 0) {
+      return '0 s'
+    }
+
+    if (totalSegundos < 60) {
+      return `${totalSegundos} s`
+    }
+
+    const minutos = Math.floor(totalSegundos / 60)
+
+    if (minutos < 60) {
+      return `${minutos} min`
+    }
+
+    const horas = Math.floor(minutos / 60)
+    const minutosRestantes = minutos % 60
+
+    if (minutosRestantes === 0) {
+      return `${horas} h`
+    }
+
+    return `${horas} h ${minutosRestantes} min`
   }
-
-  if (totalSegundos < 60) {
-    return `${totalSegundos} s`
-  }
-
-  const minutos = Math.floor(totalSegundos / 60)
-
-  if (minutos < 60) {
-    return `${minutos} min`
-  }
-
-  const horas = Math.floor(minutos / 60)
-  const minutosRestantes = minutos % 60
-
-  if (minutosRestantes === 0) {
-    return `${horas} h`
-  }
-
-  return `${horas} h ${minutosRestantes} min`
-}
 
   const loadUserData = async () => {
     const userData = localStorage.getItem('user')
@@ -78,10 +82,7 @@ const formatTempoEstudo = (totalSegundos: number): string => {
           0
 
         stats.value.sequenciaAtual =
-          data.sequencia_dias ||
-          data.sequencia_atual ||
-          data.sequencia ||
-          0
+          data.sequencia_dias || data.sequencia_atual || data.sequencia || 0
 
         const totalSegundos = data.tempo_total_estudo || 0
         stats.value.tempoEstudo = formatTempoEstudo(totalSegundos)

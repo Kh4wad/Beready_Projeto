@@ -24,6 +24,19 @@
   --loading-text: #1e293b;
   --loading-spinner-border: rgba(0, 0, 0, 0.1);
   --loading-spinner-top: #3b82f6;
+
+  /* Modal - Tema Claro */
+  --modal-bg: #ffffff;
+  --modal-header-bg: #ffffff;
+  --modal-footer-bg: #f7fafc;
+  --modal-text-primary: #1a202c;
+  --modal-text-secondary: #718096;
+  --modal-text-muted: #a0aec0;
+  --modal-border: #e2e8f0;
+  --modal-input-bg: #ffffff;
+  --modal-btn-cancel-bg: #e2e8f0;
+  --modal-btn-cancel-hover: #cbd5e0;
+  --modal-btn-cancel-text: #4a5568;
 }
 
 /* Loading State */
@@ -240,6 +253,19 @@
   --loading-text: #f1f5f9;
   --loading-spinner-border: rgba(255, 255, 255, 0.1);
   --loading-spinner-top: #3b82f6;
+
+  /* Modal - Tema Escuro */
+  --modal-bg: #1e293b;
+  --modal-header-bg: #1e293b;
+  --modal-footer-bg: #0f172a;
+  --modal-text-primary: #f1f5f9;
+  --modal-text-secondary: #94a3b8;
+  --modal-text-muted: #64748b;
+  --modal-border: #334155;
+  --modal-input-bg: #0f172a;
+  --modal-btn-cancel-bg: #334155;
+  --modal-btn-cancel-hover: #475569;
+  --modal-btn-cancel-text: #94a3b8;
 }
 
 .dark-mode {

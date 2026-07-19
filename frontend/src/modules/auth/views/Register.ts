@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { API_BASE_URL } from '@/shared/config/env'
+import { useI18n } from 'vue-i18n'
 
 // Composables internos para evitar erros de import
 function useForm(initialData: any) {
@@ -33,6 +34,7 @@ function useForm(initialData: any) {
 }
 
 function usePasswordStrength() {
+  const { t } = useI18n()
   const strengthClass = ref('')
   const strengthText = ref('')
   const strengthWidth = ref('0%')
@@ -55,19 +57,19 @@ function usePasswordStrength() {
     if (/[^A-Za-z0-9]/.test(password)) score += 1
 
     if (score <= 2) {
-      strengthText.value = 'Fraca'
+      strengthText.value = t('passwordStrength.weak')
       strengthClass.value = 'weak'
       strengthWidth.value = '25%'
     } else if (score <= 4) {
-      strengthText.value = 'Média'
+      strengthText.value = t('passwordStrength.medium')
       strengthClass.value = 'medium'
       strengthWidth.value = '50%'
     } else if (score <= 6) {
-      strengthText.value = 'Forte'
+      strengthText.value = t('passwordStrength.strong')
       strengthClass.value = 'strong'
       strengthWidth.value = '75%'
     } else {
-      strengthText.value = 'Muito Forte'
+      strengthText.value = t('passwordStrength.veryStrong')
       strengthClass.value = 'very-strong'
       strengthWidth.value = '100%'
     }
@@ -173,6 +175,7 @@ function useAlert() {
 // Exportação principal da função useRegister
 export function useRegister() {
   const router = useRouter()
+  const { t } = useI18n()
   const { success, error } = useAlert()
   const loading = ref(false)
   const showPassword = ref(false)
@@ -196,20 +199,20 @@ export function useRegister() {
   const passwordsMatch = computed(() => form.value.senha === form.value.confirmar_senha)
 
   const rules = {
-    nome: (value: string) => (!value ? 'Nome é obrigatório' : null),
+    nome: (value: string) => (!value ? t('register.nomeRequired') : null),
     email: (value: string) => {
-      if (!value) return 'E-mail é obrigatório'
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'E-mail inválido'
+      if (!value) return t('register.emailRequired')
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return t('register.emailInvalid')
       return null
     },
     senha: (value: string) => {
-      if (!value) return 'Senha é obrigatória'
-      if (value.length < 6) return 'A senha deve ter pelo menos 6 caracteres'
+      if (!value) return t('register.passwordRequired')
+      if (value.length < 6) return t('passwordValidation.minLength')
       return null
     },
     confirmar_senha: (value: string) => {
-      if (!value) return 'Confirmação de senha é obrigatória'
-      if (form.value.senha !== value) return 'As senhas não coincidem'
+      if (!value) return t('register.confirmPasswordRequired')
+      if (form.value.senha !== value) return t('passwordValidation.doNotMatch')
       return null
     },
   }
@@ -224,7 +227,7 @@ export function useRegister() {
     if (form.value.telefone) {
       const digits = form.value.telefone.replace(/\D/g, '')
       if (digits.length > 0 && digits.length < 11) {
-        error('Telefone deve ter 11 dígitos')
+        error(t('register.phoneInvalid'))
         return
       }
     }
@@ -234,7 +237,7 @@ export function useRegister() {
     loading.value = true
 
     try {
-      const response = await fetch('${API_BASE_URL}/auth/register', {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -254,14 +257,14 @@ export function useRegister() {
       const data = await response.json()
 
       if (response.ok && data.success) {
-        success('Cadastro realizado com sucesso! Redirecionando...')
+        success(t('register.success'))
         setTimeout(() => router.push('/login'), 2000)
       } else {
-        error(data.message || 'Erro ao cadastrar')
+        error(data.message || t('register.error'))
       }
     } catch (err) {
       console.error('Erro:', err)
-      error('Erro de conexão com o servidor')
+      error(t('errors.networkError'))
     } finally {
       loading.value = false
     }

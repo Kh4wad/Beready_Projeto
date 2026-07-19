@@ -18,18 +18,18 @@
             />
           </svg>
         </div>
-        <h1 class="forgot-password-title">Recuperar Senha</h1>
-        <p class="forgot-password-subtitle">Digite seu e-mail para receber o link de recuperação</p>
+        <h1 class="forgot-password-title">{{ $t('forgotPassword.title') }}</h1>
+        <p class="forgot-password-subtitle">{{ $t('forgotPassword.subtitle') }}</p>
       </div>
 
       <form @submit.prevent="handleSubmit">
         <div class="form-group">
-          <label class="form-label">E-mail</label>
+          <label class="form-label">{{ $t('login.email') }}</label>
           <input
             v-model="form.email"
             type="email"
             class="form-input"
-            placeholder="seu.email@exemplo.com"
+            :placeholder="$t('forgotPassword.emailPlaceholder')"
             required
           />
         </div>
@@ -48,10 +48,10 @@
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          Enviaremos um link seguro para redefinir sua senha
+          {{ $t('forgotPassword.helpText') }}
         </div>
         <button type="submit" class="btn-submit" :disabled="loading">
-          {{ loading ? 'Enviando...' : 'Enviar Link de Recuperação' }}
+          {{ loading ? $t('common.salvando') : $t('forgotPassword.submitButton') }}
         </button>
       </form>
 
@@ -70,7 +70,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        <router-link to="/login">Voltar para Login</router-link>
+        <router-link to="/login">{{ $t('forgotPassword.backToLogin') }}</router-link>
       </div>
     </div>
   </div>

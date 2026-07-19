@@ -16,10 +16,9 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        {{ $t('common.voltar') }}
       </button>
       <div class="hero-content">
-        <!--  AVATAR COM PREVIEW DA FOTO -->
         <div class="hero-icon">
           <img
             v-if="imagePreview || form.foto_perfil"
@@ -43,8 +42,10 @@
             />
           </svg>
         </div>
-        <h1 class="hero-title">Editar Perfil</h1>
-        <p class="hero-subtitle">Atualize suas informações pessoais</p>
+        <h1 class="hero-title">{{ $t('common.editar') }} {{ $t('common.perfil') }}</h1>
+        <p class="hero-subtitle">
+          {{ $t('profile.editProfileSubtitle') || 'Atualize suas informações pessoais' }}
+        </p>
       </div>
     </div>
 
@@ -68,51 +69,46 @@
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-                Informações Pessoais
+                {{ $t('profile.personalInfo') }}
               </h3>
             </div>
             <div class="card-body">
               <div class="form-group">
-                <label class="form-label">Foto de Perfil</label>
-
-                <!--  Input de arquivo -->
+                <label class="form-label">{{ $t('profile.fotoPerfil') }}</label>
                 <input
                   type="file"
                   accept="image/*"
                   @change="handleImageChange"
                   class="form-input"
                 />
-
-                <!--  Preview removido daqui - agora está no topo -->
-                <!-- O preview agora aparece no círculo do header -->
               </div>
               <div class="form-group">
-                <label class="form-label">Nome Completo *</label>
+                <label class="form-label">{{ $t('register.nome') }} *</label>
                 <input
                   v-model="form.nome"
                   type="text"
                   class="form-input"
-                  placeholder="Seu nome completo"
+                  :placeholder="$t('profile.nomePlaceholder') || 'Seu nome completo'"
                   required
                 />
               </div>
               <div class="form-group">
-                <label class="form-label">E-mail *</label>
+                <label class="form-label">{{ $t('login.email') }} *</label>
                 <input
                   v-model="form.email"
                   type="email"
                   class="form-input"
-                  placeholder="seu.email@exemplo.com"
+                  :placeholder="$t('profile.emailPlaceholder') || 'seu.email@exemplo.com'"
                   required
                 />
               </div>
               <div class="form-group">
-                <label class="form-label">Telefone</label>
+                <label class="form-label">{{ $t('profile.telefone') }}</label>
                 <input
                   v-model="form.telefone"
                   type="tel"
                   class="form-input"
-                  placeholder="(99)99999-9999"
+                  :placeholder="$t('profile.telefonePlaceholder') || '(99)99999-9999'"
                   @input="handlePhoneInput"
                   @keydown="handlePhoneKeydown"
                 />
@@ -121,7 +117,6 @@
             </div>
           </div>
 
-          <!--  RESTO DO FORMULÁRIO IGUAL (não muda) -->
           <div class="form-card">
             <div class="card-header">
               <h3 class="card-title">
@@ -139,35 +134,40 @@
                     d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                   />
                 </svg>
-                Preferências de Aprendizado
+                {{ $t('profile.learningPreferences') }}
               </h3>
             </div>
             <div class="card-body">
               <div class="form-group">
-                <label class="form-label">Nível de Inglês</label>
+                <label class="form-label">{{ $t('profile.nivelIngles') }}</label>
                 <select v-model="form.nivel_ingles" class="form-select">
-                  <option value="">Selecione seu nível</option>
-                  <option value="iniciante">Iniciante</option>
-                  <option value="intermediario">Intermediário</option>
-                  <option value="avancado">Avançado</option>
+                  <option value="">
+                    {{ $t('profile.selecioneNivel') || 'Selecione seu nível' }}
+                  </option>
+                  <option value="iniciante">{{ $t('profile.nivelIniciante') }}</option>
+                  <option value="intermediario">{{ $t('profile.nivelIntermediario') }}</option>
+                  <option value="avancado">{{ $t('profile.nivelAvancado') }}</option>
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label">Idioma Preferido</label>
+                <label class="form-label">{{ $t('profile.idiomaPreferido') }}</label>
                 <select v-model="form.idioma_preferido" class="form-select">
-                  <option value="">Selecione o idioma</option>
-                  <option value="pt-BR">Português (Brasil)</option>
-                  <option value="en">Inglês</option>
-                  <option value="es">Espanhol</option>
+                  <option value="">
+                    {{ $t('profile.selecioneIdioma') || 'Selecione o idioma' }}
+                  </option>
+                  <option value="pt-BR">{{ $t('idiomas.pt') }}</option>
+                  <option value="en">{{ $t('idiomas.en') }}</option>
+                  <option value="es">{{ $t('idiomas.es') }}</option>
+                  <option value="fr">{{ $t('idiomas.fr') }}</option>
                 </select>
               </div>
               <div class="form-group">
-                <label class="form-label">Objetivos de Aprendizado</label>
+                <label class="form-label">{{ $t('profile.objetivos') }}</label>
                 <textarea
                   v-model="form.objetivos_aprendizado"
                   rows="3"
                   class="form-textarea"
-                  placeholder="Descreva seus objetivos..."
+                  :placeholder="$t('profile.objetivosPlaceholder') || 'Descreva seus objetivos...'"
                 ></textarea>
               </div>
             </div>
@@ -191,21 +191,23 @@
                       d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                     />
                   </svg>
-                  Alterar Senha
+                  {{ $t('profile.alterarSenha') }}
                 </h3>
-                <small class="form-hint">Deixe em branco para manter a senha atual</small>
+                <small class="form-hint">{{
+                  $t('profile.senhaHint') || 'Deixe em branco para manter a senha atual'
+                }}</small>
               </div>
             </div>
             <div class="card-body">
               <div class="form-row">
                 <div class="form-group">
-                  <label class="form-label">Nova Senha</label>
+                  <label class="form-label">{{ $t('profile.novaSenha') }}</label>
                   <div class="password-wrapper">
                     <input
                       v-model="form.nova_senha"
                       :type="showPassword ? 'text' : 'password'"
                       class="form-input"
-                      placeholder="Mínimo 6 caracteres"
+                      :placeholder="$t('profile.novaSenhaPlaceholder') || 'Mínimo 6 caracteres'"
                       @input="handlePasswordInput"
                     />
                     <div v-if="form.nova_senha" class="password-strength">
@@ -261,17 +263,19 @@
                   </div>
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Confirmar Nova Senha</label>
+                  <label class="form-label">{{ $t('profile.confirmarNovaSenha') }}</label>
                   <div class="password-wrapper">
                     <input
                       v-model="form.confirmar_senha"
                       :type="showConfirmPassword ? 'text' : 'password'"
                       class="form-input"
-                      placeholder="Digite a senha novamente"
+                      :placeholder="
+                        $t('profile.confirmarSenhaPlaceholder') || 'Digite a senha novamente'
+                      "
                       @input="handleConfirmPasswordInput"
                     />
                     <span v-if="!passwordsMatch && form.confirmar_senha" class="form-error">
-                      As senhas não coincidem
+                      {{ $t('errors.passwordMatch') }}
                     </span>
                     <button
                       type="button"
@@ -322,10 +326,14 @@
 
         <div class="form-actions">
           <button type="button" class="btn-cancel" @click="$router.push('/profile')">
-            Cancelar
+            {{ $t('common.cancelar') }}
           </button>
           <button type="submit" class="btn-save" :disabled="loading">
-            {{ loading ? 'Salvando...' : 'Salvar Alterações' }}
+            {{
+              loading
+                ? $t('common.carregando')
+                : $t('common.salvar') + ' ' + $t('profile.alteracoes')
+            }}
           </button>
         </div>
       </form>

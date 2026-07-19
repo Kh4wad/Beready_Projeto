@@ -1,9 +1,11 @@
 import { ref, onMounted } from 'vue'
 import { useAlert } from '@/shared/composables/useAlert'
 import { tagService, type Tag } from '@/modules/tags/services/tagService'
+import { useI18n } from 'vue-i18n'
 
 export function useTags() {
   const { success, error } = useAlert()
+  const { t } = useI18n()
   const tags = ref<Tag[]>([])
   const loading = ref(false)
   const saving = ref(false)
@@ -46,7 +48,7 @@ export function useTags() {
       if (err.response?.status === 400) {
         tags.value = []
       } else {
-        error(err.response?.data?.message || 'Erro ao carregar tags')
+        error(err.response?.data?.message || t('tags.errorLoad'))
       }
     } finally {
       loading.value = false
@@ -63,7 +65,7 @@ export function useTags() {
     editingTag.value = tag
     form.value = {
       nome: tag.nome,
-      cor: tag.cor,
+      cor: tag.cor || '#4CAF50',
       descricao: tag.descricao || '',
     }
     modalOpen.value = true
@@ -76,7 +78,12 @@ export function useTags() {
   const saveTag = async () => {
     const userId = getCurrentUserId()
     if (!userId) {
-      error('Usuário não autenticado')
+      error(t('tags.userNotAuthenticated'))
+      return
+    }
+
+    if (!form.value.nome || form.value.nome.trim() === '') {
+      error(t('tags.nomeRequired'))
       return
     }
 
@@ -85,15 +92,15 @@ export function useTags() {
     try {
       if (editingTag.value) {
         await tagService.update(editingTag.value.id!, form.value)
-        success('Tag atualizada com sucesso!')
+        success(t('tags.successUpdate'))
       } else {
         await tagService.create({ ...form.value, criado_por: userId })
-        success('Tag criada com sucesso!')
+        success(t('tags.successCreate'))
       }
       await fetchTags()
       closeModal()
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao salvar tag')
+      error(err.response?.data?.message || t('tags.errorSave'))
     } finally {
       saving.value = false
     }
@@ -110,10 +117,10 @@ export function useTags() {
     deleting.value = true
     try {
       await tagService.delete(tagToDelete.value.id!)
-      success('Tag excluída com sucesso!')
+      success(t('tags.successDelete'))
       await fetchTags()
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao excluir tag')
+      error(err.response?.data?.message || t('tags.errorDelete'))
     } finally {
       deleting.value = false
       confirmModalVisible.value = false

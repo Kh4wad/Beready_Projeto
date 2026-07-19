@@ -4,7 +4,7 @@
 
     <main class="dashboard-main">
       <div class="welcome-section">
-        <h1 class="welcome-title">Bem-vindo de volta, {{ userName }}!</h1>
+        <h1 class="welcome-title">{{ $t('dashboard.welcome', { name: userName }) }}</h1>
         <p class="welcome-subtitle">{{ motivationalMessage }}</p>
       </div>
 
@@ -26,13 +26,13 @@
           </svg>
         </div>
         <div class="admin-banner-content">
-          <span class="admin-badge">Administrador</span>
+          <span class="admin-badge">{{ $t('admin.badge') }}</span>
           <div class="admin-links">
             <button @click="$router.push('/admin')" class="admin-link-btn">
-              Gerenciar Usuários
+              {{ $t('admin.manageUsers') }}
             </button>
             <button @click="$router.push('/admin?tab=stats')" class="admin-link-btn">
-              Estatísticas
+              {{ $t('admin.statistics') }}
             </button>
           </div>
         </div>
@@ -58,7 +58,7 @@
           </div>
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.flashcardsCount || 0 }}</h3>
-            <p class="stat-label">Flashcards Estudados</p>
+            <p class="stat-label">{{ $t('dashboard.flashcardsCount') }}</p>
           </div>
         </div>
         <div class="stat-card">
@@ -79,7 +79,7 @@
           </div>
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.acertoRate || 0 }}%</h3>
-            <p class="stat-label">Taxa de Acerto</p>
+            <p class="stat-label">{{ $t('dashboard.acertoRate') }}</p>
           </div>
         </div>
         <div class="stat-card">
@@ -100,7 +100,7 @@
           </div>
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.sequenciaAtual || 0 }}</h3>
-            <p class="stat-label">Dias de Sequência</p>
+            <p class="stat-label">{{ $t('dashboard.sequencia') }}</p>
           </div>
         </div>
         <div class="stat-card">
@@ -121,7 +121,7 @@
           </div>
           <div class="stat-info">
             <h3 class="stat-value">{{ stats.tempoEstudo || '0 min' }}</h3>
-            <p class="stat-label">Tempo de Estudo</p>
+            <p class="stat-label">{{ $t('dashboard.tempoEstudo') }}</p>
           </div>
         </div>
       </div>
@@ -129,11 +129,13 @@
       <!-- Progress Section -->
       <div class="progress-section">
         <div class="progress-card">
-          <h3 class="progress-title">Progresso Geral</h3>
+          <h3 class="progress-title">{{ $t('dashboard.progressoGeral') }}</h3>
           <div class="progress-bar-container">
             <div class="progress-bar" :style="{ width: (stats.progressoGeral || 0) + '%' }"></div>
           </div>
-          <p class="progress-text">{{ stats.progressoGeral || 0 }}% completo - Continue assim!</p>
+          <p class="progress-text">
+            {{ stats.progressoGeral || 0 }}% completo - {{ $t('dashboard.continueAssim') }}
+          </p>
         </div>
       </div>
 
@@ -151,11 +153,9 @@
             </svg>
           </div>
           <div class="feature-content">
-            <h3 class="feature-title">Flashcards</h3>
-            <p class="feature-description">
-              Estude com flashcards interativos e acelere seu aprendizado
-            </p>
-            <span class="feature-link">Começar agora →</span>
+            <h3 class="feature-title">{{ $t('common.flashcards') }}</h3>
+            <p class="feature-description">{{ $t('dashboard.features.flashcards.desc') }}</p>
+            <span class="feature-link">{{ $t('dashboard.features.flashcards.link') }}</span>
           </div>
         </div>
 
@@ -171,9 +171,9 @@
             </svg>
           </div>
           <div class="feature-content">
-            <h3 class="feature-title">Quizes</h3>
-            <p class="feature-description">Teste seus conhecimentos com quizzes personalizados</p>
-            <span class="feature-link">Testar conhecimento →</span>
+            <h3 class="feature-title">{{ $t('common.quizes') }}</h3>
+            <p class="feature-description">{{ $t('dashboard.features.quizes.desc') }}</p>
+            <span class="feature-link">{{ $t('dashboard.features.quizes.link') }}</span>
           </div>
         </div>
 
@@ -189,9 +189,9 @@
             </svg>
           </div>
           <div class="feature-content">
-            <h3 class="feature-title">Prompts com IA</h3>
-            <p class="feature-description">Gere prompts personalizados para praticar conversação</p>
-            <span class="feature-link">Gerar prompts →</span>
+            <h3 class="feature-title">{{ $t('prompts.title') }}</h3>
+            <p class="feature-description">{{ $t('dashboard.features.prompts.desc') }}</p>
+            <span class="feature-link">{{ $t('dashboard.features.prompts.link') }}</span>
           </div>
         </div>
 
@@ -207,9 +207,9 @@
             </svg>
           </div>
           <div class="feature-content">
-            <h3 class="feature-title">Tags</h3>
-            <p class="feature-description">Organize seus flashcards com tags personalizadas</p>
-            <span class="feature-link">Gerenciar tags →</span>
+            <h3 class="feature-title">{{ $t('common.tags') }}</h3>
+            <p class="feature-description">{{ $t('dashboard.features.tags.desc') }}</p>
+            <span class="feature-link">{{ $t('dashboard.features.tags.link') }}</span>
           </div>
         </div>
 
@@ -225,9 +225,9 @@
             </svg>
           </div>
           <div class="feature-content">
-            <h3 class="feature-title">Meu Progresso</h3>
-            <p class="feature-description">Acompanhe suas estatísticas e evolução</p>
-            <span class="feature-link">Ver estatísticas →</span>
+            <h3 class="feature-title">Meu {{ $t('common.progresso') }}</h3>
+            <p class="feature-description">{{ $t('dashboard.features.progresso.desc') }}</p>
+            <span class="feature-link">{{ $t('dashboard.features.progresso.link') }}</span>
           </div>
         </div>
 
@@ -249,9 +249,9 @@
             </svg>
           </div>
           <div class="feature-content">
-            <h3 class="feature-title">Preferências</h3>
-            <p class="feature-description">Personalize sua experiência no aplicativo</p>
-            <span class="feature-link">Configurar →</span>
+            <h3 class="feature-title">{{ $t('common.preferencias') }}</h3>
+            <p class="feature-description">{{ $t('dashboard.features.preferencias.desc') }}</p>
+            <span class="feature-link">{{ $t('dashboard.features.preferencias.link') }}</span>
           </div>
         </div>
       </div>

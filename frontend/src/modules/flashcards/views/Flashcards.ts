@@ -4,6 +4,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFlashcards } from '../composables/useFlashcards'
 import type { Flashcard, User } from '@/core/types'
+import { useI18n } from 'vue-i18n'
 
 interface FormData {
   frente: string
@@ -13,6 +14,7 @@ interface FormData {
 
 export function useFlashcardsView() {
   const router = useRouter()
+  const { t } = useI18n()
   const { flashcards, loading, loadFlashcards, createFlashcard, updateFlashcard, deleteFlashcard } =
     useFlashcards()
 

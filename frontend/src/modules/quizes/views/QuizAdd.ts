@@ -2,10 +2,12 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
 import { API_BASE_URL } from '@/shared/config/env'
+import { useI18n } from 'vue-i18n'
 
 export function useQuizAdd() {
   const router = useRouter()
   const { success, error } = useAlert()
+  const { t } = useI18n()
   const loading = ref(false)
 
   const form = ref({
@@ -14,7 +16,7 @@ export function useQuizAdd() {
     tipo_criacao: 'manual',
     nivel_dificuldade: 'iniciante',
     total_questoes: 0,
-    tempo_limite: null,
+    tempo_limite: null as number | null,
     publico: false,
   })
 
@@ -25,13 +27,13 @@ export function useQuizAdd() {
   const handleSubmit = async () => {
     // Validação
     if (!form.value.titulo) {
-      errors.value.titulo = 'Título é obrigatório'
+      errors.value.titulo = t('quizes.tituloRequired')
       return
     }
 
     const userData = localStorage.getItem('user')
     if (!userData) {
-      error('Usuário não autenticado')
+      error(t('quizes.userNotAuthenticated'))
       router.push('/login')
       return
     }
@@ -40,7 +42,7 @@ export function useQuizAdd() {
     loading.value = true
 
     try {
-      const response = await fetch('${API_BASE_URL}/quizes', {
+      const response = await fetch(`${API_BASE_URL}/quizes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,14 +57,14 @@ export function useQuizAdd() {
       const data = await response.json()
 
       if (data.success) {
-        success('Quiz criado com sucesso!')
+        success(t('quizes.successCreate'))
         setTimeout(() => router.push('/quizes'), 1500)
       } else {
-        error(data.message || 'Erro ao criar quiz')
+        error(data.message || t('quizes.errorCreate'))
       }
     } catch (err) {
       console.error('Erro:', err)
-      error('Erro de conexão com o servidor')
+      error(t('quizes.errorCreate'))
     } finally {
       loading.value = false
     }

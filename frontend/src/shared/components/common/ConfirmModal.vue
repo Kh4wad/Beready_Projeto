@@ -53,7 +53,7 @@
         <p class="confirm-message">{{ message }}</p>
         <p v-if="itemName" class="confirm-item-name">"{{ itemName }}"</p>
         <div class="confirm-actions">
-          <button class="confirm-btn-cancel" @click="close">Cancelar</button>
+          <button class="confirm-btn-cancel" @click="close">{{ $t('common.cancelar') }}</button>
           <button class="confirm-btn-confirm" :class="type" @click="confirm" :disabled="loading">
             {{ loading ? 'Processando...' : confirmText }}
           </button>

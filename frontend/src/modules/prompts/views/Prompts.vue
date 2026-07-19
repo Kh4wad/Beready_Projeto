@@ -16,7 +16,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        {{ $t('common.voltar') }}
       </button>
       <div class="hero-content">
         <div class="hero-icon">
@@ -35,8 +35,8 @@
             />
           </svg>
         </div>
-        <h1 class="hero-title">Prompts com IA</h1>
-        <p class="hero-subtitle">Gere prompts personalizados para praticar conversação</p>
+        <h1 class="hero-title">{{ $t('prompts.title') }}</h1>
+        <p class="hero-subtitle">{{ $t('prompts.subtitle') }}</p>
         <button class="hero-btn" @click="openModal">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -52,14 +52,14 @@
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Novo Prompt
+          {{ $t('prompts.newPrompt') }}
         </button>
       </div>
     </div>
 
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Carregando seus prompts...</p>
+      <p>{{ $t('prompts.carregando') }}</p>
     </div>
 
     <div v-else-if="prompts.length === 0" class="empty-state">
@@ -79,16 +79,32 @@
           />
         </svg>
       </div>
-      <h2 class="empty-title">Nenhum prompt criado ainda</h2>
-      <p class="empty-description">Crie seu primeiro prompt para gerar conteúdo com IA</p>
-      <button class="empty-btn" @click="openModal">Criar primeiro prompt</button>
+      <h2 class="empty-title">{{ $t('prompts.emptyTitle') }}</h2>
+      <p class="empty-description">{{ $t('prompts.emptyDescription') }}</p>
+      <button class="empty-btn" @click="openModal">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        {{ $t('prompts.createFirst') }}
+      </button>
     </div>
 
     <div v-else class="prompts-grid">
       <div v-for="prompt in prompts" :key="prompt.id" class="prompt-card">
         <div class="prompt-header">
           <div class="prompt-badge">
-            <span class="badge">{{ prompt.idioma_original?.toUpperCase() || 'PT' }}</span>
+            <span class="badge">{{ getLanguageName(prompt.idioma_original) }}</span>
           </div>
           <div class="prompt-actions">
             <button class="btn-icon edit" @click="editPrompt(prompt)">
@@ -128,7 +144,7 @@
         <div class="prompt-content">
           <p class="prompt-text">{{ prompt.texto_original }}</p>
           <div class="prompt-meta">
-            <span class="meta-contexto">{{ prompt.contexto || 'manual' }}</span>
+            <span class="meta-contexto">{{ getContextName(prompt.contexto) }}</span>
             <span class="meta-data">{{ formatDate(prompt.criado_em) }}</span>
           </div>
         </div>
@@ -148,7 +164,7 @@
                 d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
               />
             </svg>
-            Ver Traduções
+            {{ $t('prompts.verTraducoes') }}
           </button>
         </div>
       </div>
@@ -158,56 +174,66 @@
     <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-container">
         <div class="modal-header">
-          <h3 class="modal-title">{{ editingPrompt ? 'Editar Prompt' : 'Novo Prompt' }}</h3>
+          <div>
+            <h2 class="modal-title">
+              {{ editingPrompt ? $t('prompts.editPrompt') : $t('prompts.newPrompt') }}
+            </h2>
+            <p class="modal-subtitle">
+              {{ editingPrompt ? $t('prompts.editSubtitle') : $t('prompts.createSubtitle') }}
+            </p>
+          </div>
           <button class="modal-close" @click="closeModal">×</button>
         </div>
         <form @submit.prevent="savePrompt">
           <div class="modal-body">
             <div class="form-group">
-              <label class="form-label">Texto Original *</label>
+              <label class="form-label">{{ $t('prompts.textoOriginal') }} *</label>
               <textarea
                 v-model="form.texto_original"
                 rows="4"
                 required
                 class="form-textarea"
-                placeholder="Digite o texto em inglês ou outro idioma..."
+                :placeholder="$t('prompts.textoPlaceholder')"
               ></textarea>
             </div>
             <div class="form-group">
-              <label class="form-label">Idioma Original</label>
+              <label class="form-label">{{ $t('prompts.idiomaOriginal') }}</label>
               <select v-model="form.idioma_original" class="form-select">
-                <option value="pt-BR">Português</option>
-                <option value="en">Inglês</option>
-                <option value="es">Espanhol</option>
-                <option value="fr">Francês</option>
+                <option value="pt-BR">{{ $t('idiomas.pt') }}</option>
+                <option value="en">{{ $t('idiomas.en') }}</option>
+                <option value="es">{{ $t('idiomas.es') }}</option>
+                <option value="fr">{{ $t('idiomas.fr') }}</option>
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Contexto</label>
+              <label class="form-label">{{ $t('prompts.contexto') }}</label>
               <select v-model="form.contexto" class="form-select">
-                <option value="manual">Manual</option>
-                <option value="conversacao">Conversação</option>
-                <option value="negocios">Negócios</option>
-                <option value="viagem">Viagem</option>
-                <option value="estudo">Estudo</option>
+                <option value="manual">{{ $t('prompts.contextoManual') }}</option>
+                <option value="conversacao">{{ $t('prompts.contextoConversacao') }}</option>
+                <option value="negocios">{{ $t('prompts.contextoNegocios') }}</option>
+                <option value="viagem">{{ $t('prompts.contextoViagem') }}</option>
+                <option value="estudo">{{ $t('prompts.contextoEstudo') }}</option>
               </select>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
-            <button type="submit" class="btn-save" :disabled="saving">
-              {{ saving ? 'Salvando...' : 'Salvar' }}
+            <button type="button" class="btn-cancel" @click="closeModal">
+              {{ $t('common.cancelar') }}
+            </button>
+            <button type="submit" class="btn-create" :disabled="saving">
+              {{ saving ? $t('common.salvando') : $t('common.salvar') }}
             </button>
           </div>
         </form>
       </div>
     </div>
+
     <ConfirmModal
       v-model="confirmModalVisible"
-      title="Confirmar exclusão"
-      message="Tem certeza que deseja excluir este prompt?"
+      :title="$t('prompts.confirmDelete')"
+      :message="$t('prompts.deleteMessage')"
       :item-name="promptToDelete?.texto_original?.substring(0, 50)"
-      confirm-text="Excluir"
+      :confirm-text="$t('common.excluir')"
       type="danger"
       :loading="deleting"
       @confirm="handleConfirmDelete"
@@ -237,6 +263,8 @@ const {
   promptToDelete,
   deleting,
   handleConfirmDelete,
+  getLanguageName,
+  getContextName,
 } = usePrompts()
 </script>
 

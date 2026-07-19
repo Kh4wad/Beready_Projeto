@@ -1,11 +1,13 @@
 import { ref, onMounted } from 'vue'
 import { flashcardService } from '../services/flashcardService'
 import { useAlert } from '@/shared/composables/useAlert'
+import { useI18n } from 'vue-i18n'
 
 export function useFlashcards() {
   const flashcards = ref<any[]>([])
   const loading = ref(false)
   const { success, error } = useAlert()
+  const { t } = useI18n()
 
   const loadFlashcards = async (usuarioId: number) => {
     loading.value = true
@@ -15,7 +17,7 @@ export function useFlashcards() {
       return flashcards.value
     } catch (err: any) {
       console.error('Erro ao carregar flashcards:', err)
-      error('Erro ao carregar flashcards')
+      error(t('flashcards.errorLoad'))
       flashcards.value = []
     } finally {
       loading.value = false
@@ -26,10 +28,10 @@ export function useFlashcards() {
     loading.value = true
     try {
       const response = await flashcardService.create(data)
-      success('Flashcard criado com sucesso!')
+      success(t('flashcards.successCreate'))
       return response.data.data
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao criar flashcard')
+      error(err.response?.data?.message || t('flashcards.errorCreate'))
       throw err
     } finally {
       loading.value = false
@@ -40,10 +42,10 @@ export function useFlashcards() {
     loading.value = true
     try {
       const response = await flashcardService.update(id, data)
-      success('Flashcard atualizado com sucesso!')
+      success(t('flashcards.successUpdate'))
       return response.data.data
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao atualizar flashcard')
+      error(err.response?.data?.message || t('flashcards.errorUpdate'))
       throw err
     } finally {
       loading.value = false
@@ -54,10 +56,10 @@ export function useFlashcards() {
     loading.value = true
     try {
       await flashcardService.delete(id)
-      success('Flashcard excluído com sucesso!')
+      success(t('flashcards.successDelete'))
       return true
     } catch (err: any) {
-      error(err.response?.data?.message || 'Erro ao excluir flashcard')
+      error(err.response?.data?.message || t('flashcards.errorDelete'))
       throw err
     } finally {
       loading.value = false

@@ -5,7 +5,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        Voltar
+        $t('common.voltar')
       </button>
       <div v-if="flashcard" class="badge-container">
         <span class="badge" :class="getLevelClass(flashcard.nivel_dificuldade)">
@@ -16,7 +16,7 @@
 
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Carregando flashcard...</p>
+      <p>$t('common.carregando')ashcard...</p>
     </div>
 
     <div v-else-if="flashcard" class="study-body">
@@ -86,7 +86,7 @@
 
         <div class="modal-actions">
           <button class="btn-modal-secondary" @click="studyAgain">Estudar Novamente</button>
-          <button class="btn-modal-primary" @click="goBack">Voltar para Decks</button>
+          <button class="btn-modal-primary" @click="goBack">$t('common.voltar') para Decks</button>
         </div>
       </div>
     </div>

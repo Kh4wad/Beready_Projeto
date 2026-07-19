@@ -1,7 +1,7 @@
 <template>
   <div class="flashcard-view-page">
     <div class="flashcard-view-hero">
-      <button class="hero-back-btn" @click="$router.push('/flashcards')">← Voltar</button>
+      <button class="hero-back-btn" @click="$router.push('/flashcards')">← $t('common.voltar')</button>
       <h1>Detalhes do Flashcard</h1>
     </div>
     <div v-if="flashcard" class="flashcard-detail">

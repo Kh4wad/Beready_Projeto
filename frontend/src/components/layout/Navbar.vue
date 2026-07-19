@@ -28,7 +28,7 @@
               :d="item.iconPath"
             />
           </svg>
-          {{ item.name }}
+          {{ $t(item.name) }}
         </router-link>
       </div>
 
@@ -64,7 +64,7 @@
               d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
             />
           </svg>
-          <span>Sair</span>
+          <span>{{ $t('common.sair') }}</span>
         </button>
 
         <button
@@ -104,7 +104,7 @@
                 :d="item.iconPath"
               />
             </svg>
-            {{ item.name }}
+            {{ $t(item.name) }}
           </router-link>
 
           <button class="mobile-logout-btn" @click="handleLogout">
@@ -121,7 +121,7 @@
                 d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
               />
             </svg>
-            Sair
+            {{ $t('common.sair') }}
           </button>
         </div>
       </div>

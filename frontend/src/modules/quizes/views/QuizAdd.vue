@@ -1,11 +1,28 @@
 <template>
-  <div class="quiz-form-container">
-    <div class="quiz-form-card">
-      <div class="quiz-form-header">
-        <div class="header-icon">
+  <div class="quiz-form-page">
+    <div class="quiz-form-hero">
+      <button class="hero-back-btn" @click="$router.push('/quizes')">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          />
+        </svg>
+        {{ $t('common.voltar') }}
+      </button>
+      <div class="hero-content">
+        <div class="hero-icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8"
+            class="h-10 w-10"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -18,80 +35,84 @@
             />
           </svg>
         </div>
-        <h1 class="quiz-form-title">Criar Novo Quiz</h1>
-        <p class="quiz-form-subtitle">Preencha os dados abaixo para criar um novo quiz</p>
+        <h1 class="hero-title">{{ $t('quizes.newQuiz') }}</h1>
+        <p class="hero-subtitle">{{ $t('quizes.createSubtitle') }}</p>
       </div>
+    </div>
 
-      <form @submit.prevent="handleSubmit">
-        <div class="quiz-form-grid">
-          <div class="form-group">
-            <label class="form-label">Título *</label>
-            <input
-              v-model="form.titulo"
-              type="text"
-              class="form-input"
-              placeholder="Ex: Vocabulário Básico"
-            />
-            <span v-if="errors.titulo" class="form-error">{{ errors.titulo }}</span>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Nível de Dificuldade</label>
-            <select v-model="form.nivel_dificuldade" class="form-input">
-              <option value="iniciante">Iniciante</option>
-              <option value="intermediario">Intermediário</option>
-              <option value="avancado">Avançado</option>
-            </select>
-          </div>
-
-          <div class="form-group full-width">
-            <label class="form-label">Descrição</label>
-            <textarea
-              v-model="form.descricao"
-              class="form-textarea"
-              rows="4"
-              placeholder="Descreva o conteúdo do quiz..."
-            ></textarea>
-          </div>
-
-          <div class="form-row">
+    <div class="quiz-form-container">
+      <div class="quiz-form-card">
+        <form @submit.prevent="handleSubmit">
+          <div class="form-grid">
             <div class="form-group">
-              <label class="form-label">Total de Questões</label>
+              <label class="form-label">{{ $t('quizes.titulo') }} *</label>
               <input
-                v-model.number="form.total_questoes"
-                type="number"
+                v-model="form.titulo"
+                type="text"
                 class="form-input"
-                placeholder="Ex: 10"
+                :placeholder="$t('quizes.tituloPlaceholder')"
               />
+              <span v-if="errors.titulo" class="form-error">{{ errors.titulo }}</span>
             </div>
+
             <div class="form-group">
-              <label class="form-label">Tempo Limite (minutos)</label>
-              <input
-                v-model.number="form.tempo_limite"
-                type="number"
-                class="form-input"
-                placeholder="Opcional"
-              />
+              <label class="form-label">{{ $t('quizes.nivel') }}</label>
+              <select v-model="form.nivel_dificuldade" class="form-select">
+                <option value="iniciante">{{ $t('common.iniciante') }}</option>
+                <option value="intermediario">{{ $t('common.intermediario') }}</option>
+                <option value="avancado">{{ $t('common.avancado') }}</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">{{ $t('quizes.descricao') }}</label>
+              <textarea
+                v-model="form.descricao"
+                class="form-textarea"
+                rows="4"
+                :placeholder="$t('quizes.descricaoPlaceholder')"
+              ></textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">{{ $t('quizes.totalQuestoes') }}</label>
+                <input
+                  v-model.number="form.total_questoes"
+                  type="number"
+                  class="form-input"
+                  :placeholder="$t('quizes.totalQuestoesPlaceholder')"
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label">{{ $t('quizes.tempoLimite') }}</label>
+                <input
+                  v-model.number="form.tempo_limite"
+                  type="number"
+                  class="form-input"
+                  :placeholder="$t('quizes.tempoPlaceholder')"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-checkbox">
+                <input v-model="form.publico" type="checkbox" />
+                <span>{{ $t('quizes.publico') }}</span>
+              </label>
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-checkbox">
-              <input v-model="form.publico" type="checkbox" />
-              <span> Tornar público (outros usuários podem visualizar)</span>
-            </label>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" @click="$router.push('/quizes')">
+              {{ $t('common.cancelar') }}
+            </button>
+            <button type="submit" class="btn-submit" :disabled="loading">
+              {{ loading ? $t('common.salvando') : $t('quizes.createButton') }}
+            </button>
           </div>
-        </div>
-
-        <div class="quiz-form-actions">
-          <button type="button" class="btn-cancel" @click="$router.push('/quizes')">
-            Cancelar
-          </button>
-          <button type="submit" class="btn-submit" :disabled="loading">
-            {{ loading ? 'Salvando...' : 'Criar Quiz' }}
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </template>

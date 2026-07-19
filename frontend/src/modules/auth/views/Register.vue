@@ -3,48 +3,49 @@
     <div class="register-container">
       <div class="register-card">
         <div class="register-header">
-          <h1 class="register-title">Criar Conta</h1>
-          <p class="register-subtitle">Junte-se à nossa comunidade de aprendizado</p>
+          <h1 class="register-title">{{ $t('register.title') }}</h1>
+          <p class="register-subtitle">{{ $t('register.subtitle') }}</p>
         </div>
 
         <form @submit.prevent="handleSubmit">
           <div class="register-form-grid">
             <!-- Seção 1: Informações Pessoais -->
             <div class="register-section">
-              <h2 class="register-section-title">Informações Pessoais</h2>
+              <h2 class="register-section-title">{{ $t('register.personalInfo') }}</h2>
               <Input
                 v-model="form.nome"
-                label="Nome Completo *"
-                placeholder="Seu nome completo"
+                :label="$t('register.nome')"
+                :placeholder="$t('register.nomePlaceholder')"
                 required
                 :error="errors.nome"
               />
               <Input
                 v-model="form.email"
-                label="E-mail *"
+                :label="$t('login.email')"
                 type="email"
-                placeholder="seu.email@exemplo.com"
+                :placeholder="$t('register.emailPlaceholder')"
                 required
                 :error="errors.email"
               />
               <Input
                 v-model="form.telefone"
-                label="Telefone"
+                :label="$t('profile.telefone')"
                 type="tel"
-                placeholder="(99) 99999-9999"
+                :placeholder="$t('register.telefonePlaceholder')"
                 :error="phoneError"
-                @input="formatPhone"
+                @input="handlePhoneInput"
+                @keydown="handlePhoneKeydown"
               />
             </div>
 
             <!-- Seção 2: Segurança -->
             <div class="register-section">
-              <h2 class="register-section-title">Segurança</h2>
+              <h2 class="register-section-title">{{ $t('register.security') }}</h2>
               <Input
                 v-model="form.senha"
-                label="Senha *"
+                :label="$t('register.senha')"
                 type="password"
-                placeholder="Mínimo 6 caracteres"
+                :placeholder="$t('register.senhaPlaceholder')"
                 required
                 :error="errors.senha"
                 @input="checkPasswordStrength"
@@ -61,9 +62,9 @@
               </div>
               <Input
                 v-model="form.confirmar_senha"
-                label="Confirmar Senha *"
+                :label="$t('register.confirmarSenha')"
                 type="password"
-                placeholder="Digite a senha novamente"
+                :placeholder="$t('register.confirmarSenhaPlaceholder')"
                 required
                 :error="errors.confirmar_senha"
                 @input="checkPasswordMatch"
@@ -74,45 +75,52 @@
                 :class="{ matching: passwordsMatch, 'not-matching': !passwordsMatch }"
               >
                 <span>{{
-                  passwordsMatch ? 'As senhas coincidem' : 'As senhas não coincidem'
+                  passwordsMatch
+                    ? $t('register.passwordsMatch')
+                    : $t('register.passwordsDoNotMatch')
                 }}</span>
               </div>
             </div>
 
             <!-- Seção 3: Preferências -->
             <div class="register-section">
-              <h2 class="register-section-title">Preferências de Aprendizado</h2>
+              <h2 class="register-section-title">{{ $t('register.learningPreferences') }}</h2>
               <Select
                 v-model="form.nivel_ingles"
-                label="Nível de Inglês"
-                placeholder="Selecione seu nível"
+                :label="$t('profile.nivelIngles')"
+                :placeholder="$t('register.selectLevel')"
                 :options="nivelOptions"
               />
               <Select
                 v-model="form.idioma_preferido"
-                label="Idioma Preferido"
-                placeholder="Selecione o idioma"
+                :label="$t('profile.idiomaPreferido')"
+                :placeholder="$t('register.selectLanguage')"
                 :options="idiomaOptions"
               />
               <Textarea
                 v-model="form.objetivos_aprendizado"
-                label="Objetivos de Aprendizado"
-                placeholder="Descreva seus objetivos..."
+                :label="$t('profile.objetivos')"
+                :placeholder="$t('register.objetivosPlaceholder')"
                 :rows="3"
               />
             </div>
           </div>
 
           <div class="register-form-actions">
-            <Button variant="secondary" type="button" @click="$router.push('/login')"
-              >Cancelar</Button
-            >
-            <Button type="submit" :loading="loading">Criar Minha Conta</Button>
+            <Button variant="secondary" type="button" @click="$router.push('/login')">
+              {{ $t('common.cancelar') }}
+            </Button>
+            <Button type="submit" :loading="loading">
+              {{ $t('register.createAccount') }}
+            </Button>
           </div>
         </form>
 
         <div class="register-login-redirect">
-          <p>Já tem uma conta? <router-link to="/login">Fazer Login</router-link></p>
+          <p>
+            {{ $t('register.jaTemConta') }}
+            <router-link to="/login">{{ $t('register.loginLink') }}</router-link>
+          </p>
         </div>
       </div>
     </div>
@@ -127,9 +135,11 @@ import Textarea from '@/shared/components/common/Textarea.vue'
 import Button from '@/shared/components/common/Button.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useAlert } from '@/shared/composables/useAlert'
+import { useI18n } from 'vue-i18n'
 
 const authStore = useAuthStore()
 const { showAlert } = useAlert()
+const { t } = useI18n()
 
 const form = reactive({
   nome: '',
@@ -153,44 +163,44 @@ const phoneError = ref('')
 const loading = ref(false)
 const passwordsMatch = ref(true)
 
-// Opções para selects
+// Opções para selects com tradução
 const nivelOptions = [
-  { value: 'iniciante', label: 'Iniciante' },
-  { value: 'intermediario', label: 'Intermediário' },
-  { value: 'avancado', label: 'Avançado' },
+  { value: 'iniciante', label: t('common.iniciante') },
+  { value: 'intermediario', label: t('common.intermediario') },
+  { value: 'avancado', label: t('common.avancado') },
 ]
 const idiomaOptions = [
-  { value: 'pt-BR', label: 'Português (Brasil)' },
-  { value: 'en', label: 'Inglês' },
-  { value: 'es', label: 'Espanhol' },
+  { value: 'pt-BR', label: t('idiomas.pt') },
+  { value: 'en', label: t('idiomas.en') },
+  { value: 'es', label: t('idiomas.es') },
 ]
 
 // Validações
 const validateForm = () => {
   let valid = true
   if (!form.nome.trim()) {
-    errors.nome = 'Nome é obrigatório'
+    errors.nome = t('register.nomeRequired')
     valid = false
   } else errors.nome = ''
 
   if (!form.email.trim()) {
-    errors.email = 'E-mail é obrigatório'
+    errors.email = t('register.emailRequired')
     valid = false
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-    errors.email = 'E-mail inválido'
+    errors.email = t('register.emailInvalid')
     valid = false
   } else errors.email = ''
 
   if (!form.senha) {
-    errors.senha = 'Senha é obrigatória'
+    errors.senha = t('register.passwordRequired')
     valid = false
   } else if (form.senha.length < 6) {
-    errors.senha = 'Mínimo 6 caracteres'
+    errors.senha = t('passwordValidation.minLength')
     valid = false
   } else errors.senha = ''
 
   if (form.senha !== form.confirmar_senha) {
-    errors.confirmar_senha = 'As senhas não coincidem'
+    errors.confirmar_senha = t('passwordValidation.doNotMatch')
     valid = false
   } else errors.confirmar_senha = ''
 
@@ -210,7 +220,7 @@ const formatPhone = (e: Event) => {
     form.telefone = value
   }
   phoneError.value =
-    form.telefone.length > 0 && form.telefone.length < 14 ? 'Telefone incompleto' : ''
+    form.telefone.length > 0 && form.telefone.length < 14 ? t('register.phoneIncomplete') : ''
 }
 
 // Força da senha
@@ -230,22 +240,22 @@ const checkPasswordStrength = () => {
     strengthWidth.value = '0%'
   } else if (strength <= 2) {
     strengthClass.value = 'weak'
-    strengthText.value = 'Fraca'
+    strengthText.value = t('passwordStrength.weak')
     strengthWidth.value = '33%'
   } else if (strength === 3) {
     strengthClass.value = 'medium'
-    strengthText.value = 'Média'
+    strengthText.value = t('passwordStrength.medium')
     strengthWidth.value = '66%'
   } else {
     strengthClass.value = 'strong'
-    strengthText.value = 'Forte'
+    strengthText.value = t('passwordStrength.strong')
     strengthWidth.value = '100%'
   }
 }
 
 const checkPasswordMatch = () => {
   passwordsMatch.value = form.senha === form.confirmar_senha
-  if (!passwordsMatch.value) errors.confirmar_senha = 'As senhas não coincidem'
+  if (!passwordsMatch.value) errors.confirmar_senha = t('passwordValidation.doNotMatch')
   else errors.confirmar_senha = ''
 }
 
@@ -255,13 +265,13 @@ const handleSubmit = async () => {
   try {
     const response = await authStore.register(form)
     if (response.success) {
-      showAlert('Conta criada com sucesso! Faça login.', 'success')
+      showAlert(t('register.success'), 'success')
       setTimeout(() => (window.location.href = '/login'), 2000)
     } else {
-      showAlert(response.message || 'Erro ao cadastrar', 'error')
+      showAlert(response.message || t('register.error'), 'error')
     }
   } catch (err: any) {
-    showAlert(err.message || 'Erro de conexão', 'error')
+    showAlert(err.message || t('errors.networkError'), 'error')
   } finally {
     loading.value = false
   }

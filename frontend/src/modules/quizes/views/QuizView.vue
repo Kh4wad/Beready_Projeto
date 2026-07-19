@@ -18,7 +18,7 @@
             />
           </svg>
         </div>
-        <h1 class="quiz-view-title">{{ quiz.titulo || 'Carregando...' }}</h1>
+        <h1 class="quiz-view-title">{{ quiz.titulo || $t('common.carregando') }}</h1>
         <div class="quiz-view-badges">
           <span class="badge" :class="getLevelClass(quiz.nivel_dificuldade)">
             {{ getLevelText(quiz.nivel_dificuldade) }}
@@ -101,7 +101,7 @@
         </div>
 
         <div class="description-section">
-          <h3 class="section-title">Descrição</h3>
+          <h3 class="section-title">{{ $t('quizes.descricao') }}</h3>
           <p class="description-text">{{ quiz.descricao || 'Nenhuma descrição fornecida.' }}</p>
         </div>
 
@@ -121,7 +121,7 @@
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            Voltar
+            $t('common.voltar')
           </button>
           <button class="btn-primary" @click="$router.push(`/quizes/${quizId}/play`)">
             Iniciar Quiz

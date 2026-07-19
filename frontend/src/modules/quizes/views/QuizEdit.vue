@@ -18,7 +18,7 @@
             />
           </svg>
         </div>
-        <h1 class="quiz-form-title">Editar Quiz</h1>
+        <h1 class="quiz-form-title">{{ $t('common.editar') }} Quiz</h1>
         <p class="quiz-form-subtitle">Atualize as informações do quiz</p>
       </div>
 
@@ -31,7 +31,7 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Nível de Dificuldade</label>
+            <label class="form-label">{{ $t('flashcards.dificuldade') }}</label>
             <select v-model="form.nivel_dificuldade" class="form-input">
               <option value="iniciante">Iniciante</option>
               <option value="intermediario">Intermediário</option>
@@ -40,7 +40,7 @@
           </div>
 
           <div class="form-group full-width">
-            <label class="form-label">Descrição</label>
+            <label class="form-label">{{ $t('quizes.descricao') }}</label>
             <textarea v-model="form.descricao" class="form-textarea" rows="4"></textarea>
           </div>
 
@@ -64,13 +64,15 @@
         </div>
 
         <div class="quiz-form-actions">
-          <button type="button" class="btn-danger" @click="handleDelete">Excluir Quiz</button>
+          <button type="button" class="btn-danger" @click="handleDelete">
+            {{ $t('common.excluir') }} Quiz
+          </button>
           <div>
             <button type="button" class="btn-cancel" @click="$router.push('/quizes')">
-              Cancelar
+              {{ $t('common.cancelar') }}
             </button>
             <button type="submit" class="btn-submit" :disabled="loading">
-              {{ loading ? 'Salvando...' : 'Salvar Alterações' }}
+              {{ loading ? 'Salvando...' : $t('common.salvar') + ' Alterações' }}
             </button>
           </div>
         </div>
@@ -97,7 +99,7 @@
               />
             </svg>
           </div>
-          <h3 class="modal-title">Excluir Quiz</h3>
+          <h3 class="modal-title">{{ $t('common.excluir') }} Quiz</h3>
         </div>
         <div class="modal-body">
           <p>
@@ -107,7 +109,9 @@
           <p class="modal-warning">Esta ação é irreversível e todas as questões serão perdidas.</p>
         </div>
         <div class="modal-footer">
-          <button @click="showDeleteModal = false" class="modal-btn-cancel">Cancelar</button>
+          <button @click="showDeleteModal = false" class="modal-btn-cancel">
+            {{ $t('common.cancelar') }}
+          </button>
           <button @click="confirmDelete" class="modal-btn-delete" :disabled="deleteLoading">
             {{ deleteLoading ? 'Excluindo...' : 'Sim, excluir' }}
           </button>

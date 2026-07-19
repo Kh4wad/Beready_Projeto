@@ -16,7 +16,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        {{ $t('common.voltar') }}
       </button>
       <div class="hero-content">
         <div class="hero-icon">
@@ -35,8 +35,8 @@
             />
           </svg>
         </div>
-        <h1 class="hero-title">Minhas Tags</h1>
-        <p class="hero-subtitle">Organize seus flashcards com tags personalizadas</p>
+        <h1 class="hero-title">{{ $t('tags.title') }}</h1>
+        <p class="hero-subtitle">{{ $t('tags.subtitle') }}</p>
         <button class="hero-btn" @click="openModal">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -52,14 +52,14 @@
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Nova Tag
+          {{ $t('tags.newTag') }}
         </button>
       </div>
     </div>
 
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Carregando suas tags...</p>
+      <p>{{ $t('tags.carregando') }}</p>
     </div>
 
     <div v-else-if="tags.length === 0" class="empty-state">
@@ -79,16 +79,32 @@
           />
         </svg>
       </div>
-      <h2 class="empty-title">Nenhuma tag criada ainda</h2>
-      <p class="empty-description">Crie sua primeira tag para organizar seus flashcards</p>
-      <button class="empty-btn" @click="openModal">Criar primeira tag</button>
+      <h2 class="empty-title">{{ $t('tags.emptyTitle') }}</h2>
+      <p class="empty-description">{{ $t('tags.emptyDescription') }}</p>
+      <button class="empty-btn" @click="openModal">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+        {{ $t('tags.createFirst') }}
+      </button>
     </div>
 
     <div v-else class="tags-grid">
       <div v-for="tag in tags" :key="tag.id" class="tag-card" :style="{ borderLeftColor: tag.cor }">
         <div class="tag-info">
           <h3 class="tag-name">{{ tag.nome }}</h3>
-          <p class="tag-description">{{ tag.descricao || 'Sem descrição' }}</p>
+          <p class="tag-description">{{ tag.descricao || $t('tags.semDescricao') }}</p>
           <div class="tag-meta">
             <span class="tag-color" :style="{ backgroundColor: tag.cor }"></span>
           </div>
@@ -134,50 +150,60 @@
     <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-container">
         <div class="modal-header">
-          <h3 class="modal-title">{{ editingTag ? 'Editar Tag' : 'Nova Tag' }}</h3>
+          <div>
+            <h2 class="modal-title">
+              {{ editingTag ? $t('tags.editTag') : $t('tags.newTag') }}
+            </h2>
+            <p class="modal-subtitle">
+              {{ editingTag ? $t('tags.editSubtitle') : $t('tags.createSubtitle') }}
+            </p>
+          </div>
           <button class="modal-close" @click="closeModal">×</button>
         </div>
         <form @submit.prevent="saveTag">
           <div class="modal-body">
             <div class="form-group">
-              <label class="form-label">Nome *</label>
+              <label class="form-label">{{ $t('tags.nome') }} *</label>
               <input
                 v-model="form.nome"
                 type="text"
                 required
                 class="form-input"
-                placeholder="Ex: Gramática"
+                :placeholder="$t('tags.nomePlaceholder')"
               />
             </div>
             <div class="form-group">
-              <label class="form-label">Cor</label>
+              <label class="form-label">{{ $t('tags.cor') }}</label>
               <input v-model="form.cor" type="color" class="form-color" />
             </div>
             <div class="form-group">
-              <label class="form-label">Descrição</label>
+              <label class="form-label">{{ $t('tags.descricao') }}</label>
               <textarea
                 v-model="form.descricao"
                 rows="3"
                 class="form-textarea"
-                placeholder="Descrição da tag..."
+                :placeholder="$t('tags.descricaoPlaceholder')"
               ></textarea>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
+            <button type="button" class="btn-cancel" @click="closeModal">
+              {{ $t('common.cancelar') }}
+            </button>
             <button type="submit" class="btn-save" :disabled="saving">
-              {{ saving ? 'Salvando...' : 'Salvar' }}
+              {{ saving ? $t('common.salvando') : $t('common.salvar') }}
             </button>
           </div>
         </form>
       </div>
     </div>
+
     <ConfirmModal
       v-model="confirmModalVisible"
-      title="Confirmar exclusão"
-      message="Tem certeza que deseja excluir esta tag?"
+      :title="$t('tags.confirmDelete')"
+      :message="$t('tags.deleteMessage')"
       :item-name="tagToDelete?.nome"
-      confirm-text="Excluir"
+      :confirm-text="$t('common.excluir')"
       type="danger"
       :loading="deleting"
       @confirm="handleConfirmDelete"
