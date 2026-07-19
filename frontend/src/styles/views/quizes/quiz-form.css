@@ -1,58 +1,99 @@
-.quiz-form-container {
-  min-height: calc(100vh - 80px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+/* quiz-form.css - Estilo para formulários de Quiz (Add e Edit) */
+
+.quiz-form-page {
+  min-height: 100vh;
+  background: #f0f2f5;
+}
+
+/* Hero Section */
+.quiz-form-hero {
+  position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 3rem 2rem 2rem;
+  margin-bottom: 2rem;
 }
 
-.quiz-form-card {
-  max-width: 800px;
-  width: 100%;
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-.quiz-form-header {
-  background: linear-gradient(135deg, #d81b60, #c2185b);
-  color: white;
-  padding: 2rem;
-  text-align: center;
-}
-
-.header-icon {
-  background: rgba(255, 255, 255, 0.2);
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+.hero-back-btn {
+  position: absolute;
+  top: 1rem;
+  left: 2rem;
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 0 auto 1rem;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.875rem;
 }
 
-.quiz-form-title {
-  font-size: 1.75rem;
+.hero-back-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.hero-back-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.hero-content {
+  text-align: center;
+  color: white;
+}
+
+.hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+}
+
+.hero-icon svg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.hero-title {
+  font-size: 2rem;
   font-weight: 700;
   margin: 0 0 0.5rem;
 }
 
-.quiz-form-subtitle {
-  font-size: 0.875rem;
+.hero-subtitle {
+  font-size: 1rem;
   opacity: 0.9;
   margin: 0;
 }
 
-.quiz-form-grid {
+/* Container */
+.quiz-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 2rem 2rem;
+}
+
+.quiz-form-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.quiz-form-card .form-grid {
   padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+/* Form Elements */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -76,19 +117,23 @@
 }
 
 .form-input,
+.form-select,
 .form-textarea {
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
   font-size: 0.875rem;
   transition: all 0.3s ease;
+  width: 100%;
+  background: white;
 }
 
 .form-input:focus,
+.form-select:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #d81b60;
-  box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.1);
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 .form-textarea {
@@ -105,35 +150,42 @@
   color: #4a5568;
 }
 
+.form-checkbox input[type='checkbox'] {
+  width: 1.125rem;
+  height: 1.125rem;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
 .form-error {
   color: #e53e3e;
   font-size: 0.75rem;
 }
 
-.quiz-form-actions {
+/* Form Actions */
+.form-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
   padding: 1.5rem 2rem;
   background: #f7fafc;
   border-top: 1px solid #e2e8f0;
 }
 
 .btn-cancel,
-.btn-submit,
-.btn-danger {
+.btn-submit {
   padding: 0.625rem 1.5rem;
   border: none;
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.875rem;
 }
 
 .btn-cancel {
   background: #e2e8f0;
   color: #4a5568;
-  margin-right: 0.5rem;
 }
 
 .btn-cancel:hover {
@@ -141,7 +193,7 @@
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, #d81b60, #c2185b);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   color: white;
 }
 
@@ -155,138 +207,43 @@
   cursor: not-allowed;
 }
 
-.btn-danger {
-  background: #e53e3e;
-  color: white;
-}
-
-.btn-danger:hover {
-  background: #c53030;
-}
-
-/* Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-container {
-  background: white;
-  border-radius: 1rem;
-  width: 90%;
-  max-width: 450px;
-  animation: modalFadeIn 0.3s ease;
-}
-
-@keyframes modalFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.modal-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-icon.danger {
-  background: #fed7d7;
-  color: #e53e3e;
-}
-
-.modal-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.modal-body {
-  padding: 1.5rem;
-}
-
-.modal-warning {
-  color: #e53e3e;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.modal-btn-cancel,
-.modal-btn-delete {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.modal-btn-cancel {
-  background: #e2e8f0;
-  color: #4a5568;
-}
-
-.modal-btn-delete {
-  background: #e53e3e;
-  color: white;
-}
-
-.modal-btn-delete:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-  .quiz-form-container {
-    padding: 1rem;
+  .quiz-form-hero {
+    padding: 2rem 1rem 1.5rem;
   }
-  
-  .quiz-form-grid {
+
+  .hero-back-btn {
+    position: relative;
+    top: 0;
+    left: 0;
+    margin-bottom: 1rem;
+    display: inline-flex;
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .quiz-form-container {
+    padding: 0 1rem 1rem;
+  }
+
+  .quiz-form-card .form-grid {
     padding: 1.5rem;
   }
-  
+
   .form-row {
     grid-template-columns: 1fr;
   }
-  
-  .quiz-form-actions {
+
+  .form-actions {
     flex-direction: column-reverse;
-    gap: 1rem;
   }
-  
-  .quiz-form-actions > div {
-    display: flex;
-    gap: 0.5rem;
+
+  .btn-cancel,
+  .btn-submit {
+    width: 100%;
+    text-align: center;
   }
 }

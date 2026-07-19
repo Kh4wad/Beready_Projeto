@@ -8,7 +8,7 @@
 
       <div v-if="error" class="error-message">
         <p>❌ {{ error }}</p>
-        <button @click="goToLogin" class="btn-retry">Voltar para o login</button>
+        <button @click="goToLogin" class="btn-retry">$t('common.voltar') para o login</button>
       </div>
     </div>
   </div>

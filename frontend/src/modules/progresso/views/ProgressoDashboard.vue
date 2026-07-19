@@ -16,7 +16,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        {{ $t('common.voltar') }}
       </button>
       <div class="hero-content">
         <div class="hero-icon">
@@ -35,14 +35,14 @@
             />
           </svg>
         </div>
-        <h1 class="hero-title">Meu Progresso</h1>
-        <p class="hero-subtitle">Acompanhe sua evolução nos estudos</p>
+        <h1 class="hero-title">{{ $t('progresso.title') }}</h1>
+        <p class="hero-subtitle">{{ $t('progresso.subtitle') }}</p>
       </div>
     </div>
 
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Carregando seu progresso...</p>
+      <p>{{ $t('progresso.carregando') }}</p>
     </div>
 
     <div v-else class="progresso-grid">
@@ -64,7 +64,7 @@
           </svg>
         </div>
         <div class="progresso-value">{{ progresso?.vocabulario_aprendido || 0 }}</div>
-        <div class="progresso-label">Vocabulário Aprendido</div>
+        <div class="progresso-label">{{ $t('progresso.vocabularioAprendido') }}</div>
       </div>
 
       <div class="progresso-card">
@@ -85,7 +85,7 @@
           </svg>
         </div>
         <div class="progresso-value">{{ progresso?.flashcards_concluidos || 0 }}</div>
-        <div class="progresso-label">Flashcards Concluídos</div>
+        <div class="progresso-label">{{ $t('progresso.flashcardsConcluidos') }}</div>
       </div>
 
       <div class="progresso-card">
@@ -106,7 +106,7 @@
           </svg>
         </div>
         <div class="progresso-value">{{ progresso?.quizes_concluidos || 0 }}</div>
-        <div class="progresso-label">Quizes Concluídos</div>
+        <div class="progresso-label">{{ $t('progresso.quizesConcluidos') }}</div>
       </div>
 
       <div class="progresso-card">
@@ -127,9 +127,9 @@
           </svg>
         </div>
         <div class="progresso-value">
-       {{ formatTempoEstudo(progresso?.tempo_total_estudo || 0) }}
-       </div>
-        <div class="progresso-label">Tempo Total de Estudo</div>
+          {{ formatTempoEstudo(progresso?.tempo_total_estudo || 0) }}
+        </div>
+        <div class="progresso-label">{{ $t('progresso.tempoTotalEstudo') }}</div>
       </div>
 
       <div class="progresso-card">
@@ -150,7 +150,7 @@
           </svg>
         </div>
         <div class="progresso-value">{{ progresso?.sequencia_atual || 0 }}</div>
-        <div class="progresso-label">Sequência Atual (dias)</div>
+        <div class="progresso-label">{{ $t('progresso.sequenciaAtual') }}</div>
       </div>
 
       <div class="progresso-card">
@@ -171,7 +171,7 @@
           </svg>
         </div>
         <div class="progresso-value">{{ progresso?.maior_sequencia || 0 }}</div>
-        <div class="progresso-label">Maior Sequência</div>
+        <div class="progresso-label">{{ $t('progresso.maiorSequencia') }}</div>
       </div>
     </div>
   </div>
@@ -179,6 +179,7 @@
 
 <script setup lang="ts">
 import { useProgresso } from './ProgressoDashboard'
+
 const { progresso, loading, formatTempoEstudo } = useProgresso()
 </script>
 

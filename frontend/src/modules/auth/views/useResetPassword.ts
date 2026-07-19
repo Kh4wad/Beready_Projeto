@@ -2,11 +2,13 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
 import { API_BASE_URL } from '@/shared/config/env'
+import { useI18n } from 'vue-i18n'
 
 export function useResetPassword() {
   const router = useRouter()
   const route = useRoute()
   const { success, error } = useAlert()
+  const { t } = useI18n()
   const loading = ref(false)
   const showPassword = ref(false)
   const showConfirmPassword = ref(false)
@@ -19,39 +21,36 @@ export function useResetPassword() {
 
   const handleSubmit = async () => {
     if (!form.value.senha) {
-      error('Nova senha é obrigatória')
+      error(t('resetPassword.passwordRequired'))
       return
     }
     if (form.value.senha.length < 6) {
-      error('A senha deve ter pelo menos 6 caracteres')
+      error(t('passwordValidation.minLength'))
       return
     }
     if (form.value.senha !== form.value.confirmar_senha) {
-      error('As senhas não coincidem')
+      error(t('passwordValidation.doNotMatch'))
       return
     }
 
     loading.value = true
 
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/auth/reset-password/${form.value.token}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ senha: form.value.senha }),
-        },
-      )
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password/${form.value.token}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senha: form.value.senha }),
+      })
       const data = await response.json()
 
       if (data.success) {
-        success('Senha redefinida com sucesso! Redirecionando...')
+        success(t('resetPassword.successMessage'))
         setTimeout(() => router.push('/login'), 2000)
       } else {
-        error(data.message || 'Erro ao redefinir senha')
+        error(data.message || t('resetPassword.errorMessage'))
       }
     } catch (err) {
-      error('Erro de conexão com o servidor')
+      error(t('errors.networkError'))
     } finally {
       loading.value = false
     }
@@ -60,7 +59,7 @@ export function useResetPassword() {
   onMounted(() => {
     form.value.token = (route.params.token as string) || (route.query.token as string)
     if (!form.value.token) {
-      error('Token inválido ou expirado')
+      error(t('resetPassword.invalidToken'))
     }
   })
 

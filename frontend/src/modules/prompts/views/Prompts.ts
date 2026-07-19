@@ -3,10 +3,12 @@ import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
 import { promptService } from '@/modules/prompts/services/promptService'
 import type { Prompt } from '@/core/types'
+import { useI18n } from 'vue-i18n'
 
 export function usePrompts() {
   const router = useRouter()
   const { success, error } = useAlert()
+  const { t } = useI18n()
   const prompts = ref<Prompt[]>([])
   const loading = ref(false)
   const saving = ref(false)
@@ -48,7 +50,7 @@ export function usePrompts() {
         prompts.value = response.data.data || []
       } else {
         prompts.value = []
-        error(response.data.message || 'Erro ao carregar prompts')
+        error(response.data.message || t('prompts.errorLoad'))
       }
     } catch (err: unknown) {
       const axiosError = err as {
@@ -59,9 +61,7 @@ export function usePrompts() {
         message?: string
       }
       if (axiosError.response?.status !== 400) {
-        error(
-          axiosError.response?.data?.message || axiosError.message || 'Erro ao carregar prompts',
-        )
+        error(axiosError.response?.data?.message || axiosError.message || t('prompts.errorLoad'))
       }
       prompts.value = []
     } finally {
@@ -93,7 +93,7 @@ export function usePrompts() {
   const savePrompt = async (): Promise<void> => {
     const userId = getCurrentUserId()
     if (!userId) {
-      error('Usuário não autenticado')
+      error(t('prompts.userNotAuthenticated'))
       return
     }
 
@@ -102,18 +102,18 @@ export function usePrompts() {
     try {
       if (editingPrompt.value) {
         const response = await promptService.update(editingPrompt.value.id!, form.value)
-        if (response.data.success) success('Prompt atualizado com sucesso!')
+        if (response.data.success) success(t('prompts.successUpdate'))
         else throw new Error(response.data.message)
       } else {
         const response = await promptService.create({ ...form.value, usuario_id: userId })
-        if (response.data.success) success('Prompt criado com sucesso!')
+        if (response.data.success) success(t('prompts.successCreate'))
         else throw new Error(response.data.message)
       }
       await fetchPrompts()
       closeModal()
     } catch (err: unknown) {
       const axiosError = err as { response?: { data?: { message?: string } } }
-      error(axiosError.response?.data?.message || 'Erro ao salvar prompt')
+      error(axiosError.response?.data?.message || t('prompts.errorSave'))
     } finally {
       saving.value = false
     }
@@ -131,14 +131,14 @@ export function usePrompts() {
     try {
       const response = await promptService.delete(promptToDelete.value.id!)
       if (response.data.success) {
-        success('Prompt excluído com sucesso!')
+        success(t('prompts.successDelete'))
         await fetchPrompts()
       } else {
         throw new Error(response.data.message)
       }
     } catch (err: unknown) {
       const axiosError = err as { response?: { data?: { message?: string } } }
-      error(axiosError.response?.data?.message || 'Erro ao excluir prompt')
+      error(axiosError.response?.data?.message || t('prompts.errorDelete'))
     } finally {
       deleting.value = false
       confirmModalVisible.value = false
@@ -153,6 +153,27 @@ export function usePrompts() {
 
   const viewTranslations = (promptId: number): void => {
     router.push(`/prompts/${promptId}`)
+  }
+
+  const getLanguageName = (code?: string): string => {
+    const languages: Record<string, string> = {
+      'pt-BR': t('idiomas.pt'),
+      en: t('idiomas.en'),
+      es: t('idiomas.es'),
+      fr: t('idiomas.fr'),
+    }
+    return languages[code || ''] || code?.toUpperCase() || 'PT'
+  }
+
+  const getContextName = (context?: string): string => {
+    const contexts: Record<string, string> = {
+      manual: t('prompts.contextoManual'),
+      conversacao: t('prompts.contextoConversacao'),
+      negocios: t('prompts.contextoNegocios'),
+      viagem: t('prompts.contextoViagem'),
+      estudo: t('prompts.contextoEstudo'),
+    }
+    return contexts[context || ''] || context || t('prompts.contextoManual')
   }
 
   onMounted(() => {
@@ -177,5 +198,7 @@ export function usePrompts() {
     handleConfirmDelete,
     formatDate,
     viewTranslations,
+    getLanguageName,
+    getContextName,
   }
 }

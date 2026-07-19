@@ -16,7 +16,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        {{ $t('common.voltar') }}
       </button>
       <div class="hero-content">
         <div class="hero-icon">
@@ -63,7 +63,7 @@
 
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
-        <p>Carregando imagens...</p>
+        <p>{{ $t('common.carregando') }} imagens...</p>
       </div>
 
       <div v-else-if="imagens.length === 0" class="empty-state">
@@ -128,7 +128,9 @@
     <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-container">
         <div class="modal-header">
-          <h3 class="modal-title">{{ editingId ? 'Editar Imagem' : 'Nova Imagem' }}</h3>
+          <h3 class="modal-title">
+            {{ editingId ? $t('common.editar') + ' Imagem' : 'Nova Imagem' }}
+          </h3>
           <button class="modal-close" @click="closeModal">×</button>
         </div>
         <form @submit.prevent="save">
@@ -180,9 +182,11 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
+            <button type="button" class="btn-cancel" @click="closeModal">
+              {{ $t('common.cancelar') }}
+            </button>
             <button type="submit" class="btn-save" :disabled="saving">
-              {{ saving ? 'Salvando...' : 'Salvar' }}
+              {{ saving ? 'Salvando...' : $t('common.salvar') }}
             </button>
           </div>
         </form>
@@ -194,7 +198,7 @@
       v-model="confirmModalVisible"
       title="Confirmar exclusão"
       message="Tem certeza que deseja excluir esta imagem?"
-      confirm-text="Excluir"
+      confirm-text="$t('common.excluir')"
       type="danger"
       :loading="deleting"
       @confirm="handleConfirmDelete"

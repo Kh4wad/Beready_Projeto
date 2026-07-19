@@ -5,10 +5,12 @@ import { usePasswordStrength } from '@/shared/composables/usePasswordStrength'
 import { usePhoneMask } from '@/shared/composables/usePhoneMask'
 import { useAlert } from '@/shared/composables/useAlert'
 import { API_BASE_URL } from '@/shared/config/env'
+import { useI18n } from 'vue-i18n'
 
 export function useProfileEdit() {
   const router = useRouter()
   const { success, error } = useAlert()
+  const { t } = useI18n()
   const loading = ref(false)
   const showPassword = ref(false)
   const showConfirmPassword = ref(false)
@@ -178,7 +180,7 @@ export function useProfileEdit() {
     }
 
     if (!currentUserId) {
-      error('ID do usuário não encontrado. Faça login novamente.')
+      error(t('errors.unauthorized'))
       router.push('/login')
       return
     }
@@ -186,18 +188,18 @@ export function useProfileEdit() {
     if (form.telefone) {
       const digits = form.telefone.replace(/\D/g, '')
       if (digits.length > 0 && digits.length < 11) {
-        error('Telefone deve ter 11 dígitos')
+        error(t('profile.telefoneInvalido') || 'Telefone deve ter 11 dígitos')
         return
       }
     }
 
     if (form.nova_senha) {
       if (form.nova_senha.length < 6) {
-        error('A nova senha deve ter pelo menos 6 caracteres')
+        error(t('errors.minLength', { min: 6 }))
         return
       }
       if (form.nova_senha !== form.confirmar_senha) {
-        error('As senhas não coincidem')
+        error(t('errors.passwordMatch'))
         return
       }
     }
@@ -214,7 +216,7 @@ export function useProfileEdit() {
           selectedImage.value = undefined
           imagePreview.value = null
         } else {
-          error('Erro ao fazer upload da imagem. Tente novamente.')
+          error(t('profile.erroUploadImagem') || 'Erro ao fazer upload da imagem. Tente novamente.')
           loading.value = false
           return
         }
@@ -241,10 +243,6 @@ export function useProfileEdit() {
         status: form.status,
         objetivos_aprendizado: form.objetivos_aprendizado,
         foto_perfil: uploadedImageUrl,
-      }
-
-      if (form.nova_senha !== '') {
-        submitData.senha = form.nova_senha
       }
 
       if (form.nova_senha !== '') {
@@ -279,16 +277,16 @@ export function useProfileEdit() {
         localStorage.setItem('user', JSON.stringify(updatedUser))
         window.dispatchEvent(new CustomEvent('user-updated', { detail: updatedUser }))
 
-        success('Perfil atualizado com sucesso!')
+        success(t('success.updated'))
 
         setTimeout(() => {
           router.push('/profile')
         }, 1500)
       } else {
-        error(data.message || 'Erro ao atualizar perfil')
+        error(data.message || t('errors.serverError'))
       }
     } catch {
-      error('Erro de conexão com o servidor')
+      error(t('errors.networkError'))
     } finally {
       loading.value = false
     }

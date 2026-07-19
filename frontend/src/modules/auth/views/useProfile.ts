@@ -3,10 +3,12 @@ import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAlert } from '@/shared/composables/useAlert'
 import api from '@/core/services/api'
+import { useI18n } from 'vue-i18n'
 
 export function useProfile() {
   const router = useRouter()
   const { success, error } = useAlert()
+  const { t } = useI18n()
   const user = ref<any>(null)
   const showDeleteModal = ref(false)
   const confirmEmail = ref('')
@@ -31,20 +33,21 @@ export function useProfile() {
 
   const getNivelIngles = (nivel: string) => {
     const niveis: Record<string, string> = {
-      iniciante: 'Iniciante',
-      intermediario: 'Intermediário',
-      avancado: 'Avançado',
+      iniciante: t('profile.nivelIniciante'),
+      intermediario: t('profile.nivelIntermediario'),
+      avancado: t('profile.nivelAvancado'),
     }
-    return niveis[nivel] || nivel || 'Não informado'
+    return niveis[nivel] || nivel || t('profile.naoInformado')
   }
 
   const getIdiomaPreferido = (idioma: string) => {
     const idiomas: Record<string, string> = {
-      'pt-BR': 'Português (Brasil)',
-      en: 'Inglês',
-      es: 'Espanhol',
+      'pt-BR': t('idiomas.pt'),
+      en: t('idiomas.en'),
+      es: t('idiomas.es'),
+      fr: t('idiomas.fr'),
     }
-    return idiomas[idioma] || idioma || 'Não informado'
+    return idiomas[idioma] || idioma || t('profile.naoInformado')
   }
 
   const handleDeleteAccount = async () => {

@@ -1,6 +1,8 @@
 import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 export function usePasswordValidation() {
+  const { t } = useI18n()
   const password = ref('')
   const confirmPassword = ref('')
   const passwordError = ref('')
@@ -9,7 +11,7 @@ export function usePasswordValidation() {
   const validatePassword = (value: string): string | null => {
     if (!value) return null
     if (value.length < 6) {
-      return 'A senha deve ter pelo menos 6 caracteres'
+      return t('passwordValidation.minLength')
     }
     return null
   }
@@ -17,27 +19,47 @@ export function usePasswordValidation() {
   const validateConfirmPassword = (value: string): string | null => {
     if (!value) return null
     if (password.value !== value) {
-      return 'As senhas não coincidem'
+      return t('passwordValidation.doNotMatch')
     }
     return null
   }
 
   const checkPasswordStrength = (value: string) => {
-    let strength = 0
-    if (value.length >= 8) strength++
-    if (value.match(/[a-z]/) && value.match(/[A-Z]/)) strength++
-    if (value.match(/\d/)) strength++
-    if (value.match(/[^a-zA-Z\d]/)) strength++
+    let score = 0
+    if (value.length >= 8) score++
+    if (value.match(/[a-z]/) && value.match(/[A-Z]/)) score++
+    if (value.match(/\d/)) score++
+    if (value.match(/[^a-zA-Z\d]/)) score++
 
     const strengthMap = {
-      0: { text: 'Muito Fraca', class: '', width: '0%' },
-      1: { text: 'Fraca', class: 'weak', width: '25%' },
-      2: { text: 'Moderada', class: 'medium', width: '50%' },
-      3: { text: 'Forte', class: 'strong', width: '75%' },
-      4: { text: 'Muito Forte', class: 'very-strong', width: '100%' },
+      0: {
+        text: t('passwordStrength.veryWeak'),
+        class: '',
+        width: '0%',
+      },
+      1: {
+        text: t('passwordStrength.weak'),
+        class: 'weak',
+        width: '25%',
+      },
+      2: {
+        text: t('passwordStrength.medium'),
+        class: 'medium',
+        width: '50%',
+      },
+      3: {
+        text: t('passwordStrength.strong'),
+        class: 'strong',
+        width: '75%',
+      },
+      4: {
+        text: t('passwordStrength.veryStrong'),
+        class: 'very-strong',
+        width: '100%',
+      },
     }
 
-    return strengthMap[strength as keyof typeof strengthMap]
+    return strengthMap[score as keyof typeof strengthMap]
   }
 
   const isPasswordValid = computed(() => {

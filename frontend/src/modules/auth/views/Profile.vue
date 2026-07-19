@@ -29,7 +29,7 @@
           </div>
         </div>
         <div class="profile-info">
-          <h1 class="profile-name">{{ user?.nome || 'Carregando...' }}</h1>
+          <h1 class="profile-name">{{ user?.nome || $t('common.carregando') }}</h1>
           <p class="profile-email">{{ user?.email || '' }}</p>
         </div>
         <div class="profile-actions">
@@ -48,7 +48,7 @@
                 d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
               />
             </svg>
-            Editar Perfil
+            {{ $t('common.editar') }} {{ $t('common.perfil') }}
           </button>
           <button class="btn-profile btn-danger" @click="showDeleteModal = true">
             <svg
@@ -65,7 +65,7 @@
                 d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
               />
             </svg>
-            Excluir Conta
+            {{ $t('profile.deleteAccount') }}
           </button>
           <button class="btn-profile btn-secondary" @click="$router.push('/dashboard')">
             <svg
@@ -82,7 +82,7 @@
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               />
             </svg>
-            Voltar
+            {{ $t('common.voltar') }}
           </button>
         </div>
       </div>
@@ -107,21 +107,21 @@
                   d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                 />
               </svg>
-              Informações Pessoais
+              {{ $t('profile.personalInfo') }}
             </h3>
           </div>
           <div class="card-body">
             <div class="profile-info-group">
-              <label class="profile-info-label">Nome Completo</label>
+              <label class="profile-info-label">{{ $t('register.nome') }}</label>
               <p class="profile-info-value">{{ user?.nome || '-' }}</p>
             </div>
             <div class="profile-info-group">
-              <label class="profile-info-label">E-mail</label>
+              <label class="profile-info-label">{{ $t('login.email') }}</label>
               <p class="profile-info-value">{{ user?.email || '-' }}</p>
             </div>
             <div class="profile-info-group">
-              <label class="profile-info-label">Telefone</label>
-              <p class="profile-info-value">{{ formattedPhone || 'Não informado' }}</p>
+              <label class="profile-info-label">{{ $t('profile.telefone') }}</label>
+              <p class="profile-info-value">{{ formattedPhone || $t('profile.naoInformado') }}</p>
             </div>
           </div>
         </div>
@@ -143,20 +143,20 @@
                   d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                 />
               </svg>
-              Preferências de Aprendizado
+              {{ $t('profile.learningPreferences') }}
             </h3>
           </div>
           <div class="card-body">
             <div class="profile-info-group">
-              <label class="profile-info-label">Nível de Inglês</label>
+              <label class="profile-info-label">{{ $t('profile.nivelIngles') }}</label>
               <p class="profile-info-value">{{ getNivelIngles(user?.nivel_ingles) }}</p>
             </div>
             <div class="profile-info-group">
-              <label class="profile-info-label">Idioma Preferido</label>
+              <label class="profile-info-label">{{ $t('profile.idiomaPreferido') }}</label>
               <p class="profile-info-value">{{ getIdiomaPreferido(user?.idioma_preferido) }}</p>
             </div>
             <div class="profile-info-group">
-              <label class="profile-info-label">Status</label>
+              <label class="profile-info-label">{{ $t('profile.status') }}</label>
               <p class="profile-info-value">
                 <span
                   class="profile-status-badge"
@@ -164,7 +164,7 @@
                     user?.status === 'ativo' ? 'profile-status-active' : 'profile-status-inactive'
                   "
                 >
-                  {{ user?.status === 'ativo' ? 'Ativo' : 'Inativo' }}
+                  {{ user?.status === 'ativo' ? $t('profile.ativo') : $t('profile.inativo') }}
                 </span>
               </p>
             </div>
@@ -189,12 +189,12 @@
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               />
             </svg>
-            Objetivos de Aprendizado
+            {{ $t('profile.learningGoals') }}
           </h3>
         </div>
         <div class="card-body">
           <p class="profile-info-value profile-objectives-text">
-            {{ user?.objetivos_aprendizado || 'Nenhum objetivo definido' }}
+            {{ user?.objetivos_aprendizado || $t('profile.noGoals') }}
           </p>
         </div>
       </div>
@@ -220,16 +220,17 @@
               />
             </svg>
           </div>
-          <h3 class="modal-title">Excluir Conta</h3>
+          <h3 class="modal-title">{{ $t('profile.deleteAccount') }}</h3>
         </div>
         <div class="modal-body">
-          <p>Tem certeza que deseja excluir sua conta?</p>
+          <p>{{ $t('profile.deleteConfirmMessage') }}</p>
           <p class="modal-warning">
-            Esta ação é irreversível e todos os seus dados serão perdidos.
+            {{ $t('profile.deleteWarning') }}
           </p>
           <div class="modal-confirm-input">
             <label
-              >Digite <strong>{{ user?.email }}</strong> para confirmar:</label
+              >{{ $t('profile.deleteConfirmLabel') }} <strong>{{ user?.email }}</strong
+              >:</label
             >
             <input
               v-model="confirmEmail"
@@ -240,13 +241,15 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button @click="showDeleteModal = false" class="modal-btn-cancel">Cancelar</button>
+          <button @click="showDeleteModal = false" class="modal-btn-cancel">
+            {{ $t('common.cancelar') }}
+          </button>
           <button
             @click="handleDeleteAccount"
             :disabled="confirmEmail !== user?.email || deleteLoading"
             class="modal-btn-delete"
           >
-            {{ deleteLoading ? 'Excluindo...' : 'Sim, excluir minha conta' }}
+            {{ deleteLoading ? $t('common.carregando') : $t('profile.confirmDelete') }}
           </button>
         </div>
       </div>

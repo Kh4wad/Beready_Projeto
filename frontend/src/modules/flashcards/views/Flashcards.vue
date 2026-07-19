@@ -16,7 +16,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        {{ $t('common.voltar') }}
       </button>
       <div class="hero-content">
         <div class="hero-icon">
@@ -31,8 +31,8 @@
             <path d="M8 8h8M8 12h6" />
           </svg>
         </div>
-        <h1 class="hero-title">Meus Flashcards</h1>
-        <p class="hero-subtitle">Crie, estude e revise seus flashcards para aprender melhor</p>
+        <h1 class="hero-title">{{ $t('flashcards.title') }}</h1>
+        <p class="hero-subtitle">{{ $t('flashcards.subtitle') }}</p>
         <button class="hero-btn" @click="openCreateModal">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Novo Flashcard
+          {{ $t('flashcards.newFlashcard') }}
         </button>
       </div>
     </div>
@@ -56,7 +56,7 @@
     <!-- Loading -->
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Carregando flashcards...</p>
+      <p>{{ $t('flashcards.carregando') }}</p>
     </div>
 
     <!-- Empty -->
@@ -73,8 +73,8 @@
           <path d="M8 8h8M8 12h6" />
         </svg>
       </div>
-      <h2 class="empty-title">Nenhum flashcard ainda</h2>
-      <p class="empty-description">Comece criando seu primeiro flashcard para estudar!</p>
+      <h2 class="empty-title">{{ $t('flashcards.emptyTitle') }}</h2>
+      <p class="empty-description">{{ $t('flashcards.emptyDescription') }}</p>
       <button class="empty-btn" @click="openCreateModal">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -90,7 +90,7 @@
             d="M12 4v16m8-8H4"
           />
         </svg>
-        Criar Primeiro Flashcard
+        {{ $t('flashcards.createFirst') }}
       </button>
     </div>
 
@@ -127,11 +127,11 @@
         </div>
         <div class="flashcard-content" @click="viewFlashcard(flashcard.id)">
           <div class="flashcard-question">
-            <div class="question-label">PERGUNTA</div>
+            <div class="question-label">{{ $t('flashcards.perguntaLabel') }}</div>
             <div class="question-text">{{ flashcard.frente }}</div>
           </div>
           <div class="flashcard-answer">
-            <div class="answer-label">RESPOSTA</div>
+            <div class="answer-label">{{ $t('flashcards.respostalabel') }}</div>
             <div class="answer-text">{{ flashcard.verso }}</div>
           </div>
         </div>
@@ -147,7 +147,7 @@
               <circle cx="12" cy="12" r="10" />
               <path d="M12 8v4l3 3" />
             </svg>
-            Estudar
+            {{ $t('flashcards.estudar') }}
           </button>
         </div>
       </div>
@@ -158,9 +158,11 @@
       <div class="modal-container" @click.stop>
         <div class="modal-header">
           <div>
-            <h2 class="modal-title">{{ isEditing ? 'Editar Flashcard' : 'Novo Flashcard' }}</h2>
+            <h2 class="modal-title">
+              {{ isEditing ? $t('flashcards.editFlashcard') : $t('flashcards.newFlashcard') }}
+            </h2>
             <p class="modal-subtitle">
-              {{ isEditing ? 'Atualize as informações do flashcard' : 'Preencha os dados abaixo' }}
+              {{ isEditing ? $t('flashcards.editSubtitle') : $t('flashcards.createSubtitle') }}
             </p>
           </div>
           <button class="modal-close" @click="closeModal">×</button>
@@ -168,38 +170,46 @@
         <form @submit.prevent="submitForm">
           <div class="modal-body">
             <div class="form-group">
-              <label class="form-label">Pergunta (Frente)</label>
+              <label class="form-label">{{ $t('flashcards.pergunta') }}</label>
               <textarea
                 v-model="form.frente"
                 class="form-textarea"
                 rows="3"
                 required
-                placeholder="Digite a pergunta..."
+                :placeholder="$t('flashcards.perguntaPlaceholder')"
               ></textarea>
             </div>
             <div class="form-group">
-              <label class="form-label">Resposta (Verso)</label>
+              <label class="form-label">{{ $t('flashcards.resposta') }}</label>
               <textarea
                 v-model="form.verso"
                 class="form-textarea"
                 rows="3"
                 required
-                placeholder="Digite a resposta..."
+                :placeholder="$t('flashcards.respostaPlaceholder')"
               ></textarea>
             </div>
             <div class="form-group">
-              <label class="form-label">Nível de Dificuldade</label>
+              <label class="form-label">{{ $t('flashcards.dificuldade') }}</label>
               <select v-model="form.nivel_dificuldade" class="form-select">
-                <option value="facil">Fácil</option>
-                <option value="medio">Médio</option>
-                <option value="dificil">Difícil</option>
+                <option value="facil">{{ $t('flashcards.facil') }}</option>
+                <option value="medio">{{ $t('flashcards.medio') }}</option>
+                <option value="dificil">{{ $t('flashcards.dificil') }}</option>
               </select>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
+            <button type="button" class="btn-cancel" @click="closeModal">
+              {{ $t('common.cancelar') }}
+            </button>
             <button type="submit" class="btn-create" :disabled="submitting">
-              {{ submitting ? 'Salvando...' : isEditing ? 'Atualizar' : 'Criar' }}
+              {{
+                submitting
+                  ? $t('common.salvando')
+                  : isEditing
+                    ? $t('common.atualizar')
+                    : $t('common.criar')
+              }}
             </button>
           </div>
         </form>
@@ -227,17 +237,19 @@
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
           </div>
-          <h2 class="modal-title">Excluir Flashcard?</h2>
+          <h2 class="modal-title">{{ $t('flashcards.confirmDelete') }}</h2>
         </div>
         <div class="confirm-body">
-          <p>Tem certeza que deseja excluir o flashcard</p>
+          <p>{{ $t('flashcards.deleteConfirmMessage') }}</p>
           <p class="flashcard-name">"{{ deletingFlashcard?.frente }}"</p>
-          <p class="modal-warning">⚠️ Esta ação não pode ser desfeita!</p>
+          <p class="modal-warning">⚠️ {{ $t('flashcards.deleteWarning') }}</p>
         </div>
         <div class="confirm-footer">
-          <button class="btn-cancel" @click="showDeleteModal = false">Cancelar</button>
+          <button class="btn-cancel" @click="showDeleteModal = false">
+            {{ $t('common.cancelar') }}
+          </button>
           <button class="btn-delete-confirm" @click="handleDelete" :disabled="deleting">
-            {{ deleting ? 'Excluindo...' : 'Sim, excluir' }}
+            {{ deleting ? $t('common.excluindo') : $t('flashcards.confirmDeleteButton') }}
           </button>
         </div>
       </div>

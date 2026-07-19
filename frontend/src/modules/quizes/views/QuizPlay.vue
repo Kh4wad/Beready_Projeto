@@ -1,18 +1,18 @@
 <template>
   <div class="quiz-play-container">
     <div class="quiz-play-header">
-      <button class="btn-back" @click="voltar">← Voltar</button>
+      <button class="btn-back" @click="voltar">← $t('common.voltar')</button>
       <span v-if="!loading && !isFinished" class="progress-tracker">
         Questão {{ currentQuestionIndex + 1 }} de {{ totalQuestoes }}
       </span>
     </div>
 
-    <div v-if="loading" class="state-message">Carregando questões do quiz...</div>
+    <div v-if="loading" class="state-message">$t('common.carregando')estões do quiz...</div>
 
     <div v-else-if="isFinished" class="state-message completion-card">
       <h2>🏆 Quiz Finalizado!</h2>
       <p>Suas respostas foram computadas com sucesso no banco de dados.</p>
-      <button class="btn-primary" @click="voltar">Voltar para Listagem</button>
+      <button class="btn-primary" @click="voltar">$t('common.voltar') para Listagem</button>
     </div>
 
     <div v-else-if="currentQuestao" class="quiz-card">

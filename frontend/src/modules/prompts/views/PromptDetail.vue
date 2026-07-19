@@ -16,7 +16,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        $t('common.voltar')
       </button>
       <div class="hero-content">
         <div class="hero-icon">
@@ -74,7 +74,7 @@
 
           <div v-if="loadingTraducoes" class="loading-state">
             <div class="spinner"></div>
-            <p>Carregando traduções...</p>
+            <p>$t('common.carregando')aduções...</p>
           </div>
           <div v-else-if="traducoes.length === 0" class="empty-state">
             <p>Nenhuma tradução disponível</p>
@@ -119,7 +119,7 @@
 
           <div v-if="loadingImagens" class="loading-state">
             <div class="spinner"></div>
-            <p>Carregando imagens...</p>
+            <p>$t('common.carregando')agens...</p>
           </div>
           <div v-else-if="imagens.length === 0" class="empty-state">
             <p>Nenhuma imagem disponível</p>
@@ -165,7 +165,7 @@
 
           <div v-if="loadingFrases" class="loading-state">
             <div class="spinner"></div>
-            <p>Carregando frases...</p>
+            <p>$t('common.carregando')ases...</p>
           </div>
           <div v-else-if="frases.length === 0" class="empty-state">
             <p>Nenhuma frase semelhante disponível</p>
@@ -209,7 +209,7 @@
       v-model="confirmModalVisible"
       title="Confirmar exclusão"
       :message="confirmMessage"
-      confirm-text="Excluir"
+      confirm-text="$t('common.excluir')"
       type="danger"
       :loading="deleting"
       @confirm="handleConfirmDelete"

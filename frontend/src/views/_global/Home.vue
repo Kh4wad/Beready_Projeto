@@ -3,17 +3,21 @@
     <section class="hero-section">
       <div class="hero-content">
         <h1 class="hero-title">Beready</h1>
-        <p class="hero-subtitle">Aprenda inglês de forma inteligente com IA</p>
+        <p class="hero-subtitle">{{ $t('home.subtitle') }}</p>
         <div class="hero-buttons">
-          <Button variant="primary" @click="$router.push('/register')">Começar Agora</Button>
-          <Button variant="outline" @click="$router.push('/login')">Já tenho conta</Button>
+          <Button variant="primary" @click="$router.push('/register')">
+            {{ $t('home.comecar') }}
+          </Button>
+          <Button variant="outline" @click="$router.push('/login')">
+            {{ $t('common.entrar') }}
+          </Button>
         </div>
       </div>
     </section>
 
     <section class="features-section">
       <div class="container">
-        <h2 class="section-title">Como funciona?</h2>
+        <h2 class="section-title">{{ $t('home.comoFunciona') }}</h2>
         <div class="features-grid">
           <div class="feature-card">
             <div class="feature-icon">
@@ -32,8 +36,8 @@
                 />
               </svg>
             </div>
-            <h3>Flashcards Inteligentes</h3>
-            <p>Aprenda vocabulário com flashcards adaptativos</p>
+            <h3>{{ $t('home.flashcardsInteligentes') }}</h3>
+            <p>{{ $t('home.flashcardsDesc') }}</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
@@ -52,8 +56,8 @@
                 />
               </svg>
             </div>
-            <h3>Quizzes Personalizados</h3>
-            <p>Teste seus conhecimentos com quizzes interativos</p>
+            <h3>{{ $t('home.quizzesPersonalizados') }}</h3>
+            <p>{{ $t('home.quizzesDesc') }}</p>
           </div>
           <div class="feature-card">
             <div class="feature-icon">
@@ -72,8 +76,8 @@
                 />
               </svg>
             </div>
-            <h3>Prompts com IA</h3>
-            <p>Gere prompts personalizados para praticar conversação</p>
+            <h3>{{ $t('prompts.title') }}</h3>
+            <p>{{ $t('home.promptsDesc') }}</p>
           </div>
         </div>
       </div>
@@ -81,9 +85,11 @@
 
     <section class="cta-section">
       <div class="container">
-        <h2>Pronto para começar sua jornada?</h2>
-        <p>Junte-se a milhares de estudantes que já estão aprendendo com o Beready</p>
-        <Button variant="primary" @click="$router.push('/register')">Criar conta gratuita</Button>
+        <h2>{{ $t('home.ctaTitle') }}</h2>
+        <p>{{ $t('home.ctaDesc') }}</p>
+        <Button variant="primary" @click="$router.push('/register')">
+          {{ $t('home.criarContaGratuita') }}
+        </Button>
       </div>
     </section>
   </div>

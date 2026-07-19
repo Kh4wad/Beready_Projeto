@@ -344,7 +344,11 @@
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
-/* Modal Styles */
+/* ============================================
+   MODAL STYLES - Com suporte a tema escuro
+   ============================================ */
+
+/* Modal Overlay */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -369,54 +373,197 @@
   }
 }
 
+/* Modal Container */
 .modal-container {
-  background: var(--bg-card, #ffffff) !important;
+  background: var(--modal-bg, #ffffff);
   border-radius: 1rem;
   width: 90%;
   max-width: 550px;
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(30px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
-/* ... resto do modal igual ao flashcards ... */
-
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-  .quizes-grid {
-    grid-template-columns: 1fr;
-    padding: 0 1rem 2rem;
-  }
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  .quiz-card-title {
-    font-size: 1.125rem;
-  }
-  .hero-btn,
-  .empty-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-  }
-  .confirm-modal {
-    max-width: 95%;
-  }
+/* Modal Header */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem 1.5rem 0.5rem;
+  border-bottom: 1px solid var(--modal-border, #e2e8f0);
+  background: var(--modal-header-bg, #ffffff);
+  border-radius: 1rem 1rem 0 0;
 }
 
-/* Confirm Delete Modal - Versão melhorada */
+.modal-header > div {
+  flex: 1;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--modal-text-primary, #1a202c);
+  margin: 0 0 0.25rem;
+}
+
+.modal-subtitle {
+  font-size: 0.875rem;
+  color: var(--modal-text-secondary, #718096);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--modal-text-muted, #a0aec0);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  background: var(--modal-btn-cancel-bg, #f7fafc);
+  color: var(--modal-text-primary, #4a5568);
+}
+
+/* Modal Body */
+.modal-body {
+  padding: 1.5rem;
+  background: var(--modal-bg, #ffffff);
+}
+
+.modal-body .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal-body .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.modal-body .form-label {
+  display: block;
+  font-weight: 600;
+  color: var(--modal-text-secondary, #4a5568);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.modal-body .form-input,
+.modal-body .form-select,
+.modal-body .form-textarea {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--modal-border, #e2e8f0);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  transition: border-color 0.2s;
+  background: var(--modal-input-bg, #ffffff);
+  color: var(--modal-text-primary, #1a202c);
+  font-family: inherit;
+}
+
+.modal-body .form-input::placeholder,
+.modal-body .form-textarea::placeholder {
+  color: var(--modal-text-muted, #a0aec0);
+}
+
+.modal-body .form-input:focus,
+.modal-body .form-select:focus,
+.modal-body .form-textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.modal-body .form-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modal-body .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.modal-body .form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--modal-text-primary, #4a5568);
+}
+
+.modal-body .form-checkbox input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--modal-border, #e2e8f0);
+  background: var(--modal-footer-bg, #f7fafc);
+  border-radius: 0 0 1rem 1rem;
+}
+
+.modal-footer .btn-cancel,
+.modal-footer .btn-create {
+  padding: 0.5rem 1.25rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+}
+
+.modal-footer .btn-cancel {
+  background: var(--modal-btn-cancel-bg, #e2e8f0);
+  color: var(--modal-btn-cancel-text, #4a5568);
+}
+
+.modal-footer .btn-cancel:hover {
+  background: var(--modal-btn-cancel-hover, #cbd5e0);
+}
+
+.modal-footer .btn-create {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.modal-footer .btn-create:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.modal-footer .btn-create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Confirm Delete Modal */
 .confirm-modal {
   max-width: 450px;
   border-radius: 1rem;
@@ -442,8 +589,9 @@
   text-align: center;
   gap: 1rem;
   padding: 2rem 1.5rem 1rem;
-  background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
   border-bottom: none;
+  background: var(--modal-bg, #ffffff);
+  border-radius: 1rem 1rem 0 0;
 }
 
 .confirm-icon {
@@ -482,19 +630,16 @@
   font-weight: 700;
   color: #c53030;
   margin: 0;
-  background: none;
-  background-clip: unset;
-  -webkit-background-clip: unset;
-  -webkit-text-fill-color: unset;
 }
 
 .confirm-body {
   text-align: center;
   padding: 1.5rem 2rem;
+  background: var(--modal-bg, #ffffff);
 }
 
 .confirm-body p {
-  color: #4a5568;
+  color: var(--modal-text-secondary, #4a5568);
   font-size: 1rem;
   margin-bottom: 1rem;
 }
@@ -502,7 +647,7 @@
 .quiz-name {
   font-weight: 700;
   color: #e53e3e;
-  background: #fff5f5;
+  background: var(--modal-btn-cancel-bg, #fff5f5);
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   margin: 1rem 0;
@@ -514,7 +659,7 @@
 .modal-warning {
   color: #e53e3e;
   font-size: 0.875rem;
-  background: #fff5f5;
+  background: var(--modal-btn-cancel-bg, #fff5f5);
   padding: 0.5rem;
   border-radius: 0.5rem;
   display: inline-block;
@@ -525,14 +670,15 @@
   justify-content: center;
   gap: 1rem;
   padding: 1.5rem 2rem;
-  background: #f7fafc;
-  border-top: 1px solid #e2e8f0;
+  background: var(--modal-footer-bg, #f7fafc);
+  border-top: 1px solid var(--modal-border, #e2e8f0);
+  border-radius: 0 0 1rem 1rem;
 }
 
-.btn-cancel {
+.confirm-footer .btn-cancel {
   padding: 0.625rem 1.5rem;
-  background: #e2e8f0;
-  color: #4a5568;
+  background: var(--modal-btn-cancel-bg, #e2e8f0);
+  color: var(--modal-btn-cancel-text, #4a5568);
   border: none;
   border-radius: 0.5rem;
   font-weight: 600;
@@ -540,12 +686,11 @@
   transition: all 0.3s ease;
 }
 
-.btn-cancel:hover {
-  background: #cbd5e0;
-  transform: translateY(-2px);
+.confirm-footer .btn-cancel:hover {
+  background: var(--modal-btn-cancel-hover, #cbd5e0);
 }
 
-.btn-delete-confirm {
+.confirm-footer .btn-delete-confirm {
   padding: 0.625rem 1.5rem;
   background: linear-gradient(135deg, #e53e3e, #c53030);
   color: white;
@@ -556,13 +701,69 @@
   transition: all 0.3s ease;
 }
 
-.btn-delete-confirm:hover:not(:disabled) {
+.confirm-footer .btn-delete-confirm:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
 }
 
-.btn-delete-confirm:disabled {
+.confirm-footer .btn-delete-confirm:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .modal-container {
+    width: 95%;
+    max-height: 95vh;
+  }
+
+  .modal-body .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .modal-close {
+    align-self: flex-end;
+  }
+
+  .modal-footer,
+  .confirm-footer {
+    flex-direction: column-reverse;
+  }
+
+  .modal-footer button,
+  .confirm-footer button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  .quizes-grid {
+    grid-template-columns: 1fr;
+    padding: 0 1rem 2rem;
+  }
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  .quiz-card-title {
+    font-size: 1.125rem;
+  }
+  .hero-btn,
+  .empty-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  .confirm-modal {
+    max-width: 95%;
+  }
 }

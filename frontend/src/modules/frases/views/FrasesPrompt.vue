@@ -16,7 +16,7 @@
             d="M10 19l-7-7m0 0l7-7m-7 7h18"
           />
         </svg>
-        Voltar
+        {{ $t('common.voltar') }}
       </button>
       <div class="hero-content">
         <div class="hero-icon">
@@ -63,7 +63,7 @@
 
       <div v-if="loading" class="loading-state">
         <div class="spinner"></div>
-        <p>Carregando frases...</p>
+        <p>{{ $t('common.carregando') }} frases...</p>
       </div>
 
       <div v-else-if="frases.length === 0" class="empty-state">
@@ -144,7 +144,9 @@
     <div v-if="modalOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-container">
         <div class="modal-header">
-          <h3 class="modal-title">{{ editingId ? 'Editar Frase' : 'Nova Frase' }}</h3>
+          <h3 class="modal-title">
+            {{ editingId ? $t('common.editar') + ' Frase' : 'Nova Frase' }}
+          </h3>
           <button class="modal-close" @click="closeModal">×</button>
         </div>
         <form @submit.prevent="save">
@@ -181,7 +183,7 @@
               </select>
             </div>
             <div class="form-group">
-              <label class="form-label">Nível de Dificuldade</label>
+              <label class="form-label">{{ $t('flashcards.dificuldade') }}</label>
               <select v-model="form.nivel_dificuldade" class="form-select">
                 <option value="iniciante">Iniciante</option>
                 <option value="intermediario">Intermediário</option>
@@ -190,9 +192,11 @@
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn-cancel" @click="closeModal">Cancelar</button>
+            <button type="button" class="btn-cancel" @click="closeModal">
+              {{ $t('common.cancelar') }}
+            </button>
             <button type="submit" class="btn-save" :disabled="saving">
-              {{ saving ? 'Salvando...' : 'Salvar' }}
+              {{ saving ? 'Salvando...' : $t('common.salvar') }}
             </button>
           </div>
         </form>
@@ -204,7 +208,7 @@
       v-model="confirmModalVisible"
       title="Confirmar exclusão"
       message="Tem certeza que deseja excluir esta frase?"
-      confirm-text="Excluir"
+      confirm-text="$t('common.excluir')"
       type="danger"
       :loading="deleting"
       @confirm="handleConfirmDelete"
