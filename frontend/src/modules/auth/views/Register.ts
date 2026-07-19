@@ -81,6 +81,17 @@ function usePasswordStrength() {
 function usePhoneMask() {
   const phoneError = ref('')
 
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '')
+    if (digits.length === 11) {
+      return digits.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+    }
+    if (digits.length === 10) {
+      return digits.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+    }
+    return value
+  }
+
   const handlePhoneInput = (event: Event) => {
     const input = event.target as HTMLInputElement
     let value = input.value.replace(/\D/g, '')
@@ -91,9 +102,15 @@ function usePhoneMask() {
 
     let formatted = value
     if (value.length === 11) {
-      formatted = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1)$2-$3')
+      formatted = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
     } else if (value.length === 10) {
-      formatted = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1)$2-$3')
+      formatted = value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+    } else if (value.length > 6) {
+      formatted = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3')
+    } else if (value.length > 2) {
+      formatted = value.replace(/(\d{2})(\d{0,5})/, '($1) $2')
+    } else {
+      formatted = value
     }
 
     input.value = formatted
@@ -125,7 +142,7 @@ function usePhoneMask() {
     }
   }
 
-  return { phoneError, handlePhoneInput, handlePhoneKeydown }
+  return { phoneError, handlePhoneInput, handlePhoneKeydown, formatPhone }
 }
 
 function useAlert() {
@@ -183,7 +200,11 @@ export function useRegister() {
 
   const { strengthClass, strengthText, strengthWidth, checkPasswordStrength } =
     usePasswordStrength()
-  const { handlePhoneInput, handlePhoneKeydown, phoneError } = usePhoneMask()
+  const {
+    phoneError,
+    handlePhoneInput: handlePhoneMaskInput,
+    handlePhoneKeydown: handlePhoneMaskKeydown,
+  } = usePhoneMask()
 
   const { form, errors, validate } = useForm({
     nome: '',
@@ -281,8 +302,8 @@ export function useRegister() {
     strengthWidth,
     phoneError,
     passwordsMatch,
-    handlePhoneInput,
-    handlePhoneKeydown,
+    handlePhoneInput: handlePhoneMaskInput,
+    handlePhoneKeydown: handlePhoneMaskKeydown,
     checkPasswordStrength,
     checkPasswordMatch,
     handleSubmit,
