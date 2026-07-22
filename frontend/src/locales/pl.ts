@@ -298,6 +298,8 @@ export default {
     carregando: 'Ładowanie preferencji...',
     salvando: 'Zapisywanie...',
     salvar: 'Zapisz preferencje',
+    salvarSucesso: "Preferencje zapisane pomyślnie!",
+    errorSave: "Błąd podczas zapisywania preferencji"
   },
   idiomas: {
     pt: 'Portugalski',

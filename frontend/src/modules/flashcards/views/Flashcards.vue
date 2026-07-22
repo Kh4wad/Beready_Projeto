@@ -242,7 +242,7 @@
         <div class="confirm-body">
           <p>{{ $t('flashcards.deleteConfirmMessage') }}</p>
           <p class="flashcard-name">"{{ deletingFlashcard?.frente }}"</p>
-          <p class="modal-warning">⚠️ {{ $t('flashcards.deleteWarning') }}</p>
+          <p class="modal-warning"> {{ $t('flashcards.deleteWarning') }}</p>
         </div>
         <div class="confirm-footer">
           <button class="btn-cancel" @click="showDeleteModal = false">

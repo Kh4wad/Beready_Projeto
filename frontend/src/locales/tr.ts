@@ -297,6 +297,8 @@ export default {
     carregando: 'Tercihler yükleniyor...',
     salvando: 'Kaydediliyor...',
     salvar: 'Tercihleri Kaydet',
+    salvarSucesso: "Tercihler başarıyla kaydedildi!",
+    errorSave: "Tercihler kaydedilirken hata oluştu"
   },
   idiomas: {
     pt: 'Portekizce',
