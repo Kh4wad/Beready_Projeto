@@ -297,7 +297,8 @@ export default {
     carregando: 'Cargando preferencias...',
     salvando: 'Guardando...',
     salvar: 'Guardar Preferencias',
-  },
+    salvarSucesso: "¡Preferencias guardadas con éxito!",
+    errorSave: "Error al guardar preferencias"  },
   idiomas: {
     pt: 'Portugués',
     en: 'Inglés',

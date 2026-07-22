@@ -297,6 +297,8 @@ export default {
     carregando: '設定を読み込み中...',
     salvando: '保存中...',
     salvar: '設定を保存',
+    salvarSucesso: "設定が正常に保存されました！",
+    errorSave: "設定の保存中にエラーが発生しました"
   },
   idiomas: {
     pt: 'ポルトガル語',

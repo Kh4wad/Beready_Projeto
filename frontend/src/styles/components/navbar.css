@@ -1,6 +1,4 @@
-/* ============================================
-   NAVBAR PRINCIPAL
-   ============================================ */
+/* NAVBAR PRINCIPAL */
 .dashboard-nav {
   background: white;
   box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.05);
@@ -28,9 +26,7 @@
   flex-wrap: nowrap;
 }
 
-/* ============================================
-   LOGO
-   ============================================ */
+/* LOGO */
 .nav-brand {
   display: flex;
   align-items: center;
@@ -46,19 +42,7 @@
   flex-shrink: 0;
 }
 
-.nav-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  white-space: nowrap;
-}
-
-/* ============================================
-   MENU (desktop)
-   ============================================ */
+/* MENU (desktop) */
 .nav-menu {
   display: flex;
   gap: 0.375rem;
@@ -124,9 +108,7 @@
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.2);
 }
 
-/* ============================================
-   USUÁRIO (lado direito)
-   ============================================ */
+/* USUÁRIO (lado direito) */
 .nav-user {
   display: flex;
   align-items: center;
@@ -195,9 +177,7 @@
   color: #a0a0c0;
 }
 
-/* ============================================
-   BOTÃO SAIR
-   ============================================ */
+/* BOTÃO SAIR */
 .logout-btn {
   display: flex;
   align-items: center;
@@ -239,9 +219,7 @@
   cursor: not-allowed;
 }
 
-/* ============================================
-   HAMBURGER BUTTON
-   ============================================ */
+/* HAMBURGER BUTTON */
 .hamburger-btn {
   display: none;
   flex-direction: column;
@@ -290,9 +268,7 @@
   transform: rotate(-45deg) translate(0.3125rem, -0.3125rem);
 }
 
-/* ============================================
-   MOBILE MENU (Overlay)
-   ============================================ */
+/* MOBILE MENU (Overlay) */
 .mobile-menu {
   display: none;
   position: fixed;
@@ -303,6 +279,11 @@
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
   animation: fadeIn 0.3s ease;
+}
+
+/* Quando o menu está aberto via Vue */
+.mobile-menu.show {
+  display: block !important;
 }
 
 .dark-mode .mobile-menu {
@@ -389,9 +370,7 @@
   height: 1.375rem;
 }
 
-/* ============================================
-   ANIMAÇÕES
-   ============================================ */
+/* ANIMAÇÕES */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -412,26 +391,48 @@
   transform: translateY(-1.25rem);
 }
 
-/* ============================================
-   RESPONSIVIDADE DA LOGO
-   ============================================ */
-@media (max-width: 768px) {
-  .logo-icon-img {
-    height: 2.8rem;
+/* RESPONSIVIDADE DA LOGO */
+
+/* Breakpoint para notebooks (1024px - 1366px) */
+@media (max-width: 1366px) and (min-width: 1025px) {
+  .nav-link {
+    font-size: 0.78rem;
+    padding: 0.375rem 0.625rem;
+  }
+
+  .nav-link svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .nav-menu {
+    gap: 0.25rem;
+    padding: 0.2rem;
+  }
+
+  .user-details {
     max-width: 8rem;
   }
-}
 
-@media (max-width: 480px) {
-  .logo-icon-img {
-    height: 2.2rem;
-    max-width: 6rem;
+  .user-name {
+    font-size: 0.8rem;
+  }
+
+  .user-email {
+    font-size: 0.65rem;
+  }
+
+  .logout-btn {
+    font-size: 0.78rem;
+    padding: 0.375rem 0.625rem;
+  }
+
+  .nav-container {
+    padding: 0 1rem;
   }
 }
-
-/* ============================================
-   RESPONSIVIDADE GERAL
-   ============================================ */
+/* Breakpoint para tablets/notebooks pequenos (768px - 1024px) */
+/* RESPONSIVIDADE GERAL, */
 
 @media (max-width: 1024px) {
   .nav-menu {
@@ -443,7 +444,7 @@
   }
 
   .mobile-menu {
-    display: block;
+    top: 3.75rem;
   }
 
   .user-details {
@@ -455,10 +456,6 @@
     height: 3.75rem;
   }
 
-  .nav-title {
-    font-size: 1.2rem;
-  }
-
   .logout-btn span {
     display: none;
   }
@@ -466,20 +463,13 @@
   .logout-btn {
     padding: 0.5rem 0.625rem;
   }
-
-  .mobile-menu {
-    top: 3.75rem;
-  }
 }
 
+/* Breakpoint para mobile (até 768px) */
 @media (max-width: 768px) {
   .nav-container {
     padding: 0 0.75rem;
     height: 3.5rem;
-  }
-
-  .nav-brand .nav-title {
-    display: none;
   }
 
   .user-avatar {
@@ -557,5 +547,22 @@
   .mobile-logout-btn svg {
     width: 1.125rem;
     height: 1.125rem;
+  }
+}
+
+/* Ajuste para telas muito grandes */
+@media (min-width: 1920px) {
+  .nav-container {
+    padding: 0 2rem;
+  }
+
+  .nav-link {
+    font-size: 0.95rem;
+    padding: 0.5rem 1.25rem;
+  }
+
+  .nav-link svg {
+    width: 1.25rem;
+    height: 1.25rem;
   }
 }

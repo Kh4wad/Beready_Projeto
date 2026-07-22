@@ -297,6 +297,8 @@ export default {
     carregando: '환경설정 로딩 중...',
     salvando: '저장 중...',
     salvar: '환경설정 저장',
+    salvarSucesso: "환경 설정이 성공적으로 저장되었습니다!",
+    errorSave: "환경 설정 저장 중 오류가 발생했습니다"
   },
   idiomas: {
     pt: '포르투갈어',

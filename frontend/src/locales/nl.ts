@@ -297,6 +297,8 @@ export default {
     carregando: 'Voorkeuren laden...',
     salvando: 'Opslaan...',
     salvar: 'Voorkeuren opslaan',
+    salvarSucesso: "Voorkeuren succesvol opgeslagen!",
+    errorSave: "Fout bij het opslaan van voorkeuren"
   },
   idiomas: {
     pt: 'Portugees',

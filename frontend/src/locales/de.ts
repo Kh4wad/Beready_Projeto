@@ -298,6 +298,8 @@ export default {
     carregando: 'Lade Einstellungen...',
     salvando: 'Speichern...',
     salvar: 'Einstellungen speichern',
+    salvarSucesso: "Einstellungen erfolgreich gespeichert!",
+    errorSave: "Fehler beim Speichern der Einstellungen"
   },
   idiomas: {
     pt: 'Portugiesisch',

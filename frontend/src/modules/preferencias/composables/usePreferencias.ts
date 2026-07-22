@@ -2,8 +2,10 @@ import { ref, reactive } from 'vue'
 import { preferenciaService } from '../services/preferenciaService'
 import type { Preferencia } from '@/core/types'
 import { useAlert } from '@/shared/composables/useAlert'
+import { useI18n } from 'vue-i18n'
 
 export function usePreferencias() {
+  const { t } = useI18n()
   const preferencias = ref<Preferencia | null>(null)
   const loading = ref(false)
   const saving = ref(false)
@@ -69,7 +71,7 @@ export function usePreferencias() {
     } catch (err: any) {
       console.error('Erro ao carregar preferências:', err)
       if (err.response?.status !== 404) {
-        error(err.response?.data?.message || 'Erro ao carregar preferências')
+        error(err.response?.data?.message || t('errors.serverError'))
       }
       throw err
     } finally {
@@ -94,13 +96,14 @@ export function usePreferencias() {
       const response = await preferenciaService.save(data)
       if (response.data.success) {
         aplicarPreferenciasGlobais()
-        success('Preferências salvas com sucesso!')
+        // Mensagem traduzida corretamente.
+        success(t('preferencias.salvarSucesso'))
       } else {
-        error(response.data.message || 'Erro ao salvar preferências')
+        error(response.data.message || t('preferencias.errorSave'))
       }
     } catch (err: any) {
       console.error('Erro ao salvar preferências:', err)
-      error(err.response?.data?.message || 'Erro de conexão com o servidor')
+      error(err.response?.data?.message || t('errors.networkError'))
     } finally {
       saving.value = false
     }
