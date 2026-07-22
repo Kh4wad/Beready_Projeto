@@ -297,6 +297,8 @@ export default {
     carregando: 'Laddar inställningar...',
     salvando: 'Sparar...',
     salvar: 'Spara inställningar',
+    salvarSucesso: "Inställningar sparades framgångsrikt!",
+    errorSave: "Fel vid sparande av inställningar"
   },
   idiomas: {
     pt: 'Portugisiska',

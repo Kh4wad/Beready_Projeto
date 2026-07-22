@@ -298,6 +298,8 @@ export default {
     carregando: 'جاري تحميل التفضيلات...',
     salvando: 'جاري الحفظ...',
     salvar: 'حفظ التفضيلات',
+    salvarSucesso: "تم حفظ التفضيلات بنجاح!",
+    errorSave: "خطأ في حفظ التفضيلات"
   },
   idiomas: {
     pt: 'البرتغالية',

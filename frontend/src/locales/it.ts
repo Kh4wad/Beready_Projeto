@@ -298,6 +298,8 @@ export default {
     carregando: 'Caricamento preferenze...',
     salvando: 'Salvataggio...',
     salvar: 'Salva Preferenze',
+    salvarSucesso: "Preferenze salvate con successo!",
+    errorSave: "Errore durante il salvataggio delle preferenze"
   },
   idiomas: {
     pt: 'Portoghese',
